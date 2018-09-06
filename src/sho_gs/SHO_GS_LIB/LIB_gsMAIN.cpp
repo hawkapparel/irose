@@ -21,13 +21,6 @@
 #include "GS_ThreadMALL.h"
 #include "classFILE.h"
 
-// #include "AStrTable.h"
-
-#if defined(__N_PROTECT) && !defined(__NORTHUSA)
-	#include "../../../GG_SDK/CSAuth2/include/ggsrv.h"
-	#pragma comment (lib, "../../GG_SDK/CSAuth2/win32/ggsrvlib.lib" )
-#endif
-
 #define	TEST_ZONE_NO 100
 #define	DB_INI_STRING		30
 
@@ -330,10 +323,6 @@ CLIB_GameSRV::CLIB_GameSRV ( EXE_GS_API *pExeAPI )
 
 CLIB_GameSRV::~CLIB_GameSRV ()
 {
-#if defined(__N_PROTECT) && !defined(__NORTHUSA)
-	CleanupGameguardAuth();
-#endif
-
 	Shutdown ();
 
 	if ( g_pThreadSQL ) {
@@ -400,28 +389,6 @@ CLIB_GameSRV::~CLIB_GameSRV ()
 
 void CLIB_GameSRV::SystemINIT( HINSTANCE hInstance, char *szBaseDataDIR, int iLangType )
 {
-	//int iSize;
-	//
-	//iSize = sizeof( CObjITEM );
-	//iSize = sizeof( CObjMOB  );
-	//iSize = sizeof( CObjSUMMON );
-	//iSize = sizeof( tagPartyUSER );
-
-#if defined(__N_PROTECT) && !defined(__NORTHUSA)
-	char	szFullPath[ MAX_PATH ];
-	::GetModuleFileName( hInstance, szFullPath, MAX_PATH );
-
-	char	szPathOnly[ MAX_PATH ];
-	::ZeroMemory( szPathOnly, MAX_PATH );
-	CUtil::ExtractFilePath( szFullPath, szPathOnly, MAX_PATH );
-	DWORD dwGGErrCode = InitGameguardAuth( szPathOnly, 50 );
-	if ( ERROR_SUCCESS != dwGGErrCode ) 
-	{
-		LogString( 0xffff, "n-Protect init error \n" );
-		return;
-	}
-#endif
-
 	// Initializes the symbol files
 #ifdef	__USE_TRACE
 	TRACE_INIT ( NULL );

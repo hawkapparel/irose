@@ -10,18 +10,9 @@
 #include "CurlTHREAD.h"
 #include "blockLIST.h"
 #include "CAS_Gums.h"
-#ifdef	__TAIWAN
-#include "BS_Taiwan.h"
-#endif
-
 
 #define PACKET_SEED 0x6648495
-//-------------------------------------------------------------------------------------------------
 
-
-//-------------------------------------------------------------------------------------------------
-
-//CBS_Taiwan	 *g_pTwainBS=NULL;
 AS_gumSOCKET *g_pSockGUM=NULL;
 
 SHO_LS *SHO_LS::m_pInstance=NULL;
@@ -161,14 +152,7 @@ void SHO_LS::SystemINIT( HINSTANCE hInstance )
 	#define	WM_GUMSOCK_MSG	( WM_SOCKETWND_MSG+0 )
 	CSocketWND *pSockWND = CSocketWND::InitInstance( hInstance, 1 );
 
-#ifdef	__TAIWAN
-	g_LOG.CS_ODS(0xffff, "TAWAIN version \n");
-	g_LOG.CS_ODS(0xffff, "TAWAIN version \n");
-	g_LOG.CS_ODS(0xffff, "TAWAIN version \n");
-	g_LOG.CS_ODS(0xffff, "TAWAIN version \n");
-	g_LOG.CS_ODS(0xffff, "TAWAIN version \n");
-	g_LOG.CS_ODS(0xffff, "TAWAIN version \n");
-#elif defined( USE_MSSQL )
+#if defined( USE_MSSQL )
 	g_LOG.CS_ODS(0xffff, "MS-SQL version \n");
 	g_LOG.CS_ODS(0xffff, "MS-SQL version \n");
 	g_LOG.CS_ODS(0xffff, "MS-SQL version \n");
@@ -257,15 +241,6 @@ bool SHO_LS::StartServerSOCKET (HWND hMainWND, char *szDBServerIP, int iServerLi
 	if ( m_iServerListenPortNO )
 		return false;
 
-#ifdef	__TAIWAN
-	if ( szGumsIP ) {
-		g_pTwainBS = CBS_Taiwan::InitInstance(
-							szGumsIP,	// "203.74.37.20", 
-							iGumsPORT,	// 7888,
-							0/* iServerID */ );
-	}
-#endif
-
 	m_bShowOnlyWS = bShowOnlyWS;
     if ( NULL == g_pThreadSQL ) {
 #ifndef	USE_ORACLE_DB
@@ -280,25 +255,22 @@ bool SHO_LS::StartServerSOCKET (HWND hMainWND, char *szDBServerIP, int iServerLi
 
         g_pThreadSQL = CLS_SqlTHREAD::Instance ();
 
-#ifndef	__TAIWAN
-	#ifndef	USE_ORACLE_DB
-			if ( !g_pThreadSQL->Connect( USE_MY_SQL, (char*)szDBServerIP, szDBUser, szPassword, szDBName, 32, 1024*8) ) {
-	#else
-			if ( !g_pThreadSQL->Connect( USE_ODBC, szDBServerIP, szDBUser, szPassword, szDBName, 32, 1024*4) ) {
-	#endif
-				g_LOG.CS_ODS (0xffff, "sql connect failed ...");
-				g_pThreadSQL->Destroy ();
-				g_pThreadSQL = NULL;
-				return false;
-			}
+#ifndef	USE_ORACLE_DB
+		if ( !g_pThreadSQL->Connect( USE_MY_SQL, (char*)szDBServerIP, szDBUser, szPassword, szDBName, 32, 1024*8) ) {
+#else
+		if ( !g_pThreadSQL->Connect( USE_ODBC, szDBServerIP, szDBUser, szPassword, szDBName, 32, 1024*4) ) {
 #endif
+			g_LOG.CS_ODS (0xffff, "sql connect failed ...");
+			g_pThreadSQL->Destroy ();
+			g_pThreadSQL = NULL;
+			return false;
+		}
 
 		g_pThreadSQL->Resume ();
 		g_pThreadSQL->m_bCheckLogIN  = true;//CheckBoxLogIN->Checked;
 		g_pThreadSQL->m_dwCheckRIGHT = dwLoginRight;//StrToInt( EditLogInLevel->Text );
 	}
 
-#ifndef	__TAIWAN
 	if ( szGumsIP && CSocketWND::GetInstance() ) {
 		// 테스트용 n-cash 서버 :: 211.232.109.160
 		g_pSockGUM = new AS_gumSOCKET;
@@ -310,7 +282,6 @@ bool SHO_LS::StartServerSOCKET (HWND hMainWND, char *szDBServerIP, int iServerLi
 							WM_GUMSOCK_MSG );
 		g_pSockGUM->Connect ();
 	}
-#endif
 
 	g_dwStartTIME = classTIME::GetCurrentAbsSecond();
 

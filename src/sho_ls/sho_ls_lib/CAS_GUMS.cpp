@@ -48,10 +48,6 @@ DWORD AS_gumSOCKET::GetPlayingFLAG( eGumsNATION eNation, int iPayType )
 				case BILLING_MSG_PAY_GU		:
 					dwPlayFlag |= PLAY_FLAG_EXTRA_STOCK | PLAY_FLAG_EXTRA_CHAR;
 					break;
-#ifdef	__PHILIPPINE
-				default:
-					dwPlayFlag |= PLAY_FLAG_EXTRA_CHAR;
-#endif
 			}
 			break;
 		case GUMS_JAPAN :	// ¿œ∫ª¿∫...

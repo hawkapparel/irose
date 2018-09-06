@@ -7696,92 +7696,14 @@ bool classUSER::Send_gsv_SERVER_IPSEARCH_REPLY( classUSER * pUSER )
 	return true;
 }
 
-//-------------------------------------------------------------------------------------------------
-/**
- * 필리핀의 경우 n-Protect 적용
- *	#define	AUTH_MODULE_nPROTECT	0xf1
- *	struct srv_CHECK_AUTH : public t_PACKETHEADER {
- *		BYTE	m_btModuleTYPE;
- *		// 각 모듈별 데이타...
- *	} ;
- */
 bool classUSER::Send_srv_CHECK_AUTH ()
 {
-#if defined(__N_PROTECT) && !defined(__NORTHUSA)
-	classPACKET *pCPacket = Packet_AllocNLock ();
-	if ( !pCPacket )
-		return false;
-
-	pCPacket->m_HEADER.m_wType = SRV_CHECK_AUTH;
-	pCPacket->m_HEADER.m_nSize = sizeof( srv_CHECK_AUTH );
-
-	//if ( this->m_dwCSARecvTime < this->m_dwCSASendTime ) {
-	//	// 마지막으로 보낸 패킷의 응답이 없었다. :: 짤러~
-	//	Packet_ReleaseNUnlock( pCPacket );
-	//	return false;
-	//}
-	DWORD dwGGErrCode = this->m_CSA.GetAuthQuery();
-	if ( ERROR_SUCCESS != dwGGErrCode ) {
-		// 접속 종료 :: 타이머 주기동안 인증값이 도착하지 않았거나 기타 에러 발생 
-		LogString( 0xffff, "Send ERROR on m_CSA.GetAuthQuery() :: Return:0x%x, [ 0x%x, 0x%x, 0x%x, 0x%x ]\n",
-				dwGGErrCode,
-				this->m_CSA.m_AuthQuery.dwIndex,
-				this->m_CSA.m_AuthQuery.dwValue1,
-				this->m_CSA.m_AuthQuery.dwValue2,
-				this->m_CSA.m_AuthQuery.dwValue3 );
-		Packet_ReleaseNUnlock( pCPacket );
-
-#ifdef	__INC_WORLD
-		return true;		// 개인섭은 짜르지 말자~~
-#endif
-		return false;
-	}
-	this->m_dwCSASendTime = ::timeGetTime();		// 마지막으로 보낸 시간..
-
-	pCPacket->m_srv_CHECK_AUTH.m_btModuleTYPE = AUTH_MODULE_nPROTECT;
-	pCPacket->AppendData( &this->m_CSA.m_AuthQuery, sizeof( GG_AUTH_DATA ) );
-
-	//LogString( 0xffff, "SEND:: 0x%x, 0x%x, 0x%x, 0x%x\n",
-	//		this->m_CSA.m_AuthQuery.dwIndex,
-	//		this->m_CSA.m_AuthQuery.dwValue1,
-	//		this->m_CSA.m_AuthQuery.dwValue2,
-	//		this->m_CSA.m_AuthQuery.dwValue3 );
-
-	this->SendPacket( pCPacket );
-	Packet_ReleaseNUnlock( pCPacket );
-#else
-	// pCPacket->m_srv_CHECK_AUTH.m_btModuleTYPE = 0;
-#endif
 	return true;
 }
+
 /// n-protect의 체크요청 응답 패킷
 bool classUSER::Recv_cli_CHECK_AUTH( t_PACKET *pPacket )
 {
-#if defined(__N_PROTECT) && !defined(__NORTHUSA)
-	// 필리핀이면...
-	this->m_dwCSARecvTime = ::timeGetTime();		// 마지막으로 받은 시간..
-	::CopyMemory( &this->m_CSA.m_AuthAnswer, &pPacket->m_pDATA[ sizeof(cli_CHECK_AUTH) ], sizeof(GG_AUTH_DATA) );
-
-	//LogString( 0xffff, "RECV:: 0x%x, 0x%x, 0x%x, 0x%x\n",
-	//		this->m_CSA.m_AuthAnswer.dwIndex,
-	//		this->m_CSA.m_AuthAnswer.dwValue1,
-	//		this->m_CSA.m_AuthAnswer.dwValue2,
-	//		this->m_CSA.m_AuthAnswer.dwValue3 );
-
-	DWORD dwGGErrCode = this->m_CSA.CheckAuthAnswer();
-	if ( ERROR_SUCCESS != dwGGErrCode ) {
-		LogString( 0xffff, "Recv ERROR on m_CSA.CheckAuthAnswer():: Return:0x%x, [ 0x%x, 0x%x, 0x%x, 0x%x ]\n",
-				dwGGErrCode,
-				this->m_CSA.m_AuthAnswer.dwIndex,
-				this->m_CSA.m_AuthAnswer.dwValue1,
-				this->m_CSA.m_AuthAnswer.dwValue2,
-				this->m_CSA.m_AuthAnswer.dwValue3 );
-#ifdef	__INC_WORLD
-		return true;		// 개인섭은 짜르지 말자~~
-#endif
-		return false;
-	}
-#endif
 	return true;
 }
 
@@ -8524,12 +8446,7 @@ int classUSER::Proc_ZonePACKET( t_PACKET *pPacket )
 			return Recv_cli_REPAIR_FROM_NPC( pPacket );
 
 		case CLI_CRAFT_ITEM_REQ :
-		#pragma message( "#### 필리핀 버젼이면 여기 막아야 됨 ####" )
-		#if defined(__PHILIPPINES)
-			return IS_HACKING( this, "Proc_ZonePACKET:CRAFT_ITEM" );
-		#else
 			return Recv_cli_CRAFT_ITEM_REQ( pPacket );
-		#endif
 
 		case CLI_PARTY_RULE :
 			return Recv_cli_PARTY_RULE( pPacket );
@@ -8953,18 +8870,9 @@ int	 classUSER::Proc (void)
 
 	m_csRecvQ.Unlock ();
 
-
-#if defined(__N_PROTECT) && !defined(__NORTHUSA)
-	if ( this->GetZONE()->GetTimeGetTIME() - this->m_dwCSASendTime >= 10000 /* 3 * 60 * 1000 */ ) {
-		if ( !this->Send_srv_CHECK_AUTH() )
-			return 0;
-	}
-#else
-	// 5분동안 보낸 패킷이 전혀 없냐 ???
 	if ( this->GetZONE()->GetTimeGetTIME() - SOCKET_KEEP_ALIVE_TIME >= this->Get_CheckTIME() ) {
 		return 0;
 	}
-#endif
 
 	if ( this->GetZONE()->GetCurrentTIME() - this->m_dwBackUpTIME >= DB_BACKUP_TIME ) {
 		this->m_dwBackUpTIME = this->GetZONE()->GetCurrentTIME();

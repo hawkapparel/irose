@@ -12,8 +12,6 @@
 
 
 #define	__SHO_LS_LIB
-// #define	__TAIWAN
-// #define	__PHILIPPINE
 
 #define	USE_ORACLE_DB	1	// 사내섭을 제외한...
 #define	USE_MSSQL			// 한국을 제외한 다른 나라...

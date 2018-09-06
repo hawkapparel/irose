@@ -13,17 +13,11 @@
 
 #define	__SHO_GS
 
-//  #define	__INC_WORLD
-//	#define	__USE_TRACE
 #define ENABLE_CHATROOM		// Enables the chatroom functions
-//#define FRAROSE
 
 #ifdef FRAROSE
 	#define __KCHS_BATTLECART__
 #endif
-
-//#define	__PHILIPPINES			// 필리핀 전용 서버
-//#define __N_PROTECT				// nProtect 용
 
 #include "LIB_Util.h"
 

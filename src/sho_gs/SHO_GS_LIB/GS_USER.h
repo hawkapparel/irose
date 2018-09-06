@@ -19,22 +19,12 @@
 	#include "CThreadMSGR.h"
 #endif
 
-#if defined(__N_PROTECT) && !defined(__NORTHUSA)
-	#include "../../../GG_SDK/CSAuth2/include/ggsrv.h"
-#endif
-
-//---------------------------------------------------------------------------
-
 extern CPacketCODEC *g_pPacketCODEC;
 
 #define	SOCKET_KEEP_ALIVE_TIME	( 5 * 60 * 1000 )		// 5분
 
 #define	PENALTY_EXP_TOWN	3	// 마을 부활 패널티 경험치 5%
 #define	PENALTY_EXP_FIELD	5	// 필드 부활 패널치 경험치 8%
-
-
-// #define	USER_STEP_CONNECT		0
-// #define	USER_STEP_TO_DISCON		999
 
 enum {
 	CHEAT_INVALID=0,
@@ -678,13 +668,6 @@ x	//CDLList< tagPartyUSER >::tagNODE *m_pPartyNODE;
 	int	m_iChatRoomID;
 	CDLList<classUSER*>::tagNODE *m_pNodeChatROOM;
 #endif
-
-#if defined(__N_PROTECT) && !defined(__NORTHUSA)
-	CCSAuth2		m_CSA;		// n-Protect검증용
-	DWORD			m_dwCSARecvTime;
-	DWORD			m_dwCSASendTime;
-#endif
-
 	DWORD			m_dwCoolTIME[ MAX_USEITEM_COOLTIME_TYPE ];
 
 	void InitUSER ()
@@ -693,11 +676,6 @@ x	//CDLList< tagPartyUSER >::tagNODE *m_pPartyNODE;
 
 	#ifdef	__INC_WORLD
 		m_iChatRoomID = 0;
-	#endif
-
-	#if defined(__N_PROTECT) && !defined(__NORTHUSA)
-		m_CSA.Init();
-		m_dwCSARecvTime = m_dwCSASendTime = 0;
 	#endif
 
 		CObjTARGET::Set_TargetIDX( 0 );

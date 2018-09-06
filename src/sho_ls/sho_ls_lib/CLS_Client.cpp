@@ -91,25 +91,6 @@ bool CLS_Client::Recv_cli_ACCEPT_REQ ()
 //-------------------------------------------------------------------------------------------------
 bool CLS_Client::Recv_cli_LOGIN_REQ ( t_PACKET *pPacket )
 {
-#if defined( __TAIWAN ) || defined( __PHILIPPINE )
-#pragma message( "!!!!!!!!! 필리핀 버젼인지 미국버젼인지 체크 필요 !!!!!");
-#pragma message( "!!!!!!!!! 필리핀 버젼인지 미국버젼인지 체크 필요 !!!!!");
-#pragma message( "!!!!!!!!! 필리핀 버젼인지 미국버젼인지 체크 필요 !!!!!");
-#pragma message( "!!!!!!!!! 필리핀 버젼인지 미국버젼인지 체크 필요 !!!!!");
-#pragma message( "!!!!!!!!! 필리핀 버젼인지 미국버젼인지 체크 필요 !!!!!");
-#pragma message( "!!!!!!!!! 필리핀 버젼인지 미국버젼인지 체크 필요 !!!!!");
-#pragma message( "!!!!!!!!! 필리핀 버젼인지 미국버젼인지 체크 필요 !!!!!");
-	#ifndef __NORTHUSA
-	// Check taiwan client !!!
-    short nOffset=pPacket->m_HEADER.m_nSize-sizeof(short);
-	short *pNationCode;
-
-	pPacket->m_pDATA[ nOffset-1 ] = 0;	// 혹시 계정뒤에 값이 950일경우를 대비해서 계정 문자열 끝을 다시 설정
-    pNationCode = (short*)Packet_GetDataPtr (pPacket, nOffset, sizeof(short) );
-	if ( 950 != *pNationCode )
-		return false;
-	#endif
-#endif
 	return g_pThreadSQL->Add_SqlPACKET( this->m_iSocketIDX, NULL, pPacket );
 }
 

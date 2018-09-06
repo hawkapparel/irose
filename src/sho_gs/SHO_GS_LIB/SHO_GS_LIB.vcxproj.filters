@@ -178,9 +178,6 @@
     <ClCompile Include="md5.cpp">
       <Filter>Source Files\srv_COMMON</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\MiniDumper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlphabetCvt\AlphabetCvt.h">
@@ -347,9 +344,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Common\SRV_Prototype.h">
       <Filter>Source Files\srv_COMMON</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\common\MiniDumper.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

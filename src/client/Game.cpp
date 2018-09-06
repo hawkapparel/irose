@@ -5,8 +5,6 @@
 #include "stdAFX.h"
 
 #include "Game.h"
-//#include "CMouse.h"
-//#include "CKeyboard.h"
 #include "BULLET.h"
 #include "CCamera.h"
 #include "CModelCHAR.h"

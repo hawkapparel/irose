@@ -21,8 +21,6 @@
 #include "GS_ThreadMALL.h"
 #include "classFILE.h"
 
-#include "MiniDumper.h"
-
 // #include "AStrTable.h"
 
 #if defined(__N_PROTECT) && !defined(__NORTHUSA)
@@ -152,8 +150,6 @@ CPartyBUFF		*g_pPartyBUFF;
 
 CLIB_GameSRV *CLIB_GameSRV::m_pInstance=NULL;
 CPacketCODEC *g_pPacketCODEC;
-
-MiniDumper g_MiniDump;
 
 #define	__GEN_TEXT
 

@@ -180,7 +180,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\common\CAssertNew.cpp" />
-    <ClCompile Include="..\common\MiniDumper.cpp" />
     <ClCompile Include="CCamera.cpp" />
     <ClCompile Include="CClientStorage.cpp" />
     <ClCompile Include="CommandFilter.cpp" />
@@ -543,7 +542,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common\CAssertNew.h" />
-    <ClInclude Include="..\common\MiniDumper.h" />
     <ClInclude Include="CCamera.h" />
     <ClInclude Include="CClientStorage.h" />
     <ClInclude Include="CommandFilter.h" />

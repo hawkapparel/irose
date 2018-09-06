@@ -5,8 +5,6 @@
 #include "stdAFX.h"
 #include "Resource.h"
 #include "CApplication.h"
-//#include "CMouse.h"
-//#include "CKeyboard.h"
 #include "Network\CNetwork.h"
 #include "Game.h"
 #include "tgamectrl/TGameCtrl.h"

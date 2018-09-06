@@ -1181,9 +1181,6 @@
     <ClCompile Include="..\common\CAssertNew.cpp">
       <Filter>Source Files\Common\Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\common\MiniDumper.cpp">
-      <Filter>Source Files\Common\Common</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CCamera.h">
@@ -2318,9 +2315,6 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="..\common\CAssertNew.h">
-      <Filter>Source Files\Common\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\MiniDumper.h">
       <Filter>Source Files\Common\Common</Filter>
     </ClInclude>
   </ItemGroup>

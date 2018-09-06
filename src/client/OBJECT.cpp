@@ -6,7 +6,6 @@
 #include "CObjMORPH.h"
 #include "CObjGROUND.h"
 #include "CObjCHAR.h"
-//#include "CMouse.h"
 #include "common\IO_AI.h"
 #include "Game_FUNC.h"
 #include "IO_Terrain.h"

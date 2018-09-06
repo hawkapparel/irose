@@ -115,7 +115,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\common\MiniDumper.cpp" />
     <ClCompile Include="AlphabetCvt\AlphabetCvt.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
@@ -308,7 +307,6 @@
     <ClCompile Include="md5.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\common\MiniDumper.h" />
     <ClInclude Include="AlphabetCvt\AlphabetCvt.h" />
     <ClInclude Include="CGS_API.h" />
     <ClInclude Include="ETC_Math.h" />

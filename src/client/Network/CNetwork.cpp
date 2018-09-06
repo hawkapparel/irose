@@ -10,7 +10,6 @@
 #include "../System/CGame.h"
 #include "../util/CSocketWND.h"
 #include "../gameproc/LiveCheck.h"
-#include "Debug.h"
 
 ////005. 5. 23 ¹Ú ÁöÈ£
 //#include "../nProtect/NProtect.h"
@@ -149,7 +148,6 @@ void CNetwork::Proc_WorldPacket ()
 							continue;
 						}
 						CGame::GetInstance().ProcWndMsg( WM_USER_WORLDSERVER_DISCONNECTED,0,0 );
-						//SendServerDisconnectMsg( "WorldServer" );
 						break;
 					}
 					case NETWORK_STATUS_DERVERDEAD	:
@@ -749,7 +747,6 @@ void CNetwork::Proc ()
 							continue;
 						}
 						CGame::GetInstance().ProcWndMsg( WM_USER_SERVER_DISCONNECTED,0,0 );
-						//SendServerDisconnectMsg( "ZoneServer" );
 						break;
 					}
 					case NETWORK_STATUS_DERVERDEAD	:

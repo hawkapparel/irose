@@ -266,7 +266,6 @@
     <ClCompile Include="Terrain\WideTerrain.cpp" />
     <ClCompile Include="CApplication.cpp" />
     <ClCompile Include="Country.cpp" />
-    <ClCompile Include="debug.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Create</PrecompiledHeader>
@@ -550,7 +549,6 @@
     <ClInclude Include="JCommandState.h" />
     <ClInclude Include="SqliteDB.h" />
     <ClInclude Include="Util\ADSStream.h" />
-    <ClInclude Include="Util\BugGUARD.h" />
     <ClInclude Include="Util\CBITArray.h" />
     <ClInclude Include="Util\CCheat.h" />
     <ClInclude Include="Util\CClientSOCKET.h" />
@@ -655,7 +653,6 @@
     <ClInclude Include="Terrain\WideTerrain.h" />
     <ClInclude Include="CApplication.h" />
     <ClInclude Include="Country.h" />
-    <ClInclude Include="debug.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="gamecommon\CDelegatedObservable.h" />

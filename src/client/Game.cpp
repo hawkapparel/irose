@@ -25,7 +25,6 @@
 #include "CViewMSG.h"
 #include "Common/IO_Quest.h"
 #include "Common/IO_Skill.h"
-#include "Debug.h"
 #include "Game_FUNC.h"
 #include "Interface/CKeyMove.h"
 #include "Interface/CLoading.h"

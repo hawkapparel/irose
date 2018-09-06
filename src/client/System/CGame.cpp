@@ -20,7 +20,6 @@
 #include "SqliteDB.h"
 
 #include "../Country.h"
-#include "../Debug.h"
 #include "../Network/CNetwork.h"
 #include "../IO_Event.h"
 #include "../CClientStorage.h"
@@ -265,9 +264,6 @@ int CGame::Init()
 	if( !(CStringManager::GetSingleton()).LoadTables( ( CLocalizing::GetSingleton() ).GetCurrentCharSet() ) )
 		return false;
 
-#ifdef _USE_BG
-	g_CrashMsg.assign( STR_CRASH_MSG );
-#endif
 	::activateLog (true);
 
 #ifdef	_DEBUG

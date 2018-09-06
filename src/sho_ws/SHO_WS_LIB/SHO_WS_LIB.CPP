@@ -1,4 +1,3 @@
-
 #include "stdAFX.h"
 #include "CWS_Server.h"
 #include "CWS_Client.h"
@@ -149,16 +148,6 @@ DWORD GetServerStartTIME ()
 	return g_dwStartTIME;
 }
 
-//#define	USE_BUG_GUARD
-#ifdef	USE_BUG_GUARD
-	void SetExceptionReport (DWORD dwVer, char *szAppName, char *szErrFile );
-	#pragma comment ( lib, "BugGuard.lib" )
-#endif
-
-//-------------------------------------------------------------------------------------------------
-
-
-
 #define	LANG_KOR			0
 #define	LANG_ENG			1
 #define	LANG_JPN			2
@@ -188,26 +177,12 @@ bool IsOnlyTAIWAN()
 }
 bool IsTAIWAN ()
 {
-	/*
-	switch( ::Get_ServerLangTYPE() ) {
-		case LANG_ENG :
-		case LANG_TWAIN :
-		case LANG_PHILIPPINE :
-			return true;
-	} 
-	//*/
 	return true;
 }
 
 
 SHO_WS::SHO_WS( EXE_WS_API *pExeAPI )
 {
-#ifdef	USE_BUG_GUARD
-	SetExceptionReport( GetServerBuildNO() , "SHO_WS_DLL", "SHO_WS_DLL.err" );
-#endif
-
-//	COMPILE_TIME_ASSERT( sizeof(cli_MESSENGER) == ( sizeof(t_PACKETHEADER)+1 ) );
-//	int iSize = sizeof(cli_MESSENGER);
 
 #if ( _WIN32_WINNT < 0x0500 ) || !defined( __SERVER )
 	COMPILE_TIME_ASSERT( 0 );

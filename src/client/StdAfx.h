@@ -38,7 +38,6 @@ typedef	LPDIRECT3DVERTEXBUFFER9		LPD3DVERTEXBUFFER;
 //#define _D_RELEASE
 
 #define	ZZ_MEM_OFF	// not use zz_mem
-//#define _USE_BG		// Bug Guard
 //#define FRAROSE
 #ifdef FRAROSE
 	#define _GBC

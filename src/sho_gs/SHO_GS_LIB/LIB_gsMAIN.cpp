@@ -409,32 +409,9 @@ bool LSV_SocketMSG(WPARAM wParam, LPARAM lParam)
 
 #define	USE_MY_SQL_AGENT		0
 
-//#define	USE_BUG_GUARD
-
-#ifdef		USE_BUG_GUARD
-	void SetExceptionReport (DWORD dwVer, char *szAppName, char *szErrFile );
-	#pragma comment ( lib, "BugGuard.lib" )
-#endif
-
-
-/*void __cdecl ReportFailure(int iCode, void *pUnused)
-{
-	switch( iCode ) {
-		case _SECERR_BUFFER_OVERRUN	:
-			::MessageBox( NULL, "Buffer overrun detected !!", "Server ERROR!!!", MB_OK );
-			break;
-	} 
-}*/
 
 CLIB_GameSRV::CLIB_GameSRV ( EXE_GS_API *pExeAPI )
 {
-//	_set_security_error_handler( ReportFailure );
-
-//	int sss = sizeof( tagGrowAbility );
-#ifdef		USE_BUG_GUARD
-	SetExceptionReport( GetServerBuildNO() , "SHO_GS_DLL", "SHO_GS_DLL.err" );
-#endif
-
 #if ( _WIN32_WINNT < 0x0500 ) || !defined( __SERVER )
 	COMPILE_TIME_ASSERT( 0 );
 #endif

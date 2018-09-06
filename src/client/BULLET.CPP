@@ -4,7 +4,6 @@
 #include "stdAFX.h"
 #include "BULLET.h"
 #include "CGameOBJ.h"
-#include "Debug.h"
 
 //-------------------------------------------------------------------------------------------------
 
@@ -299,15 +298,6 @@ void CBulletPARABOLA::Cal_MoveVEC ( CObjCHAR *pDest )
 	m_vZ = m_vZ0;
 	this->m_MoveVEC.z = m_vZ0;
 
-	/*if( _isnan( m_MoveVEC.x ) || _isnan( m_MoveVEC.y ) || _isnan( m_MoveVEC.z ) ) 
-	{		
-		
-		sprintf( g_MsgBuf, "[CALC]m_MoveVEC : x:%f, y:%f, z:%f\n", m_MoveVEC.x, m_MoveVEC.y, m_MoveVEC.z );
-		g_TempDebugMsg += std::string( g_MsgBuf );		
-		memset( 0, 0, 100 );
-	}*/
-
-
 	m_iDistance = MUL02( (int)m_fDistance );
 }
 
@@ -387,23 +377,6 @@ int	 CBulletPARABOLA::Proc ()
 	float fAdjustHeight = m_DisplacementVec.z * ( ( (float)m_dwElapsedTime / 1000.0f ) / m_fArrivedTime );
 
 	m_PosCUR.z += fAdjustHeight;
-
-
-	/*if( _isnan( m_PosCUR.x ) || _isnan( m_PosCUR.y ) || _isnan( m_PosCUR.z ) ) 
-	{
-		
-		
-		sprintf( g_MsgBuf, "[PROC]m_MoveVEC : x:%f, y:%f, z:%f\n", m_MoveVEC.x, m_MoveVEC.y, m_MoveVEC.z );
-		g_TempDebugMsg += std::string( g_MsgBuf );		
-
-		sprintf( g_MsgBuf, "[PROC]m_PosCUR : x:%f, y:%f, z:%f\n", m_PosCUR.x, m_PosCUR.y, m_PosCUR.z );
-		g_TempDebugMsg += std::string( g_MsgBuf );		
-
-		sprintf( g_MsgBuf, "[PROC]PassTime[ %d ], AdjustHeight[ %f ]\n", dwPassTime, fAdjustHeight );
-		g_TempDebugMsg += std::string( g_MsgBuf );		
-
-		memset( 0, 0, 100 );
-	}*/
 
 
 	this->Rotation( m_MoveVEC );

@@ -377,9 +377,6 @@
     <ClCompile Include="Country.cpp">
       <Filter>Source Files\winMAIN</Filter>
     </ClCompile>
-    <ClCompile Include="Debug.cpp">
-      <Filter>Source Files\winMAIN</Filter>
-    </ClCompile>
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files\winMAIN</Filter>
     </ClCompile>
@@ -1207,9 +1204,6 @@
     <ClInclude Include="Util\ADSStream.h">
       <Filter>Source Files\Util</Filter>
     </ClInclude>
-    <ClInclude Include="Util\BugGUARD.h">
-      <Filter>Source Files\Util</Filter>
-    </ClInclude>
     <ClInclude Include="Util\CBITArray.h">
       <Filter>Source Files\Util</Filter>
     </ClInclude>
@@ -1520,9 +1514,6 @@
       <Filter>Source Files\winMAIN</Filter>
     </ClInclude>
     <ClInclude Include="Country.h">
-      <Filter>Source Files\winMAIN</Filter>
-    </ClInclude>
-    <ClInclude Include="Debug.h">
       <Filter>Source Files\winMAIN</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">

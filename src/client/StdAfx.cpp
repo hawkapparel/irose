@@ -31,10 +31,6 @@
 #pragma comment (lib, "znzin.lib")
 #pragma comment (lib, "xmlparse.lib")
 
-#ifdef	_USE_BG
-#pragma comment (lib, "util\\BugGUARD.lib" )
-#endif
-
 
 // #pragma comment (lib, "E:\\Project\\3DOnLine\\ZnZin\\engine\\lib\\lua.lib")
 // #pragma comment (lib, "E:\\Project\\3DOnLine\\ZnZin\\engine\\lib\\lualib.lib")

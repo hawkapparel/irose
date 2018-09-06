@@ -9,7 +9,6 @@
 #include "CClientStorage.h"
 #include "System/CGame.h"
 #include "Interface/ExternalUI/CLogin.h"
-#include "Debug.h"
 #include "triggerinfo/triggerinfo.h"
 
 #include "Util/CheckHack.h"
@@ -112,10 +111,6 @@ bool IsDuplicateApp (void)
 //-------------------------------------------------------------------------------------------------
 int APIENTRY WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
 {
-#ifdef _USE_BG
-	SetExceptionReport();
-#endif
-
 #if 0
 	if( IsDuplicateApp() )
 		return FALSE;
@@ -241,11 +236,6 @@ int APIENTRY WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 			} /// else 이미 다른 클라이언트가 실행중이다..
 			*/
 		}
-#endif
-	}
-	else {
-#ifdef _USE_BG
-		ReportZnzinLog( "초기화에 실패하였습니다. 오류원인을 전송하시겠습니까?", 10 );
 #endif
 	}
 

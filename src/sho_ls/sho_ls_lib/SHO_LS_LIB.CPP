@@ -7,7 +7,6 @@
 #include "CLS_Client.h"
 #include "CLS_Server.h"
 #include "CLS_SqlTHREAD.h"
-#include "CurlTHREAD.h"
 #include "blockLIST.h"
 #include "CAS_Gums.h"
 
@@ -22,7 +21,6 @@ CLS_AccountLIST *g_pListWAIT = NULL;    // HASHKEY = dwLoginServerSocketID
 CLS_AccountLIST *g_pListBKDR = NULL;
 
 CLS_SqlTHREAD   *g_pThreadSQL = NULL;
-CurlTHREAD      *g_pThreadSTATUS=NULL;
 
 CLS_ListCLIENT  *g_pListCLIENT;
 CLS_ListSERVER  *g_pListSERVER;

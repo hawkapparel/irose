@@ -16,7 +16,6 @@
 #include "ioDataPOOL.h"
 #include "GS_SocketLSV.h"
 #include "GS_SocketASV.h"
-#include "CUrlTHREAD.h"
 #include "CThreadGUILD.h"
 #include "GS_ThreadMALL.h"
 #include "classFILE.h"
@@ -94,23 +93,21 @@ CCharDatLIST	*g_pCharDATA;
 CMotionLIST		 g_MotionFILE;
 CPartyBUFF		*g_pPartyBUFF;
 
-		GS_lsvSOCKET	*g_pSockLSV = NULL;
-		GS_asvSOCKET	*g_pSockASV = NULL;
-//		GS_logSOCKET	*g_pSockLOG = NULL;
+GS_lsvSOCKET	*g_pSockLSV = NULL;
+GS_asvSOCKET	*g_pSockASV = NULL;
 
-		GS_CThreadSQL	*g_pThreadSQL = NULL;
-		GS_CThreadLOG	*g_pThreadLOG = NULL;
-		CurlTHREAD		*g_pThreadURL = NULL;
+GS_CThreadSQL	*g_pThreadSQL = NULL;
+GS_CThreadLOG	*g_pThreadLOG = NULL;
 
-		CThreadGUILD	*g_pThreadGUILD = NULL;
+CThreadGUILD	*g_pThreadGUILD = NULL;
 
-		GS_CThreadMALL  *g_pThreadMALL = NULL;
+GS_CThreadMALL  *g_pThreadMALL = NULL;
 
-		char			 g_szURL[ MAX_PATH ];
+char			 g_szURL[ MAX_PATH ];
 
-		classLogFILE	 g_ChatLOG;
-		classLogFILE	 g_ChatGMLOG;
-		int				 g_iChatLogDAY; /// 로그 파일을 주기적으로 바꾸기 위한 날짜
+classLogFILE	 g_ChatLOG;
+classLogFILE	 g_ChatGMLOG;
+int				 g_iChatLogDAY; /// 로그 파일을 주기적으로 바꾸기 위한 날짜
 
 #define	BASE_DATA_DIR	m_BaseDataDIR.Get()	//	"..\\..\\sho\\"
 
@@ -171,18 +168,6 @@ VOID CALLBACK GS_TimerProc (HWND hwnd/* handle to window */, UINT uMsg/* WM_TIME
 		case GS_TIMER_WORLD_TIME :
 		{
 			g_pZoneLIST->Inc_WorldTIME ();
-			// 한국
-			if ( 0 == ( g_pZoneLIST->m_dwAccTIME & 0x00f ) ) {
-				// 0x00f = 16, 10초 * 16 = 160초 = 2.6초
-				CLIB_GameSRV *pGS = CLIB_GameSRV::GetInstance();
-				if ( pGS ) {
-					// http://roseonline.co.kr/statistics/stime.asp?channelip=xxx.xxx.xxx.xxx&cnt=1500
-					sprintf( g_szURL, "http://roseonline.co.kr/statistics/stime.asp?channelip=%s&cnt=%d",
-						pGS->GetServerIP(), g_pUserLIST->GetUsedSocketCNT() );
-
-					g_pThreadURL->SendURL( g_szURL );
-				}
-			}
 
 			switch( g_pZoneLIST->m_dwAccTIME % 6 ) {
 				case 0 : case 3 :		// 30초에 한번씩 체크...	
@@ -1098,7 +1083,6 @@ bool CLIB_GameSRV::Start( HWND hMainWND, char *szServerName, char *szClientListe
 
 	g_pObjMGR = new CObjMNG( MAX_GAME_OBJECTS );
 	g_pZoneLIST = CZoneLIST::Instance ();
-	g_pThreadURL = new CurlTHREAD;
 
 	g_pZoneLIST->InitZoneLIST( BASE_DATA_DIR );
 
@@ -1108,9 +1092,7 @@ bool CLIB_GameSRV::Start( HWND hMainWND, char *szServerName, char *szClientListe
 	m_pWorldTIMER = new CTimer( m_hMainWND, GS_TIMER_WORLD_TIME, WORLD_TIME_TICK, (TIMERPROC)GS_TimerProc );
 	m_pWorldTIMER->Start ();
 
-	g_pUserLIST->Active( m_iListenPortNO, MAX_ZONE_USER_BUFF, 5*60 );	// 5분 대기..
-
-//	g_pSockLSV->Send_gsv_START( xxx )
+	g_pUserLIST->Active( m_iListenPortNO, MAX_ZONE_USER_BUFF, 5*60 );	// 5분 대기.
 
 	return true;
 }
@@ -1119,11 +1101,6 @@ bool CLIB_GameSRV::Start( HWND hMainWND, char *szServerName, char *szClientListe
 void CLIB_GameSRV::Shutdown ()
 {
 	SAFE_DELETE( m_pWorldTIMER );	// 타이머 삭제가 앞서도록...
-
-	if ( g_pThreadURL ) {
-		g_pThreadURL->Free ();
-		SAFE_DELETE( g_pThreadURL );
-	}
 
 	g_pUserLIST->ShutdownACCEPT ();
 

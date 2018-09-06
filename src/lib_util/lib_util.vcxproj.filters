@@ -80,12 +80,6 @@
     <ClInclude Include="..\Client\Util\classHASH.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Client\Util\classHTTP.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Client\Util\classIME.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Client\Util\classLOG.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -146,12 +140,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="classHASH.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="classHTTP.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="classIME.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="classLOG.cpp">

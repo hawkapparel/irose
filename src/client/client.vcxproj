@@ -561,8 +561,6 @@
     <ClInclude Include="Util\CheckHack.h" />
     <ClInclude Include="Util\classCRC.h" />
     <ClInclude Include="Util\classHASH.h" />
-    <ClInclude Include="Util\classHTTP.h" />
-    <ClInclude Include="Util\classIME.h" />
     <ClInclude Include="Util\classLOG.h" />
     <ClInclude Include="Util\classLUA.h" />
     <ClInclude Include="Util\classMD5.h" />

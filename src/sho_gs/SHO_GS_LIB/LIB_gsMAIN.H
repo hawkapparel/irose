@@ -38,7 +38,6 @@
 #include "classSTR.h"
 #include "classUTIL.h"
 #include "classHASH.h"
-#include "classHTTP.h"
 #include "classINDEX.h"
 #include "classIOCP.h"
 #include "classTIME.h"

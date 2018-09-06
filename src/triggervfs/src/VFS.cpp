@@ -303,7 +303,7 @@ bool CVFS::Open (FILE * fpFAT, long lOffset, const char *VfsName, const char *Di
 		return false;
 
 	/// 읽기
-	::_fmode = _O_BINARY;
+	_set_fmode(_O_BINARY);
 	if ((strcmp (Mode, "mr") == 0) || (strcmp (Mode, "mr+") == 0))
 	{
 		m_hFile = CreateFile( VfsName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_READONLY, NULL);
@@ -580,7 +580,7 @@ short CVFS::AddFile (const char * FileName
 	bUseDel							= false; /// 강제로 false로 함. 이 부분 잘 못됐음. 고쳐야 함
 
 	/// 파일이 존재하는지 확인. "rb" binary mode로 열어야 함
-	::_fmode = _O_BINARY;
+	_set_fmode(_O_BINARY);
 	
 	short nErrorCode = VADDFILE_SUCCESS;
 

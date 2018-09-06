@@ -56,11 +56,11 @@ bool CLoadingImageManager::LoadImageTable( char* strSTBName )
 					if( iImageZoneNO > 500 )
 					{
 
-						m_LoadingImageTableByPlanet.insert( std::make_pair< int, std::string >( iImageZoneNO - 500,  szFileName ) );
+						m_LoadingImageTableByPlanet.insert( std::make_pair( iImageZoneNO - 500,  szFileName ) );
 					}else
 					{
 						/// Á¸
-						m_LoadingImageTableByZone.insert( std::make_pair< int, std::string >( iImageZoneNO,  szFileName ) );
+						m_LoadingImageTableByZone.insert( std::make_pair( iImageZoneNO,  szFileName ) );
 					}
 				}
 			}else

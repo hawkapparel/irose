@@ -16,13 +16,6 @@
 #include "zz_vfs.h"
 #include "zz_renderer.h"
 #include "zz_mesh.h"
-#include "nvtristrip.h"
-
-#ifndef _DEBUG
-	#pragma comment (lib, "nvtristrip.lib")
-#else
-	#pragma comment (lib, "NvTriStrip_d.lib")
-#endif
 
 ZZ_IMPLEMENT_DYNCREATE(zz_mesh, zz_node)
 
@@ -430,58 +423,6 @@ void zz_mesh::update_index_buffer ()
 	assert(ibuf_res->get_created());
 
 	ibuf_res->update_buffer((index_type == TYPE_STRIP) ? ibuf_strip : ibuf_list);
-}
-
-// use this at off-line(tool interface)
-bool zz_mesh::generate_strip ()
-{
-	if (num_indices != num_faces*3) { // already striped?
-		ZZ_LOG("mesh:generate_strip() failed. already striped\n");
-		return false;
-	}
-
-	if (num_indices == num_verts) { // if it is not welded mesh(for morph), skip
-		index_type = TYPE_LIST;
-		ZZ_LOG("mesh:generate_strip() failed. not welded\n");
-		return false;
-	}
-	
-	if (num_matids > 0) { // if use material id, do not generate strip
-        index_type = TYPE_LIST;
-		ZZ_LOG("mesh:generate_strip() failed. mesh has material ids\n");
-		return false;
-	}
-
-	PrimitiveGroup * prim_group(NULL);
-	unsigned short num_groups(0);
-	
-	// generate strip by list index buffer
-	GenerateStrips(reinterpret_cast<const unsigned short*>(ibuf_list), num_indices, &prim_group, &num_groups);
-
-	bool ret(false);
-	bool not_effective(false);
-
-	if (prim_group->numIndices > (unsigned int)(num_indices - 100*3)) { // if not effective more than 100 polygon
-		not_effective = true;
-	}
-
-	if (not_effective) {
-		ZZ_LOG("mesh:generate_strip() failed. not effective(%d->%d)\n", num_indices, prim_group->numIndices);
-		index_type = TYPE_LIST;
-		ret = false;
-	}
-	else {
-		index_type = TYPE_STRIP;
-		num_indices = prim_group->numIndices;
-		assert(!ibuf_strip);
-		ibuf_strip = zz_new unsigned short[prim_group->numIndices];
-		memcpy(ibuf_strip, prim_group->indices, sizeof(unsigned short)*prim_group->numIndices);
-		ret = true;
-	}
-	
-	delete [] prim_group;
-
-	return ret;
 }
 
 void zz_mesh::dump_indices ()

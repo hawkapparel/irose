@@ -1821,9 +1821,6 @@ int weldMesh ( HNODE hMesh );
 ZZ_SCRIPT
 int clearMeshMatid ( HNODE hMesh );
 
-ZZ_SCRIPT
-int generateMeshStrip ( HNODE hMesh );
-
 /// bTextMode : 텍스트모드로 저장하려면 1, 바이너리는 0
 ZZ_SCRIPT
 int saveMesh ( HNODE hMesh, ZSTRING pSavePath, int bTextMode );

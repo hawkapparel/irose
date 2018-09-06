@@ -294,9 +294,6 @@ public:
 
 	virtual void apply_lod () {} ; // apply level by lod level
 
-	// return false if generating strip failed
-	virtual bool generate_strip ();
-
 	e_index_type get_index_type () { return index_type; }
 
 	uint16 get_strip_index (uint16 index);

@@ -188,6 +188,7 @@
 #include "zz_interface.h"
 
 #include <algorithm>
+#include <functional>
 
 // sfx_ocean uses ocean_block that currently in use.
 // So, if we does not have any ocean_block available, we cannot render sfx_ocean.

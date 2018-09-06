@@ -805,22 +805,6 @@ int zz_lua_flushSprite (lua_State * L)
 }
 
 //--------------------------------------------------------------------------------
-// generateMeshStrip
-//--------------------------------------------------------------------------------
-int zz_lua_generateMeshStrip (lua_State * L)
-{
-	int param_index = 1;
-	const char where[] = "generateMeshStrip";
-	int return_num = 0;
-
-	HNODE hMesh = get_param_uint( L, param_index, where );
-
-	set_param_int( L, return_num, generateMeshStrip( hMesh ) );
-
-	return return_num;
-}
-
-//--------------------------------------------------------------------------------
 // getAnimatableSpeed
 //--------------------------------------------------------------------------------
 int zz_lua_getAnimatableSpeed (lua_State * L)
@@ -6502,7 +6486,6 @@ void register_api_interfaces (lua_State * L)
 	lua_register( L, "fileReadWord", zz_lua_fileReadWord );
 	lua_register( L, "findNode", zz_lua_findNode );
 	lua_register( L, "flushSprite", zz_lua_flushSprite );
-	lua_register( L, "generateMeshStrip", zz_lua_generateMeshStrip );
 	lua_register( L, "getAnimatableSpeed", zz_lua_getAnimatableSpeed );
 	lua_register( L, "getAnimatableState", zz_lua_getAnimatableState );
 	lua_register( L, "getBone", zz_lua_getBone );

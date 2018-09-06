@@ -5014,18 +5014,6 @@ int clearMeshMatid ( HNODE hMesh )
 	return 1;
 }
 
-
-ZZ_SCRIPT
-int generateMeshStrip ( HNODE hMesh )
-{
-	zz_mesh * mesh = reinterpret_cast<zz_mesh*>(hMesh);
-
-	if (!mesh) return 0;
-	
-	return ISTRUE(mesh->generate_strip());
-}
-
-
 ZZ_SCRIPT
 int saveMesh ( HNODE hMesh, ZSTRING pSavePath, int bTextMode )
 {

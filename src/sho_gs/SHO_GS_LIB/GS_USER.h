@@ -14,11 +14,6 @@
 #include "GS_Party.h"
 #include "Calculation.h"
 
-#ifdef	__INC_WORLD
-	#include "CDLList.h"
-	#include "CThreadMSGR.h"
-#endif
-
 extern CPacketCODEC *g_pPacketCODEC;
 
 #define	SOCKET_KEEP_ALIVE_TIME	( 5 * 60 * 1000 )		// 5분
@@ -70,20 +65,9 @@ struct tagMallDATA {
 } ;
 
 #define	MAX_USER_TITLE			50
-/**
- * \ingroup SHO_GS_LIB
- * \class	classUSER
- * \author	wookSang.Jo
- * \brief	접속된 사용자의 네트웍 처리및 관리 클래스
- *			소켓클래스 iocpSOCKET, 사용자 케릭터 처리 클래스 CObjAVT 상속받음
- */
+
 class classUSER : public iocpSOCKET, public CObjAVT
 {
-public:
-#ifdef	__INC_WORLD
-	float m_fPROPOINT[ 4 ];
-	float m_fSUCPOINT[ 4 ];
-#endif
 
 private:
 	CCriticalSection		m_csSrvRECV;
@@ -664,19 +648,11 @@ x	//CDLList< tagPartyUSER >::tagNODE *m_pPartyNODE;
 		return true;
 	}
 
-#ifdef	__INC_WORLD
-	int	m_iChatRoomID;
-	CDLList<classUSER*>::tagNODE *m_pNodeChatROOM;
-#endif
 	DWORD			m_dwCoolTIME[ MAX_USEITEM_COOLTIME_TYPE ];
 
 	void InitUSER ()
 	{
 		::ZeroMemory( m_dwCoolTIME, sizeof(m_dwCoolTIME) );
-
-	#ifdef	__INC_WORLD
-		m_iChatRoomID = 0;
-	#endif
 
 		CObjTARGET::Set_TargetIDX( 0 );
 

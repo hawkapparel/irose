@@ -1,19 +1,9 @@
-/**
- * \ingroup SHO_GS
- * \file	ZoneFILE.h
- * \brief	클라이언트와 같이 사용하는 존 파일을 읽어 존을 구성
- */
 #ifndef	__ZONEFILE_H
 #define	__ZONEFILE_H
 #include "classHASH.h"
 #include "CBitARRAY.h"
-//-------------------------------------------------------------------------------------------------
 
-// #define	__NPC_TEST
-
-#ifndef	__INC_WORLD
-	#undef	__NPC_TEST
-#endif
+#undef	__NPC_TEST
 
 struct tagEVENTPOS {
 	short	m_nZoneNO;
@@ -33,29 +23,10 @@ struct tagEVENTPOS {
 #define	MAX_SECTOR_SIZE				12000
 #define	BUF_SECTOR_SIZE(s)			( s * 1/5 )
 
-//#define nSECTOR_SIZE                (4000)		// 60 m
-
-// #define nSECTOR_SIZE                ( 6400 )		// 64 m
-// #define	nSECTOR_BUFFER_SIZE			( 3000 )		// 30 m
-//#define	nSECTOR_BUFFER_SIZE			( nSECTOR_SIZE * 2/5)
-
-
-//#define	nSECTOR_HALF_SIZE			( nSECTOR_SIZE / 2	)
-//#define	SECTOR_MAP_LIMIT			( nSECTOR_HALF_SIZE+nSECTOR_BUFFER_SIZE )
-
-
-// 최대 64개 맵 * 각맵은 16개 패치로 구성 * 5m 단위의 속성
 #define	MAP_MOVE_ATTR_GRID_CNT		( MAP_COUNT_PER_ZONE_AXIS*PATCH_COUNT_PER_MAP_AXIS*2 )
 
 class CRegenPOINT;
 
-/**
- * \ingroup SHO_GS_LIB
- * \class	CZoneFILE
- * \author	wookSang.Jo
- * \brief	존(zone) 파일을 읽어 존 데이타를 생성하는 클래스
- *			기본 쓰래드 클래스 classTHREAD를 상속받음
- */
 class CZoneFILE : public classTHREAD 
 {
 private:

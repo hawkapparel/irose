@@ -224,36 +224,11 @@ bool tagMOTION::LoadZMO (char *szFileName)
 			}
 		}
 
-		// 공격 모션에 공격 타점이 안들어간 잘못된 데이타일수 있으므로...
-	#ifndef	__INC_WORLD
 		if ( m_wTatalAttackFrame <= 0 ) 
 			m_wTatalAttackFrame = 1;
-	#endif
-		/*
-		if ( m_nActionPointCNT ) {
-			m_pActionPoint = new short[ m_nActionPointCNT ];
-			m_nActionPointCNT = 0;
-			for (nF=0; nF<wTotalFrames; nF++) {
-				if ( m_pFrameEvent[ nF ] )
-					m_pActionPoint[ m_nActionPointCNT++ ] = m_pFrameEvent[ nF ];
-			}
-		} else {
-			m_nActionPointCNT = 1;
-			m_pActionPoint = new short[ m_nActionPointCNT ];
-			m_pActionPoint[ 0 ] = 1;
-		}
-		*/
-		SAFE_DELETE_ARRAY( m_pFrameEvent );
-		
-		// 3ZMO 파일 데이터는 무시.
-	} 
-	//else { // not an extended version
-	//	m_nActionPointCNT = 1;
-	//	m_pActionPoint = new short[ m_nActionPointCNT ];
-	//	m_pActionPoint[ 0 ] = 1;
-	//}
 
-	// 진행된 프레임과 맞추기 위해서..
+		SAFE_DELETE_ARRAY( m_pFrameEvent );
+	} 
 	m_wTotalFrame --;
 
 	fclose( fp );
@@ -262,20 +237,16 @@ bool tagMOTION::LoadZMO (char *szFileName)
 }
 #endif
 
-
-//-------------------------------------------------------------------------------------------------
 CMotionLIST::~CMotionLIST ()
 {	
 	this->Free ();
 }
+
 void CMotionLIST::Free ()
 {
-	#pragma message ("TODO:: SAFE_DELETE( pData->m_DATA );  --> " __FILE__)
-
 	CFileLIST< tagMOTION* >::Free ();
 }
 
-//-------------------------------------------------------------------------------------------------
 HNODE CMotionLIST::KEY_GetZMOTION(unsigned int uiKEY)
 {
 	if ( uiKEY ) {
@@ -318,14 +289,10 @@ bool CMotionLIST::Load (char *szSTBFile, short nFileNameColNO, char *szBaseDIR)
 				if ( fSTB.GetString(nFileNameColNO+nSex, nI) ) {
 					if ( szBaseDIR ) {
 						szFileName = CStr::Printf("%s%s", szBaseDIR, fSTB.GetString(nFileNameColNO+nSex, nI) );
-					} else
-						szFileName = fSTB.GetString(nFileNameColNO+nSex, nI);
-
-					#if !defined( __SERVER ) || defined( __INC_WORLD )
-						this->Add_FILE(szFileName, nI + nSex*m_nFemaleIndex);
-					#else
+					} else {
+						szFileName = fSTB.GetString(nFileNameColNO + nSex, nI);
+					}
 						this->Add_FILE(szFileName, nI + nSex*m_nFemaleIndex, true);
-					#endif
 				}
 			}
 		}
@@ -338,7 +305,6 @@ bool CMotionLIST::Load (char *szSTBFile, short nFileNameColNO, char *szBaseDIR)
 
 }
 
-//-------------------------------------------------------------------------------------------------
 bool CMotionLIST::Load_FILE (tagFileDATA<tagMOTION*> *pData)
 {
 	SAFE_DELETE( pData->m_DATA );

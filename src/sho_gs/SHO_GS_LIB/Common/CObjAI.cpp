@@ -119,21 +119,8 @@ void CObjAI::Start_ATTACK (CObjCHAR *pTarget)
 	}
 }
 
-
-//-------------------------------------------------------------------------------------------------
-/// casting
 char CObjAI::Do_SKILL (int iServerTarget, CObjCHAR *pTarget)
 {
-#ifdef	__INC_WORLD
-	if ( this->IsUSER() ) {
-		LogString( 0xffff, "%s( %.0f/%.0f ) DO_Skill: bCast:%d / ToDo:%d / Active%d, CMD:%x, STATE:%x \n", 
-				this->Get_NAME(),
-				this->m_PosCUR.x, this->m_PosCUR.y,
-				m_bCastingSTART, m_nToDoSkillIDX, m_nActiveSkillIDX,
-				m_wCommand, m_wState);
-	}
-#endif
-
 	if ( !m_bCastingSTART && m_nToDoSkillIDX ) 
 	{
 		if ( !this->SkillChk_ACTIVE( m_nToDoSkillIDX ) ) 
@@ -270,22 +257,9 @@ void CObjAI::Start_MOVE( float fSpeed )
 		this->Set_MOTION( this->GetANI_Move(), m_fCurMoveSpeed, this->Get_MoveAniSPEED() );
 	}
 }
-
-/// Restart move
-/// 최종좌표가 바뀌지 않았다면 그대로 고.
-/// 최종좌표가 수정되었다면, 다시 스타트.
 void CObjAI::Restart_MOVE (t_POSITION &PosGOTO)
 {
 	if ( Get_STATE() == CS_MOVE && PosGOTO.x == m_PosGOTO.x && PosGOTO.y == m_PosGOTO.y ) {
-		// 최종 좌표가 바뀌지 않았다.
-#ifdef	__INC_WORLD
-		if ( this->IsUSER() ) {
-			LogString( 0xffff, ">>SKIP Restart_MOVE ( %s ): Dist:%.0f   Pos( %.0f,%.0f )\n",
-				this->Get_NAME(),
-				::distance_square( m_PosCUR, m_PosGOTO ),
-				this->m_PosGOTO.x, this->m_PosGOTO.y );
-		}
-#endif
 		return;
 	}
 
@@ -294,8 +268,6 @@ void CObjAI::Restart_MOVE (t_POSITION &PosGOTO)
 	this->Start_MOVE( this->Get_MoveSPEED() );
 }
 
-
-//-------------------------------------------------------------------------------------------------
 bool CObjAI::SetCMD_SIT (void)
 {
 #ifdef	__BLOCK_WHEN_SKILL
@@ -544,12 +516,6 @@ bool CObjAI::SetCMD_Skill2OBJ (int iServerTarget, short nSkillIDX)
 
 			bCheckHP = true;
 		}
-
-#ifdef	__INC_WORLD
-		if ( this->IsUSER() ) {
-			LogString( 0xffff, ">>>> SetCMD_Skill2OBJ %d :: %.0f, %.0f \n", nSkillIDX, m_PosCUR.x, m_PosCUR.y );
-		}
-#endif
 		
 		if ( ( CS_BIT_MOV | CS_BIT_MOV2 ) & this->Get_STATE() ) {
 			m_wState = CS_BIT_MOV2 | ( ( CS_BIT_INT & this->Get_STATE() ) ? CS_NEXT_STOP: CS_STOP );
@@ -601,10 +567,6 @@ bool CObjAI::SetCMD_Skill2POS (tPOINTF &PosGOTO, short nSkillIDX)
 	return true;
 }
 
-//-------------------------------------------------------------------------------------------------
-/// 애니매이션 진행..
-/// @bug -->안에서 AI Action에 의해 m_pCurMOTION이 바뀌어 오는 경우가 생겨 뻑~~~~~~~
-// 이전 호출되었던 부분에서 경과된 시간만큼 모션 프레임을 진행.
 bool CObjAI::ProcMotionFrame (void)
 {
 	int iFrame = this->GetCurrentFrame();
@@ -615,11 +577,6 @@ bool CObjAI::ProcMotionFrame (void)
 		m_wState &= ~CS_BIT_INT;
 		return false;
 	}
-
-#ifdef	__INC_WORLD
-	assert( iFrame <= m_pCurMOTION->m_wTotalFrame );
-	assert( m_iCurMotionFRAME >= 0 );
-#endif
 
 	/// 동작프레임을 체크 해야된다면..
 	if ( m_wState & CS_BIT_CHK ) 
@@ -655,29 +612,11 @@ bool CObjAI::ProcMotionFrame (void)
 //-------------------------------------------------------------------------------------------------
 bool CObjAI::Goto_TARGET( CObjCHAR *pTarget, int iRange )
 {
-/*
-#ifdef	__INC_WORLD
-	if ( this->IsUSER() ) {
-		LogString( 0xffff, ">>Goto_TARGET( %s -> %s ): Dist:%.0f   Pos( %.0f,%.0f )=> ( %.0f,%.0f )\n",
-			this->Get_NAME(), pTarget->Get_NAME(),
-			::distance_square( m_PosCUR, pTarget->m_PosCUR ),
-			this->m_PosCUR.x, this->m_PosCUR.y,
-			pTarget->m_PosCUR.x, pTarget->m_PosCUR.y );
-	}
-#endif
-*/
-
 	if ( IsInRANGE( pTarget, iRange ) ) {
-		/// 거리안에 들어 왔다...
 		this->m_PosGOTO = this->m_PosCUR;
-#ifndef	__SERVER
-		this->Move_COMPLETED ();
-#endif
 		return true;
 	}
 
-	// 최종 위치가 바뀌었으면 이동 벡터 다시 계산...
-	// 이동중이 아닌 상태면...이동하지 않는다.
 	this->Restart_MOVE( pTarget->m_PosCUR );
 
 	return false;
@@ -693,30 +632,7 @@ bool CObjAI::Goto_POSITION (int iRange)
 
 	int iDistance = distance ((int)m_PosCUR.x, (int)m_PosCUR.y, (int)m_PosMoveSTART.x, (int)m_PosMoveSTART.y);
 
-/*
-#ifdef	__INC_WORLD
-	if ( this->IsUSER() ) {
-		int iDist2 = distance ((int)m_PosMoveSTART.x, (int)m_PosMoveSTART.y, (int)m_PosGOTO.x, (int)m_PosGOTO.y);
-
-		LogString( 0xffff, ">>Goto_POSITION( %s ): Dist:(%d+%d)%d / %d, Start( %.0f,%.0f ), Cur( %.0f,%.0f ), GoTo( %.0f,%.0f ),,, Start->Goto:%d\n",
-			this->Get_NAME(),
-			iDistance, iRange, iDistance + iRange, m_iMoveDistance,
-			this->m_PosMoveSTART.x, this->m_PosMoveSTART.y,
-			this->m_PosCUR.x, this->m_PosCUR.y,
-			this->m_PosGOTO.x, this->m_PosGOTO.y,
-			iDist2 );
-	}
-#endif
-*/
-
 	if ( iDistance+iRange >= m_iMoveDistance ) {
-#ifdef	__INC_WORLD
-		if ( this->IsUSER() ) {
-			int iTemp=0;
-		}
-#endif
-		/// 도착 
-		/// this->Move_COMPLETED ();  iRange값에 의해 정지 될경우 호출되어 좌표 오류가 발생했었다...
 		return true;
 	} 
 
@@ -754,12 +670,6 @@ int CObjAI::ProcCMD_STOP ()
 int CObjAI::ProcCMD_MOVE ()
 {
 	CObjCHAR *pTarget = (CObjCHAR*)this->Get_TARGET();
-
-#ifdef	__INC_WORLD
-	if ( this->IsUSER() ) {
-		int i=0;
-	}
-#endif
 
 	if ( pTarget )
 	{

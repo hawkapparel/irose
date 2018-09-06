@@ -1,10 +1,7 @@
 #include "stdAFX.h"
 #include "IO_Motion.h"
-#ifndef	__SERVER
-	#include "Game.h"
-	#include "..\\Util\\VFSManager.h"
-#endif
-
+#include "Game.h"
+#include "..\\Util\\VFSManager.h"
 
 #define FRAME_ATTACK			
 
@@ -18,15 +15,9 @@ tagMOTION::tagMOTION ()
 	m_pFrameEvent = NULL;
 	m_nActionPointCNT = 0;
 	m_wTatalAttackFrame = 0;
-#ifdef	__SERVER
-	m_pActionPoint = NULL;
-#else
 	m_iInterpolationInterval = 500;
-#endif
 }
 
-//-------------------------------------------------------------------------------------------------
-#ifndef	__SERVER
 bool tagMOTION::LoadZMO (char *szFileName)
 {
 
@@ -139,128 +130,6 @@ bool tagMOTION::LoadZMO (char *szFileName)
 
 	return true;
 }
-#else // server version
-//-------------------------------------------------------------------------------------------------
-bool tagMOTION::LoadZMO (char *szFileName)
-{
-	FILE *fp;
-
-	fp = fopen( szFileName, "rb" );
-	if ( !fp )
-		return false;
-
-	// header section
-	// char *szTag = Ctr::ReadString( fp );
-	CStrVAR stTag(32);
-	stTag.ReadString( fp );
-	if ( strncmp(stTag.Get(), "ZMO0002", 7) ) {
-		fclose( fp );
-		return false;
-	}
-
-	UINT uiValue;
-	// read the speed of frames
-	fread (&uiValue, sizeof(UINT),	1,	fp);
-	m_wFPS = uiValue;
-
-	// read the number of frames
-	fread (&uiValue, sizeof(UINT),	1,	fp);
-	m_wTotalFrame = uiValue;
-
-	WORD wTotalFrames;
-
-	char szTAG[4];
-	fseek(fp, -4, SEEK_END);
-	fread (szTAG, sizeof(char), 4, fp);
-
-	int iExtendedVersion = -1;
-
-	if ( strncmp(szTAG, "EZMO", 4) == 0 ) iExtendedVersion = 2;
-	else if ( strncmp(szTAG, "3ZMO", 4) == 0 ) iExtendedVersion = 3;
-
-	if ( iExtendedVersion >= 2 )
-	{
-		// extanded zmo file...
-		long lFileSize=sizeof(long);
-		fseek (fp, -4-lFileSize,	SEEK_END);		// eof-8
-		fread (&lFileSize, sizeof(long), 1, fp);
-		fseek (fp, lFileSize,		SEEK_SET);
-
-		// read total frame
-		fread (&wTotalFrames, sizeof(short), 1, fp);
-		_ASSERT( wTotalFrames == m_wTotalFrame );
-		
-		// read frame event
-		m_pFrameEvent = new short[ wTotalFrames ];
-
-		_ASSERT( m_pFrameEvent );
-
-		fread (m_pFrameEvent, sizeof(short), wTotalFrames, fp);
-
-		short nF;
-		for (nF=0; nF<wTotalFrames; nF++) {
-
-			if ( m_pFrameEvent[ nF ] ) {
-				m_nActionPointCNT ++;
-
-				switch( m_pFrameEvent[ nF ] )
-				{
-					case 21:
-					case 22:
-					case 23:
-					case 24:
-					case 25:
-					case 26:
-					case 27:
-					case 10:
-					case 20:
-					case 56:
-					case 66:
-					case 57:
-					case 67:
-						m_wTatalAttackFrame++;						
-						break;
-				}
-			}
-		}
-
-		// 공격 모션에 공격 타점이 안들어간 잘못된 데이타일수 있으므로...
-	#ifndef	__INC_WORLD
-		if ( m_wTatalAttackFrame <= 0 ) 
-			m_wTatalAttackFrame = 1;
-	#endif
-		/*
-		if ( m_nActionPointCNT ) {
-			m_pActionPoint = new short[ m_nActionPointCNT ];
-			m_nActionPointCNT = 0;
-			for (nF=0; nF<wTotalFrames; nF++) {
-				if ( m_pFrameEvent[ nF ] )
-					m_pActionPoint[ m_nActionPointCNT++ ] = m_pFrameEvent[ nF ];
-			}
-		} else {
-			m_nActionPointCNT = 1;
-			m_pActionPoint = new short[ m_nActionPointCNT ];
-			m_pActionPoint[ 0 ] = 1;
-		}
-		*/
-		SAFE_DELETE_ARRAY( m_pFrameEvent );
-		
-		// 3ZMO 파일 데이터는 무시.
-	} 
-	//else { // not an extended version
-	//	m_nActionPointCNT = 1;
-	//	m_pActionPoint = new short[ m_nActionPointCNT ];
-	//	m_pActionPoint[ 0 ] = 1;
-	//}
-
-	// 진행된 프레임과 맞추기 위해서..
-	m_wTotalFrame --;
-
-	fclose( fp );
-
-	return true;
-}
-#endif
 
 
 //-------------------------------------------------------------------------------------------------
@@ -318,14 +187,10 @@ bool CMotionLIST::Load (char *szSTBFile, short nFileNameColNO, char *szBaseDIR)
 				if ( fSTB.GetString(nFileNameColNO+nSex, nI) ) {
 					if ( szBaseDIR ) {
 						szFileName = CStr::Printf("%s%s", szBaseDIR, fSTB.GetString(nFileNameColNO+nSex, nI) );
-					} else
-						szFileName = fSTB.GetString(nFileNameColNO+nSex, nI);
-
-					#if !defined( __SERVER ) || defined( __INC_WORLD )
-						this->Add_FILE(szFileName, nI + nSex*m_nFemaleIndex);
-					#else
-						this->Add_FILE(szFileName, nI + nSex*m_nFemaleIndex, true);
-					#endif
+					} else {
+						szFileName = fSTB.GetString(nFileNameColNO + nSex, nI);
+					}
+					this->Add_FILE(szFileName, nI + nSex*m_nFemaleIndex);
 				}
 			}
 		}

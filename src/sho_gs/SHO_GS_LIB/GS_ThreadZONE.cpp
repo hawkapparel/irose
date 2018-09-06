@@ -84,14 +84,7 @@ __fastcall CZoneTHREAD::~CZoneTHREAD()
 	delete m_pEvent;
 }
 
-
-//-------------------------------------------------------------------------------------------------
-
-#ifndef	__INC_WORLD
-	#define _FRAME_PER_SECOND   10
-#else
-	#define _FRAME_PER_SECOND   2
-#endif
+#define _FRAME_PER_SECOND   10
 #define _DELAY_PER_FRAME    ( 1000 / _FRAME_PER_SECOND )
 
 void CZoneTHREAD::Execute()

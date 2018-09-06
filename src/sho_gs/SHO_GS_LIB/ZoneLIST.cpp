@@ -86,9 +86,6 @@ bool CZoneLIST::InitZoneLIST (char *szBaseDIR)
         if ( NULL == ZONE_FILE( nZ ) ) {
             continue;
 		}
-#ifdef	__INC_WORLD
-		//if ( 24 != nZ ) continue;
-#endif
         szZoneFILE = CStr::Printf("%s%s", szBaseDIR, ZONE_FILE( nZ ));
         if ( !CUtil::Is_FileExist( szZoneFILE ) ) {
             continue;

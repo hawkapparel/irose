@@ -4,21 +4,8 @@
 #include "Object.h"
 #include "Calculation.h"
 
-#ifndef __SERVER
-	#include "IO_PAT.h"
-	#include "../Network/NET_Prototype.h"
-	#include "../Interface/Dlgs/ChattingDlg.h"
-	#include "../Interface/it_mgr.h"
-	#include "../Game.h"
-#endif
 #define	MAX_INT		0x07fffffff
 
-//-------------------------------------------------------------------------------------------------
-	
-//-------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------
 short tagBankData::Get_EmptySlot (short nStartSlotNO, short nEndSlotNO)
 {
 	for (short nI=nStartSlotNO; nI<nEndSlotNO; nI++) 
@@ -28,7 +15,6 @@ short tagBankData::Get_EmptySlot (short nStartSlotNO, short nEndSlotNO)
 	return -1;
 }
 
-//-------------------------------------------------------------------------------------------------
 short tagBankData::Add_ITEM(tagITEM &sITEM, short nStartSlotNO, short nEndSlotNO)
 {
 	if ( 0 == sITEM.GetTYPE() || sITEM.GetTYPE() >= ITEM_TYPE_MONEY ) {
@@ -457,12 +443,10 @@ int CUserDATA::Cal_CRITICAL ()
 	return m_Battle.m_iCritical;
 }
 
-//-------------------------------------------------------------------------------------------------
 int CUserDATA::Cal_RESIST ()
 {
 	int iTotRES=0, iTotGradeRES=0;
 
-	// 모든 아이템에 항마력이 입력될수 있다..
 	for (short nE=EQUIP_IDX_NULL+1; nE<MAX_EQUIP_IDX; nE++) {
 		if ( m_Inventory.m_ItemEQUIP[ nE ].GetLife() < 1 || 0 == m_Inventory.m_ItemEQUIP[ nE ].GetTYPE() )
 			continue;
@@ -473,11 +457,7 @@ int CUserDATA::Cal_RESIST ()
 		}
 	}
 
-//#ifndef	__INC_WORLD
-//	this->m_Battle.m_nRES = (int) ( iTotRES + (iTotGradeRES) + ( this->GetCur_INT()+5 ) * 0.4f + (this->GetCur_LEVEL()+15) * 0.9f );
-//#else
 	this->m_Battle.m_nRES = (int) ( iTotRES + (iTotGradeRES) + ( this->GetCur_INT()+5 ) * 0.6f + (this->GetCur_LEVEL()+15) * 0.8f );
-//#endif
 	this->m_Battle.m_nRES += this->m_iAddValue[ AT_RES ];
 
 	iTotRES = this->GetPassiveSkillValue( AT_PSV_RES ) + (short)( this->m_Battle.m_nRES * this->GetPassiveSkillRate( AT_PSV_RES ) / 100.f );
@@ -486,7 +466,6 @@ int CUserDATA::Cal_RESIST ()
 	return this->m_Battle.m_nRES;
 }
 
-//-------------------------------------------------------------------------------------------------
 int CUserDATA::Cal_HIT ()
 {
 	int iHitRate;
@@ -909,9 +888,6 @@ void CUserDATA::Add_AbilityValue (WORD wType, int iValue)
 
 		case AT_EXP			:	
 			AddCur_EXP(iValue);							
-#ifdef	__INC_WORLD
-			g_LOG.CS_ODS( 0xffff, "			>>>> 능력치 보상중 경험치 :: %d \n", iValue );
-#endif
 			return;
 		case AT_BONUSPOINT	:	AddCur_BonusPOINT(iValue);					return;
 		case AT_SKILLPOINT	:	AddCur_SkillPOINT(iValue);					return;
@@ -920,9 +896,6 @@ void CUserDATA::Add_AbilityValue (WORD wType, int iValue)
 			if ( iValue < 0 && iValue > GetCur_MONEY() )
 				break;
 			Add_CurMONEY(iValue);	
-#ifdef	__INC_WORLD
-			g_LOG.CS_ODS( 0xffff, "			>>>> 능력치 보상중 줄리 보상:: %d \n", iValue );
-#endif
 			break;
 
 		default :
@@ -932,8 +905,6 @@ void CUserDATA::Add_AbilityValue (WORD wType, int iValue)
 	}
 }
 
-
-//-------------------------------------------------------------------------------------------------
 bool CUserDATA::Check_JobCollection( short nClassStbIDX )
 {
 	if ( 0 == CLASS_INCLUDE_JOB( nClassStbIDX, 0 ) ) {
@@ -2011,9 +1982,6 @@ bool CUserDATA::Reward_CalEXP( BYTE btEquation, int iBaseValue, BYTE btRewardToP
 	} else {
 		iR = CCal::Get_RewardVALUE( btEquation, iBaseValue, this, 0 );
 		this->Add_ExpNSend( iR );
-#ifdef	__INC_WORLD
-			g_LOG.CS_ODS( 0xffff, "			>>>> 경험치 보상:: %d \n", iR );
-#endif
 	}
 
 	return true;
@@ -2024,15 +1992,9 @@ bool CUserDATA::Reward_CalMONEY( BYTE btEquation, int iBaseValue, BYTE btRewardT
 	int iR;
 
 	if ( btRewardToParty ) {
-		;
-		;
-		;
 	} else {
 		iR = CCal::Get_RewardVALUE( btEquation, iBaseValue, this, nDupCNT );
 		this->Add_MoneyNSend( iR, GSV_REWARD_MONEY );
-#ifdef	__INC_WORLD
-		g_LOG.CS_ODS( 0xffff, "			>>>> 돈 보상:: %d \n", iR );
-#endif
 	}
 	return true;
 }
@@ -2045,9 +2007,6 @@ bool CUserDATA::Reward_CalITEM( BYTE btEquation, int iBaseValue, BYTE btRewardTo
 
 	int iR;
 	if ( btRewardToParty ) {
-		;
-		;
-		;
 	} else {
 		if ( sITEM.IsEnableDupCNT() ) {
 			iR = CCal::Get_RewardVALUE( btEquation, iBaseValue, this, 0 );
@@ -2083,9 +2042,6 @@ bool CUserDATA::Reward_CalITEM( BYTE btEquation, int iBaseValue, BYTE btRewardTo
 						}
 				}
 			}
-#ifdef	__INC_WORLD
-			g_LOG.CS_ODS( 0xffff, "			>>>> 아이템 보상:: Type:%d, No:%d, Quantity: %d \n", sITEM.GetTYPE(), sITEM.GetItemNO(), sITEM.GetQuantity () );
-#endif
 			this->Add_ItemNSend( sITEM );
 		}
 	}
@@ -2093,10 +2049,6 @@ bool CUserDATA::Reward_CalITEM( BYTE btEquation, int iBaseValue, BYTE btRewardTo
 	return true;
 }
 
-
-//-------------------------------------------------------------------------------------------------
-/// 2004 / 2/ 19 : 추가 nAvy
-/// 2004 / 5/ 24 : 수정 nAvy - Sub_ITEM => ClearITEM
 void CUserDATA::Set_ITEM(short nListRealNO, tagITEM& sITEM)
 {
 	tagITEM oldItem = Get_InventoryITEM (nListRealNO);

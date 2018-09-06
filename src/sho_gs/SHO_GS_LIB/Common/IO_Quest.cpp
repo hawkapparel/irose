@@ -5,21 +5,11 @@
 #include "CUserDATA.h"
 
 
-#ifndef	__SERVER
-	#include "../Interface/it_mgr.h"
-	#include "../System/CGame.h"
+#include "ZoneLIST.h"
+#include "GS_ThreadLOG.h"
 
-	#include "../Util/LogWnd.h"
-	#include "..\GameProc\CDayNNightProc.h"
-
-	#include "../Event/QuestRewardQueue.h"
-#else
-	#include "ZoneLIST.h"
-	#include "GS_ThreadLOG.h"
-
-	extern short Get_WorldTIME ();
-	extern short Get_ServerChannelNO ();
-#endif
+extern short Get_WorldTIME ();
+extern short Get_ServerChannelNO ();
 
 
 t_HASHKEY Make_EventObjectID(int iZoneNO, int iMapX, int iMapY, int iEventID)
@@ -2428,47 +2418,26 @@ void CQuestDATA::LoadQuestTrigger (CFileSystem* pFileSystem, unsigned int uiTrig
 		tagHASH< CQuestTRIGGER* > *pHashNode = m_HashQUEST.Search( HashKey );
 		pFindTrigger = pHashNode ? pHashNode->m_DATA : NULL;
 		if ( pFindTrigger ) {
-		#if	defined( __INC_WORLD ) || !defined( __SERVER )
-			char *szStr = CStr::Printf( "     ERROR:: QUEST TRIGGER: duplicated HashKey \"%s\", skip \"%s\" trigger, [ %s ]\n", pTrigger->m_Name.Get(), pFindTrigger->m_Name.Get(), szFileName );
-			//g_LOG.CS_ODS(0xffff, szStr );
-			::MessageBox( NULL, szStr, "중복된 퀘스트 테이타", MB_OK );
-		#endif
 			SAFE_DELETE( pTrigger );
 			continue;
 		}
 
-#if	defined( __INC_WORLD )
-		//g_LOG.CS_ODS(0xffff, "     QUEST TRIGGER: \"%s\", %d registered\n", pTrigger->m_Name.Get(), HashKey );
-#endif
-
 		m_HashQUEST.Insert( HashKey, pTrigger );
 		if ( pPrevTrigger ) {
-			// 하단 체크 안함 :: 몬스터 사망시 자동 발생하는 트리거의 경우
-			// 첫번째 트리거 이후 하단체크 안함 설정된 트리거라도 다음 데이타를 지시..
-			// 하단 체크 여부는 수행시 GetCheckNext()로 한다..
-			// if ( pPrevTrigger->GetCheckNext() )
-				pPrevTrigger->m_pNextTrigger = pTrigger;
+			pPrevTrigger->m_pNextTrigger = pTrigger;
 		}
 		pPrevTrigger = pTrigger;
 	}
 }
 
-#ifdef	__SERVER
 bool CQuestDATA::LoadDATA (char *szFileName)
 {
 	FILE *fpIN;
 
 	fpIN = fopen( szFileName, "rb" );
 	if ( NULL == fpIN ) {
-#if	defined( __INC_WORLD )
-		g_LOG.CS_ODS(0xffff, "**** ERROR QUEST TRIGGER FILE not found: \"%s\" \n", szFileName );
-#endif
 		return false;
 	}
-
-#if	defined( __INC_WORLD )
-		g_LOG.CS_ODS(0xffff, "**** QUEST TRIGGER FILE: \"%s\" \n", szFileName );
-#endif
 
 	unsigned long ulPatternCNT, ulSize;
 	fread( &ulSize,			1,		sizeof(unsigned long),		fpIN);
@@ -2490,40 +2459,6 @@ bool CQuestDATA::LoadDATA (char *szFileName)
 
 	return true;
 }
-#else
-bool CQuestDATA::Client_LoadDATA (char *szFileName)
-{
-	CFileSystem* pFileSystem = (CVFSManager::GetSingleton()).GetFileSystem();
-	if( pFileSystem->OpenFile( szFileName ) == false )
-	{
-		//::MessageBox (NULL, "File open error...", szFileName, MB_OK);
-		(CVFSManager::GetSingleton()).ReturnToManager( pFileSystem );
-		return false;
-	}
-
-	unsigned int ulPatternCNT, ulSize;
-	pFileSystem->ReadUInt32( &ulSize );
-	pFileSystem->ReadUInt32( &ulPatternCNT );
-	short nStrLen;
-	pFileSystem->ReadInt16( &nStrLen );
-	pFileSystem->Seek( nStrLen,	FILE_POS_CUR );
-
-	unsigned int uiTriggerCNT;
-	for (unsigned long ulP=0; ulP<ulPatternCNT; ulP++) 
-	{
-		pFileSystem->ReadUInt32( &uiTriggerCNT );
-		pFileSystem->ReadInt16( &nStrLen );
-		pFileSystem->Seek( nStrLen,	FILE_POS_CUR );
-
-		this->LoadQuestTrigger( pFileSystem, uiTriggerCNT, szFileName );
-	}
-
-	pFileSystem->CloseFile();
-	(CVFSManager::GetSingleton()).ReturnToManager( pFileSystem );
-
-	return true;
-}
-#endif
 
 void CQuestDATA::Free ()
 {
@@ -2533,55 +2468,23 @@ void CQuestDATA::Free ()
 	while( m_HashQUEST.GetFirst( &HashKEY, &pDATA ) ) {
 		m_HashQUEST.Delete( HashKEY );
 	}
-///*
-//    tagHASH< CQuestTRIGGER* > *pFindNODE;
-//	for (int iL=0; iL<m_HashQUEST.GetTableCount(); iL++) {
-//		pFindNODE = m_HashQUEST.GetEntryNode( iL );
-//		while( pFindNODE ) {
-//			SAFE_DELETE( pFindNODE->m_DATA );
-//
-//			pFindNODE = pFindNODE->m_NEXT;
-//		}
-//	}
-//*/
+
 	m_STB.Free();
 }
 
 //-------------------------------------------------------------------------------------------------
 void CQuestDATA::CheckAllQuest( CUserDATA *pUSER )
 {
-#ifdef	__INC_WORLD
-    tagHASH< CQuestTRIGGER* > *pFindNODE;
-	for (int iL=0; iL<m_HashQUEST.GetTableCount(); iL++) {
-		pFindNODE = m_HashQUEST.GetEntryNode( iL );
-		while( pFindNODE ) {
-			// CheckQUEST( CUserDATA *pUSER, t_HASHKEY HashQuest, bool bDoReward=false, int iEventNpcIDX=0, CGameOBJ *pCallOBJ=NULL, short nSelectReward=-1 );
-			for (int iC=0; iC<10; iC++) {
-				if ( QST_RESULT_SUCCESS == this->CheckQUEST( pUSER, pFindNODE->m_ulKEY, true ) ) {
-					// g_LOG.CS_ODS( 0xffff, "%d CheckAllQuest Success \"%s\" \n", iC, pFindNODE->m_DATA->m_Name.Get() );
-				} // else break;
-			}
-
-			pFindNODE = pFindNODE->m_NEXT;
-		}
-	}
-	#endif
 }
 
 //-------------------------------------------------------------------------------------------------
 eQST_RESULT CQuestDATA::CheckQUEST( CUserDATA *pUSER, t_HASHKEY HashQuest, bool bDoReward, int iEventNpcIDX, CGameOBJ *pCallOBJ, short nSelectReward )
 {
-#ifndef	__SERVER
-	//--------------------------------------------------------------------------------
-	LOGERR( "===트리거 수행===" );
-	//--------------------------------------------------------------------------------
-#else
 	if ( !this->m_bEnable ) {
 		// 퀘스트 데이타 점검중...
 		return QST_RESULT_STOPPED;
 	}
 	::InterlockedIncrement( &this->m_lRefCnt );
-#endif	
 
 	eQST_RESULT eResult = QST_RESULT_INVALID;
 	CQuestTRIGGER *pTrigger;
@@ -2590,36 +2493,19 @@ eQST_RESULT CQuestDATA::CheckQUEST( CUserDATA *pUSER, t_HASHKEY HashQuest, bool 
 	tagHASH< CQuestTRIGGER* > *pHashNode = m_HashQUEST.Search( HashQuest );
 	pTrigger = pHashNode ? pHashNode->m_DATA : NULL;
 
-#ifndef	__SERVER
-	/// 트리거 없음
-	if( pTrigger == NULL )
-	{
-		//--------------------------------------------------------------------------------
-		LOGERR( "트리거 없음 " );
-		//--------------------------------------------------------------------------------
-		return QST_RESULT_INVALID;
-	}
-#else
 	// npc 죽을때 발생되는 트리거로...서버랑 맞아야 됨 :: 해킹방지....
 	if ( pTrigger && pTrigger->m_iOwerNpcIDX && pTrigger->m_iOwerNpcIDX != iEventNpcIDX ) {
 		::InterlockedDecrement( &this->m_lRefCnt );
 		return QST_RESULT_INVALID;
 	}
-#endif
 
 	qstPARAM.Init( pUSER, pUSER ? pUSER->Quest_GetZoneNO() : 0 );
 	qstPARAM.m_pCallOBJ = pCallOBJ;
 
 	while ( pTrigger ) 
 	{
-#ifndef	__SERVER
-		qstPARAM.m_pCurrentTRIGGER = pTrigger;
-#endif
 		if ( pTrigger->Proc( &qstPARAM, bDoReward, nSelectReward ) ) 
 		{
-#ifdef	__INC_WORLD
-			g_LOG.CS_ODS( 0xffff, " ** CheckQuest Success \"%s\" \n", pTrigger->m_Name.Get() );
-#endif
 			if ( qstPARAM.m_HashNextTRIGGER ) 
 			{
 				pHashNode = m_HashQUEST.Search( qstPARAM.m_HashNextTRIGGER ); 
@@ -2629,17 +2515,7 @@ eQST_RESULT CQuestDATA::CheckQUEST( CUserDATA *pUSER, t_HASHKEY HashQuest, bool 
 				continue;
 			}
 
-#ifdef	__SERVER
 			::InterlockedDecrement( &this->m_lRefCnt );
-#endif
-
-#ifndef	__SERVER
-			//----------------------------------------------------------------------------------------------------
-			/// 뷰잉된 서버로 부터 받은 보상내용 실행
-			//----------------------------------------------------------------------------------------------------
-			g_QuestRewardQueue.ApplyReward();
-#endif
-
 			return QST_RESULT_SUCCESS;
 		}
 		
@@ -2649,18 +2525,10 @@ eQST_RESULT CQuestDATA::CheckQUEST( CUserDATA *pUSER, t_HASHKEY HashQuest, bool 
 		pTrigger = pTrigger->m_pNextTrigger;
 	}
 
-#ifdef	__SERVER
 	::InterlockedDecrement( &this->m_lRefCnt );
-#endif
 
 	if ( QST_RESULT_INVALID == eResult && qstPARAM.m_bServerFUNC )
 		return QST_RESULT_FAILED;
-
-#ifndef	__SERVER
-	//--------------------------------------------------------------------------------
-	LOGERR( "===트리거 수행 끝===" );
-	//--------------------------------------------------------------------------------
-#endif
 
 	return eResult;
 }
@@ -2669,7 +2537,6 @@ eQST_RESULT CQuestDATA::CheckQUEST( CUserDATA *pUSER, t_HASHKEY HashQuest, bool 
 //-------------------------------------------------------------------------------------------------
 void CQuestTRIGGER::Init_COND( uniQstENTITY *pCOND )
 {
-	// 로딩시 데이타 수정할것들...
 	switch( pCOND->iType ) {
 		case 12 :	// F_QSTCOND012
 		{
@@ -2822,39 +2689,6 @@ bool CQuestTRIGGER::Load (FILE *fpIN, STBDATA *pSTB, int iLangCol)
 		switch( m_ppReward[ uiC ]->iType ) {
 			case 3 :	// 보상 ??
 			{
-#ifdef	__INC_WORLD
-				STR_REWD_003 *pRewd = (STR_REWD_003*) m_ppReward[ uiC ];
-				
-				/// 캐릭터 능력치 변경
-				for (int iD=0; iD<pRewd->iDataCnt; iD++) 
-				{
-					
-					switch( pRewd->CheckData[ iD ].iType ) {
-						case AT_CLASS	:
-						case AT_MONEY	:
-						case AT_SEX		:
-						case AT_FACE	:
-						case AT_HAIR	:
-						case AT_TEAM_NO	:
-						case AT_UNION	:
-							break;
-						default :
-							if ( pRewd->CheckData[ iD ].iType >= AT_UNION_POINT1 &&
-								 pRewd->CheckData[ iD ].iType <= AT_UNION_POINT10 )
-								break;
-
-							// pRewd->CheckData[ iD ].btOp ::
-							//	case 5 :	// 값바꿈
-							//	case 6 :	// 증가(주어진 만큼)
-							//	case 7 :	// 감소
-							g_LOG.CS_ODS( 0xffff, ">>>>> Reward Ability:: Type:%d, Value:%d, OP:%d \n",
-								pRewd->CheckData[ iD ].iType,
-								pRewd->CheckData[ iD ].iValue,
-								pRewd->CheckData[ iD ].btOp );
-							break;
-					}
-				}
-#endif
 				break;
 			}
 			case 12 :
@@ -2924,56 +2758,16 @@ void CQuestTRIGGER::Free ()
 
 bool CQuestTRIGGER::Proc( tQST_PARAM *pPARAM, bool bDoReward, short nSelectReward )
 {
-#ifdef	__INC_WORLD
-//	g_LOG.CS_ODS( 0xffff, "Trigger Name:: %s, Cond:%d, Rewd:%d\n", this->m_Name.Get(), this->m_uiCondCNT, this->m_uiRewdCNT );
-#endif
 
 	unsigned int uiC;
 
-#ifndef	__SERVER
-	//if ( !bDoReward ) 
+	for (uiC=0; uiC<m_uiCondCNT; uiC++) 
 	{
-#endif
-		for (uiC=0; uiC<m_uiCondCNT; uiC++) 
+		if ( !g_fpQstCOND[ m_ppCondition[uiC]->iType ].fpCheck( m_ppCondition[ uiC ], pPARAM) ) 
 		{
-			if ( !g_fpQstCOND[ m_ppCondition[uiC]->iType ].fpCheck( m_ppCondition[ uiC ], pPARAM) ) 
-			{
-				#ifndef	__SERVER
-
-					/// 랜덤 체크하는 부분들은 서버로부터 받은건 다시 체크하지 않는다.
-					if( bDoReward && ( m_ppCondition[uiC]->iType == 10 ) )
-						continue;
-
-					char *szMsg;
-					if ( pPARAM->m_nErrSTEP >= 0 ) 
-					{
-						szMsg = CStr::Printf ("	[QST] %s에서 %d번째 조건데이타( 조건타입:%d ) 중 %d번째 조건 만족 못함", pPARAM->m_pCurrentTRIGGER->m_Name.Get(),
-									uiC, m_ppCondition[uiC]->iType, pPARAM->m_nErrSTEP );					
-					} else 
-					{
-						szMsg = CStr::Printf ("	[QST] %s에서 %d번째 조건데이타( 조건타입:%d ) 조건 만족 못함", pPARAM->m_pCurrentTRIGGER->m_Name.Get(), 
-								uiC, m_ppCondition[uiC]->iType );					
-					}
-
-					//--------------------------------------------------------------------------------
-					DUMPWAR( szMsg )( "!!!조건만족 못함!!! ", pPARAM->m_pCurrentTRIGGER->m_Name.Get() );
-					//--------------------------------------------------------------------------------
-
-				#endif
-
-				// pPARAM->m_pErrENTITY = m_ppCondition[ uiC ];
-				return false;
-			}
+			return false;
 		}
-#ifndef	__SERVER
-		// 클라이언트에서는 bDoReward = false 상태로 조건만 체크하고
-		// 조건이 true일경우 서버에 보상 요청 패킷을 보낸다.
-		// 서버에서 조건 체크후 보상 조건이 만족하면 보상후 
-		// 보상 하라는 패킷을 보내므로 그때 bDoReward = true로 본 함수를 호출한다.
-		if ( !bDoReward )
-			return true;
 	}
-#endif
 
 	short nCurReward=-1;
 	for (uiC=0; uiC<m_uiRewdCNT; uiC++) 
@@ -2996,18 +2790,6 @@ bool CQuestTRIGGER::Proc( tQST_PARAM *pPARAM, bool bDoReward, short nSelectRewar
 
 		if ( !g_fpQstREWD[ m_ppReward[uiC]->iType ].fpReward( m_ppReward[ uiC ], pPARAM ) ) 
 		{
-			// pPARAM->m_pErrENTITY = m_ppReward[ uiC ];
-			#ifndef	__SERVER
-				char *szMsg;
-				if ( pPARAM->m_nErrSTEP >= 0 ) {
-					szMsg = CStr::Printf ("	[QST] %s에서 %d번째 보상데이타( 조건타입:%d ) 중 %d번째 조건 만족 못함", pPARAM->m_pCurrentTRIGGER->m_Name.Get(), uiC, m_ppReward[uiC]->iType, pPARAM->m_nErrSTEP );					
-				} else {
-					szMsg = CStr::Printf ("	[QST] %s에서 %d번째 보상데이타( 조건타입:%d ) 조건 만족 못함", pPARAM->m_pCurrentTRIGGER->m_Name.Get(), uiC, m_ppReward[uiC]->iType );				
-				}
-				//--------------------------------------------------------------------------------
-				DUMPWAR( szMsg )( "!!!조건만족 못함!!! ", pPARAM->m_pCurrentTRIGGER->m_Name.Get() );
-				//--------------------------------------------------------------------------------
-			#endif
 			return false;
 		}
 _NEXT_FOR :
@@ -3016,5 +2798,3 @@ _NEXT_FOR :
 
 	return true;
 }
-
-//-------------------------------------------------------------------------------------------------

@@ -15,10 +15,6 @@
 #include "Calculation.h"
 #include "GS_ThreadMALL.h"
 #include "DEF_STB.h"
-
-#ifdef	__INC_WORLD
-	#include "CChatROOM.h"
-#endif
 #include "CThreadGUILD.h"
 
 #define	RET_FAILED		false	
@@ -34,20 +30,12 @@ classUSER::classUSER ()
 {	
 	COMPILE_TIME_ASSERT( sizeof(tagITEM) == (6+sizeof(__int64)) );
 
-#ifdef	__INC_WORLD
-	m_pNodeChatROOM = new CDLList< classUSER* >::tagNODE;
-	m_pNodeChatROOM->m_VALUE = this;
-#endif
-
 	this->InitUSER ();
 }
 
 //-------------------------------------------------------------------------------------------------
 classUSER::~classUSER ()
 {
-#ifdef	__INC_WORLD
-	SAFE_DELETE( m_pNodeChatROOM );
-#endif
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -345,82 +333,10 @@ short classUSER::Parse_CheatCODE (char *szCode)
 	if ( pArg1 ) {
 #ifdef	__NEW_LOG
 		if ( !strcmpi( pToken, "/logtest" ) ) {
-//			g_pThreadLOG->When_DeletedITEM( xxx );
-
-			//g_pThreadLOG->When_TagItemLOG( int iAction, classUSER *pSourAVT, tagITEM *pItem, short nQuantity=1, __int64 biTradeZuly=0, classUSER *pDestAVT=NULL);
-			//g_pThreadLOG->When_ObjItemLOG( int iAction, classUSER *pSourAVT, CObjITEM *pItemOBJ);
-
-			//g_pThreadLOG->When_CreateOrDestroyITEM ( classUSER *pSourAVT, tagITEM *pOutItem, tagITEM *pUseItem, short nUseCNT, BYTE btMakeOrBreak, BYTE btSucOrFail );
-			//g_pThreadLOG->When_DieBY( CObjCHAR *pKillOBJ, classUSER *pDeadAVT );
-
-			//// 레벨업
-			//g_pThreadLOG->When_UpgradeITEM	( this, tagITEM *pEquipITEM, BYTE btBeforeGrade, bool bSuccess );
-			//g_pThreadLOG->When_GemmingITEM	( this,	tagITEM *pEquipITEM, tagITEM *pJewelITEM, BYTE btGemming, BYTE btSuccess );
-			//g_pThreadLOG->When_CheatCODE ( this, szCode );
-
 			return 1;
 		}
 #endif
 
-#ifdef	__INC_WORLD
-		if ( !strcmpi( pToken, "/test_view" ) ) {
-			int iNpcNO = atoi( pArg1 );
-			if ( iNpcNO > 0 && iNpcNO < g_TblNPC.m_nDataCnt ) {
-				CObjNPC *pNPC = g_pZoneLIST->Get_LocalNPC( iNpcNO );
-				if ( pNPC ) {
-					pNPC->VSet_SHOW( 2 );
-				}
-			}
-		} else
-		if ( !strcmpi( pToken, "/mall" ) ) {
-			classPACKET *pCPacket = Packet_AllocNLock ();
-			if ( !pCPacket )
-				return 0;
-			pCPacket->m_HEADER.m_wType = CLI_MALL_ITEM_REQ;
-			pCPacket->m_HEADER.m_nSize = sizeof( cli_MALL_ITEM_REQ );
-			pCPacket->m_cli_MALL_ITEM_REQ.m_btReqTYPE = 0;
-		
-			pArg2 = pStrVAR->GetTokenNext (pDelimiters);
-			if ( !strcmpi( pArg1, "list" ) ) {
-				pCPacket->m_cli_MALL_ITEM_REQ.m_btReqTYPE = REQ_MALL_ITEM_LIST;
-			} else
-			if ( !strcmpi( pArg1, "get" ) ) {
-				// index
-				int iInvIDX=0;
-				if ( pArg2 ) {
-					iInvIDX = atoi( pArg2 );
-				}
-				pCPacket->m_HEADER.m_nSize = sizeof( cli_MALL_ITEM_REQ ) + 1;
-				pCPacket->m_cli_MALL_ITEM_REQ.m_btReqTYPE = REQ_MALL_ITEM_BRING;
-				pCPacket->m_cli_MALL_ITEM_REQ.m_nDupCnt   = 2;
-				pCPacket->m_cli_MALL_ITEM_REQ.m_btInvIDX[0] = iInvIDX;
-			} else
-			if ( !strcmpi( pArg1, "check" ) ) {
-				// char name
-				pCPacket->m_cli_MALL_ITEM_REQ.m_btReqTYPE = REQ_MALL_ITEM_FIND_CHAR;
-				if ( pArg2 )
-					pCPacket->AppendString( pArg2 );
-			} else
-			if ( !strcmpi( pArg1, "give" ) ) {
-				// index
-				pCPacket->m_HEADER.m_nSize = sizeof( cli_MALL_ITEM_REQ ) + 1;
-				pCPacket->m_cli_MALL_ITEM_REQ.m_btReqTYPE = REQ_MALL_ITEM_GIVE;
-                pArg3 = pStrVAR->GetTokenNext (pDelimiters);
-				if ( pArg3 ) {
-					pCPacket->m_cli_MALL_ITEM_REQ.m_nDupCnt = 2;
-					pCPacket->m_cli_MALL_ITEM_REQ.m_btInvIDX[0] = atoi( pArg3 );
-					pCPacket->AppendString( pArg2 );
-
-	                pArg3 = pStrVAR->GetTokenNext (pDelimiters);	// desc[]
-					pCPacket->AppendString( pArg3 );
-				}
-			} 
-
-			this->Recv_cli_MALL_ITEM_REQ( (t_PACKET*)( pCPacket->m_pDATA ) );
-			Packet_ReleaseNUnlock( pCPacket );
-			return 1;
-		}
-#endif
 		if ( !strcmpi( pToken, "/pay" ) ) {
 			int iPayType = atoi( pArg1 );
 			if ( iPayType > 0 && iPayType <= BILLING_MSG_PAY_IQ ) {
@@ -556,13 +472,8 @@ short classUSER::Parse_CheatCODE (char *szCode)
 		if( pArg1 )
 		{
 			if ( !strcmpi( pToken, "/na" ) ) {
-			#ifdef	__INC_WORLD
-				g_pZoneLIST->Send_gsv_ANNOUNCE_CHAT( &szCode[4], this->Get_NAME() );
-			#else
 				g_pSockLSV->Send_gsv_CHEAT_REQ( this, this->m_dwWSID, 0, szCode );
-			#endif
 			} else 
-			// 타겟 케릭터 소환...
 			if ( !strcmpi( pToken, "/call" ) ) {
 				if ( this->GetZONE() ) {
 					pArg2 = pStrVAR->GetTokenNext (pDelimiters);	// account
@@ -906,7 +817,6 @@ short classUSER::GuildCMD (char *szCMD)
 
 
 	if ( this->B_Cheater() ) {
-// #ifdef	__INC_WORLD
 		if ( !strcmpi(pArg1, "score") ) {
 			pArg2 = pStrVAR->GetTokenNext (pDelimiters);
 			if ( pArg2 )
@@ -920,7 +830,6 @@ short classUSER::GuildCMD (char *szCMD)
 		if ( !strcmpi(pArg1, "level") ) {
 			this->IncClanLEVEL ();
 		}
-// #endif
 	}
 
 	Packet_ReleaseNUnlock( pCPacket );
@@ -1332,12 +1241,6 @@ bool classUSER::Use_InventoryITEM( t_PACKET *pPacket )
 	nCoolTimeType = USEITEM_COOLTIME_TYPE(pITEM->m_nItemNo);
 	if ( nCoolTimeType ) {
 		if ( dwCurTime - this->m_dwCoolTIME[ nCoolTimeType ] <= static_cast<DWORD>( USEITEM_COOLTIME_DELAY(pITEM->m_nItemNo) ) ) {
-		#ifdef	__INC_WORLD
-			char szTmp[ MAX_PATH ];
-			sprintf( szTmp, "ignore use item:: CurTime:%d, LastTime:%d, Reamin:%dsec", 
-							dwCurTime, 	this->m_dwCoolTIME[ nCoolTimeType ], dwCurTime-this->m_dwCoolTIME[ nCoolTimeType ] );
-			this->Send_gsv_WHISPER( "Cool time", szTmp );			// xxxx
-		#endif
 			return true;
 		}
 	}
@@ -1753,20 +1656,11 @@ bool classUSER::Send_gsv_SETEXP (WORD wFromObjIDX)
 	return true;
 }
 
-//-------------------------------------------------------------------------------------------------
-/// 레벨업 되었을경우 호출되는 함수
 bool classUSER::Send_gsv_LEVELUP (short nLevelDIFF)
 {
-/*	존 분할로 운영시 월드 서버에서 파티 운영될수 있도록 전송하던...
-#ifndef	__INC_WORLD
-	g_pSockLSV->Send_gsv_LEVEL_UP( LEVELUP_OP_USER, this->m_dwWSID, this->Get_LEVEL(), m_GrowAbility.m_lEXP );
-#endif
-*/
-	// 레벨업시 획득 포인트...
 	this->UpdateAbility ();		// levelup
 
 	if ( this->Get_HP() > 0 ) {
-		// 죽었을때 레벨업하면 살아나던 버그 수정...
 		this->Set_HP ( this->Get_MaxHP() );
 		this->Set_MP ( this->Get_MaxMP() );
 	}
@@ -3931,28 +3825,13 @@ bool classUSER::Recv_cli_CREATE_ITEM_REQ( t_PACKET *pPacket )
 				break;
 			}
 		}
-#ifdef __INC_WORLD
-		m_fPROPOINT[ 0 ] = fPRO_POINT[ 0 ] >= 0 ? fPRO_POINT[ 0 ] : 0;
-		m_fPROPOINT[ 1 ] = fPRO_POINT[ 1 ] >= 0 ? fPRO_POINT[ 1 ] : 0;
-		m_fPROPOINT[ 2 ] = fPRO_POINT[ 2 ] >= 0 ? fPRO_POINT[ 2 ] : 0;
-		m_fPROPOINT[ 3 ] = fPRO_POINT[ 3 ] >= 0 ? fPRO_POINT[ 3 ] : 0;
-		m_fSUCPOINT[ 0 ] = fSUC_POINT[ 0 ] >= 0 ? fSUC_POINT[ 0 ] : 0;
-		m_fSUCPOINT[ 1 ] = fSUC_POINT[ 1 ] >= 0 ? fSUC_POINT[ 1 ] : 0;
-		m_fSUCPOINT[ 2 ] = fSUC_POINT[ 2 ] >= 0 ? fSUC_POINT[ 2 ] : 0;
-		m_fSUCPOINT[ 3 ] = fSUC_POINT[ 3 ] >= 0 ? fSUC_POINT[ 3 ] : 0;
-#endif
-		// LogString (LOG_DEBUG, "Step:%d, Rand: %d, Suc:%f, Pro:%f\n", nI, nRand, fSUC_POINT[nI], fPRO_POINT[nI] );
 
-		// 사용된 원재료를 소모 시킴...
 		nUsedCNT = nI;
 		sUsedITEM[ nI ] = this->m_Inventory.m_ItemLIST[ nInvIDX ];
 		if ( sUsedITEM[ nI ].IsEnableDupCNT() ) {
-			// 중복된 갯수를 갖는 아이템이다.
 			sUsedITEM[ nI ].m_uiQuantity = PRODUCT_NEED_ITEM_CNT( nProductIDX, nI );
 		}
-		#ifndef	__NEW_LOG
-			g_pThreadLOG->When_DestroyedITEM( this, &sUsedITEM[ nI ] );
-		#endif
+
 		this->Sub_ITEM( nInvIDX, sUsedITEM[ nI ] );
 
 		if ( fPRO_POINT[nI] < fSUC_POINT[nI] ) {
@@ -4539,11 +4418,7 @@ bool classUSER::Recv_cli_MOVE_ITEM( t_PACKET *pPacket )
 			sOriITEM = *pSourITEM;
 			this->Sub_ITEM( pPacket->m_cli_MOVE_ITEM.m_btFromIDX, sMoveITEM );
 
-#ifndef	__INC_WORLD
 			if ( ( this->m_dwPayFLAG & PLAY_FLAG_EXTRA_STOCK ) && pPacket->m_cli_MOVE_ITEM.m_btUseSpecialTAB == 1 ) {
-#else
-			if ( pPacket->m_cli_MOVE_ITEM.m_btUseSpecialTAB == 1 ) {
-#endif
 				nToSlotIDX = this->m_Bank.Add_ITEM( sMoveITEM, BANKSLOT_PLATINUM_0, BANKSLOT_PLATINUM_0+BANKSLOT_PLATINUM );
 			} else 
 			if ( this->m_GrowAbility.IsBankAddON( this->GetCurAbsSEC() ) ) {
@@ -4727,12 +4602,10 @@ short classUSER::Recv_cli_TELEPORT_REQ( t_PACKET *pPacket )
 			// 서버의 위치로 클라이언트 복귀...
 			return this->Send_gsv_ADJUST_POS( true );
 		}
-	} else 
-#ifndef	__INC_WORLD
-		return RET_OK;	// IS_HACKING( this, "Recv_cli_TELEPORT_REQ-4" );
-#endif
+	} else {
+		return RET_OK;
+	}
 
-	// 같은 서버에서 존이 실행 되고 있는가 ???
 	tagEVENTPOS *pEventPOS = g_pZoneLIST->Get_EventPOS( TELEPORT_ZONE( wWarpIDX ), TELEPORT_EVENT_POS(wWarpIDX) );
 	if ( !pEventPOS ) {
 		g_LOG.CS_ODS( 0xffff, "ERROR:: Invalid Warp Position... WarpIDX: %d \n", wWarpIDX );
@@ -5845,40 +5718,20 @@ bool classUSER::Recv_cli_SELF_SKILL( t_PACKET *pPacket )
 		return true;
 	}
 
-#ifdef	__INC_WORLD
-	char szTmp[ MAX_PATH ];
-#endif
-
 	DWORD dwCurTime = this->GetZONE()->GetCurrentTIME();
 	if ( SKILL_DELAY_TIME > dwCurTime - this->m_dwLastSkillActiveTIME ) {
-#ifdef	__INC_WORLD
-		sprintf( szTmp, "ignore Skill:: Delay:%d, Charged:%d", SKILL_DELAY_TIME, dwCurTime - this->m_dwLastSkillActiveTIME );
-		this->Send_gsv_WHISPER( "SELF_SKILL", szTmp );
-#endif
 		return true;
 	}
 
 	if ( this->Get_ActiveSKILL() ) {
-#ifdef	__INC_WORLD
-		sprintf( szTmp, "ignore Skill in casting motion" );
-		this->Send_gsv_WHISPER( "SELF_SKILL", szTmp );
-#endif
 		return true;	// 스킬 케스팅 중일땐 못바꿔
 	}
 	if ( this->m_IngSTATUS.IsIgnoreSTATUS() || this->m_IngSTATUS.IsSET( FLAG_ING_DUMB ) ) 
 	{
-#ifdef	__INC_WORLD
-		sprintf( szTmp, "ignore Skill:: not allowd status" );
-		this->Send_gsv_WHISPER( "SELF_SKILL", szTmp );
-#endif
 		return true;
 	}
 
 	if ( pPacket->m_cli_SELF_SKILL.m_btSkillSLOT >= MAX_LEARNED_SKILL_CNT ) {
-#ifdef	__INC_WORLD
-		sprintf( szTmp, "ignore Skill:: invalid skill slot %d / %d", pPacket->m_cli_SELF_SKILL.m_btSkillSLOT, MAX_LEARNED_SKILL_CNT);
-		this->Send_gsv_WHISPER( "SELF_SKILL", szTmp );
-#endif
 		return false;
 	}
 
@@ -5887,30 +5740,12 @@ bool classUSER::Recv_cli_SELF_SKILL( t_PACKET *pPacket )
 		return true;
 
 	if ( SKILL_RELOAD_TYPE(nSkillIDX) ) {
-		// 05.05.30 스킬 리로드 그룹타입으로 체크...
 		if ( SKILL_RELOAD_SECOND(nSkillIDX) > dwCurTime - this->m_dwLastSkillGroupSpeelTIME[ SKILL_RELOAD_TYPE(nSkillIDX) ] ) {
-#ifdef	__INC_WORLD
-			sprintf( szTmp, "ignore SkillIdx:%d, :: Delay:%d > Charged:%d, LastStamp:%d \n", 
-					nSkillIDX, 
-					SKILL_RELOAD_SECOND(nSkillIDX), 
-					dwCurTime - this->m_dwLastSkillGroupSpeelTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ], 
-					this->m_dwLastSkillGroupSpeelTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ] );
-			this->Send_gsv_WHISPER( "SELF_SKILL", szTmp );
-#endif
 			return true;
 		}
 	}
 
 	if ( SKILL_RELOAD_SECOND(nSkillIDX) > dwCurTime - this->m_dwLastSkillSpellTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ] ) {
-		// 다시 사용가능한 시간인지 체크...
-#ifdef	__INC_WORLD
-		sprintf( szTmp, "ignore SkillIdx:%d, :: Delay:%d > Charged:%d, LastStamp:%d \n", 
-				nSkillIDX, 
-				SKILL_RELOAD_SECOND(nSkillIDX), 
-				dwCurTime - this->m_dwLastSkillSpellTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ], 
-				this->m_dwLastSkillSpellTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ] );
-		this->Send_gsv_WHISPER( "SELF_SKILL", szTmp );
-#endif
 		return true;
 	}
 
@@ -5918,33 +5753,13 @@ bool classUSER::Recv_cli_SELF_SKILL( t_PACKET *pPacket )
 		// 무겁다.. 명령 불가...
 		if ( ( SKILL_TYPE( nSkillIDX ) >= 3 && SKILL_TYPE( nSkillIDX ) <= 13 ) ||
 			   SKILL_TYPE( nSkillIDX ) == 17 ) {
-#ifdef	__INC_WORLD
-			sprintf( szTmp, "ignore Skill:: over weight ");
-			this->Send_gsv_WHISPER( "SELF_SKILL", szTmp );
-#endif
 			return true;
 		}
 	}
-#ifdef __KCHS_BATTLECART__
+
 	if ( this->Get_RideMODE() ) {
-		if( !this->CanDoPatSkill( nSkillIDX ) )
-		{
-	#ifdef	__INC_WORLD
-			sprintf( szTmp, "ignore Skill:: in riding mode");
-			this->Send_gsv_WHISPER( "SELF_SKILL", szTmp );
-	#endif
-			return true;
-		}
-	}
-#else
-	if ( this->Get_RideMODE() ) {
-	#ifdef	__INC_WORLD
-		sprintf( szTmp, "ignore Skill:: in riding mode");
-		this->Send_gsv_WHISPER( "SELF_SKILL", szTmp );
-	#endif
 		return true;
 	}
-#endif
 
 	if ( !this->Is_SelfSKILL( nSkillIDX ) ) {
 		return IS_HACKING( this, "Recv_cli_SELF_SKILL :: no self type skill" );
@@ -5960,46 +5775,24 @@ bool classUSER::Recv_cli_SELF_SKILL( t_PACKET *pPacket )
 	return true;
 }
 
-/// 타겟 스킬 시작 요청 받음
 bool classUSER::Recv_cli_TARGET_SKILL( t_PACKET *pPacket )
 {
 	if ( !(this->m_dwPayFLAG & PLAY_FLAG_BATTLE) ) {
-		// 공격 못해... 돈내야함
 		return true;
 	}
 
-#ifdef	__INC_WORLD
-	char szTmp[ MAX_PATH ];
-#endif
-
 	DWORD dwCurTime = this->GetZONE()->GetCurrentTIME();
 	if ( SKILL_DELAY_TIME > dwCurTime - this->m_dwLastSkillActiveTIME ) {
-#ifdef	__INC_WORLD
-		sprintf( szTmp, "ignore Skill:: Delay:%d, Charged:%d", SKILL_DELAY_TIME, dwCurTime - this->m_dwLastSkillActiveTIME );
-		this->Send_gsv_WHISPER( "SELF_TARGET", szTmp );
-#endif
 		return true;
 	}
 
 	if ( this->Get_ActiveSKILL() ) {
-#ifdef	__INC_WORLD
-		sprintf( szTmp, "ignore Skill in casting motion" );
-		this->Send_gsv_WHISPER( "TARGET_SKILL", szTmp );
-#endif
 		return true;	// 스킬 케스팅 중일땐 못바꿔
 	}
 	if ( this->m_IngSTATUS.IsIgnoreSTATUS() || this->m_IngSTATUS.IsSET( FLAG_ING_DUMB ) ) {
-#ifdef	__INC_WORLD
-		sprintf( szTmp, "ignore Skill:: not allowd status" );
-		this->Send_gsv_WHISPER( "TARGET_SKILL", szTmp );
-#endif
 		return true;
 	}
 	if ( pPacket->m_cli_TARGET_SKILL.m_btSkillSLOT >= MAX_LEARNED_SKILL_CNT ) {
-#ifdef	__INC_WORLD
-		sprintf( szTmp, "ignore Skill:: invalid skill slot %d / %d", pPacket->m_cli_SELF_SKILL.m_btSkillSLOT, MAX_LEARNED_SKILL_CNT);
-		this->Send_gsv_WHISPER( "SELF_SKILL", szTmp );
-#endif
 		return false;
 	}
 
@@ -6008,30 +5801,12 @@ bool classUSER::Recv_cli_TARGET_SKILL( t_PACKET *pPacket )
 		return true;
 
 	if ( SKILL_RELOAD_TYPE(nSkillIDX) ) {
-		// 05.05.30 스킬 리로드 그룹타입으로 체크...
 		if ( SKILL_RELOAD_SECOND(nSkillIDX) > dwCurTime - this->m_dwLastSkillGroupSpeelTIME[ SKILL_RELOAD_TYPE(nSkillIDX) ] ) {
-#ifdef	__INC_WORLD
-			sprintf( szTmp, "ignore SkillIdx:%d, :: Delay:%d > Charged:%d, LastStamp:%d \n", 
-					nSkillIDX, 
-					SKILL_RELOAD_SECOND(nSkillIDX), 
-					dwCurTime - this->m_dwLastSkillGroupSpeelTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ], 
-					this->m_dwLastSkillGroupSpeelTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ] );
-			this->Send_gsv_WHISPER( "SELF_SKILL", szTmp );
-#endif
 			return true;
 		}
 	}
 
 	if ( SKILL_RELOAD_SECOND(nSkillIDX) > dwCurTime - this->m_dwLastSkillSpellTIME[ pPacket->m_cli_TARGET_SKILL.m_btSkillSLOT ] ) {
-		// 다시 사용가능한 시간인지 체크...
-#ifdef	__INC_WORLD
-		sprintf( szTmp, "ignore SkillIdx:%d, :: Delay:%d > Charged:%d, LastStamp:%d \n", 
-				nSkillIDX, 
-				SKILL_RELOAD_SECOND(nSkillIDX), 
-				dwCurTime - this->m_dwLastSkillSpellTIME[ pPacket->m_cli_TARGET_SKILL.m_btSkillSLOT ], 
-				this->m_dwLastSkillSpellTIME[ pPacket->m_cli_TARGET_SKILL.m_btSkillSLOT ] );
-		this->Send_gsv_WHISPER( "TARGET_SKILL", szTmp );
-#endif
 		return true;
 	}
 
@@ -6039,48 +5814,19 @@ bool classUSER::Recv_cli_TARGET_SKILL( t_PACKET *pPacket )
 		// 무겁다.. 명령 불가...
 		if ( ( SKILL_TYPE( nSkillIDX ) >= 3 && SKILL_TYPE( nSkillIDX ) <= 13 ) ||
 			   SKILL_TYPE( nSkillIDX ) == 17 ) {
-#ifdef	__INC_WORLD
-			sprintf( szTmp, "ignore Skill:: over weight ");
-			this->Send_gsv_WHISPER( "TARGET_SKILL", szTmp );
-#endif
 			return true;
 		}
 	}
 
-#ifdef __KCHS_BATTLECART__
 	if ( this->Get_RideMODE() ) {
-		if( !this->CanDoPatSkill( nSkillIDX ) )
-		{
-	#ifdef	__INC_WORLD
-			sprintf( szTmp, "ignore Skill:: in riding mode");
-			this->Send_gsv_WHISPER( "SELF_SKILL", szTmp );
-	#endif
-			return true;
-		}
-	}
-#else
-	if ( this->Get_RideMODE() ) {
-	#ifdef	__INC_WORLD
-		sprintf( szTmp, "ignore Skill:: in riding mode");
-		this->Send_gsv_WHISPER( "TARGET_SKILL", szTmp );
-	#endif
 		return true;
 	}
-#endif
 
 	if ( !this->Is_TargetSKILL( nSkillIDX ) ) {
-		// 짜르지 말고 무시 :: 몇건씩 들어온다 -_-;
-		// return IS_HACKING( this, "Recv_cli_TARGET_SKILL :: no target type skill" );
-#ifdef	__INC_WORLD
-		sprintf( szTmp, "ignore Skill:: invalied self skill");
-		this->Send_gsv_WHISPER( "TARGET_SKILL", szTmp );
-#endif
 		return true;
 	}
 
-	// 타겟이 유효한지( 살아 있는지 )... 체크...
 	if ( this->Do_TargetSKILL( pPacket->m_cli_TARGET_SKILL.m_wDestObjIDX, nSkillIDX ) ) {
-		// 시작 성공...
 		this->m_dwLastSkillActiveTIME = dwCurTime;
 		this->m_dwLastSkillSpellTIME[ pPacket->m_cli_TARGET_SKILL.m_btSkillSLOT ] = dwCurTime;
 		this->m_dwLastSkillGroupSpeelTIME[ SKILL_RELOAD_TYPE(nSkillIDX) ] = dwCurTime;
@@ -6089,7 +5835,6 @@ bool classUSER::Recv_cli_TARGET_SKILL( t_PACKET *pPacket )
 	return true;
 }
 
-/// 지역 스킬 요청 받음 
 bool classUSER::Recv_cli_POSITION_SKILL( t_PACKET *pPacket )
 {
 	if ( !(this->m_dwPayFLAG & PLAY_FLAG_BATTLE) ) {
@@ -6097,17 +5842,8 @@ bool classUSER::Recv_cli_POSITION_SKILL( t_PACKET *pPacket )
 		return true;
 	}
 
-//#ifndef	__INC_WORLD
-//	if ( this->m_IngSTATUS.IsSubSET( FLAG_CHEAT_INVINCIBLE ) ) // 무적 모드시 공격 불가...
-//		return true;
-//#endif
 	DWORD dwCurTime = this->GetZONE()->GetCurrentTIME();
 	if ( SKILL_DELAY_TIME > dwCurTime - this->m_dwLastSkillActiveTIME ) {
-#ifdef	__INC_WORLD
-		char szTmp[ MAX_PATH ];
-		sprintf( szTmp, "ignore Skill:: Delay:%d, Charged:%d", SKILL_DELAY_TIME, dwCurTime - this->m_dwLastSkillActiveTIME );
-		this->Send_gsv_WHISPER( "SELF_TARGET", szTmp );
-#endif
 		return true;
 	}
 
@@ -6121,32 +5857,12 @@ bool classUSER::Recv_cli_POSITION_SKILL( t_PACKET *pPacket )
 		return true;
 
 	if ( SKILL_RELOAD_TYPE(nSkillIDX) ) {
-		// 05.05.30 스킬 리로드 그룹타입으로 체크...
 		if ( SKILL_RELOAD_SECOND(nSkillIDX) > dwCurTime - this->m_dwLastSkillGroupSpeelTIME[ SKILL_RELOAD_TYPE(nSkillIDX) ] ) {
-#ifdef	__INC_WORLD
-			char szTmp[ MAX_PATH ];
-			sprintf( szTmp, "ignore SkillIdx:%d, :: Delay:%d > Charged:%d, LastStamp:%d \n", 
-					nSkillIDX, 
-					SKILL_RELOAD_SECOND(nSkillIDX), 
-					dwCurTime - this->m_dwLastSkillGroupSpeelTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ], 
-					this->m_dwLastSkillGroupSpeelTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ] );
-			this->Send_gsv_WHISPER( "SELF_SKILL", szTmp );
-#endif
 			return true;
 		}
 	}
 
 	if ( SKILL_RELOAD_SECOND(nSkillIDX) > dwCurTime - this->m_dwLastSkillSpellTIME[ pPacket->m_cli_POSITION_SKILL.m_btSkillSLOT ] ) {
-		// 다시 사용가능한 시간인지 체크...
-#ifdef	__INC_WORLD
-		char szTmp[ MAX_PATH ];
-		sprintf( szTmp, "ignore SkillIdx:%d, :: Delay:%d > Charged:%d, LastStamp:%d \n", 
-				nSkillIDX, 
-				SKILL_RELOAD_SECOND(nSkillIDX), 
-				dwCurTime - this->m_dwLastSkillSpellTIME[ pPacket->m_cli_POSITION_SKILL.m_btSkillSLOT ], 
-				this->m_dwLastSkillSpellTIME[ pPacket->m_cli_POSITION_SKILL.m_btSkillSLOT ] );
-		this->Send_gsv_WHISPER( "POSITION_SKILL", szTmp );
-#endif
 		return true;
 	}
 	if ( this->Get_WeightRATE() >= WEIGHT_RATE_CANT_ATK ) {
@@ -6157,12 +5873,7 @@ bool classUSER::Recv_cli_POSITION_SKILL( t_PACKET *pPacket )
 	}
 	if ( this->Get_RideMODE() )
 	{
-#ifdef __KCHS_BATTLECART__
-		if( !this->CanDoPatSkill( nSkillIDX ) )
-			return true;
-#else
 		return true;
-#endif
 	}
 
 	switch ( SKILL_TYPE( nSkillIDX ) ) {
@@ -6723,49 +6434,17 @@ bool classUSER::Recv_cli_MCMD_APPEND_REQ( t_PACKET *pPacket )
 
 	return true;
 }
-/// 메신져 :: 개인섭 테스트용함수
+
 bool classUSER::Recv_cli_MESSENGER( t_PACKET *pPacket )
 {
-#ifdef	__INC_WORLD
-	switch( pPacket->m_tag_MCMD_HEADER.m_btCMD ) {
-		case MSGR_CMD_APPEND_REQ	:	// 상대방에 요청
-			return this->Recv_cli_MCMD_APPEND_REQ( pPacket );
-
-		case MSGR_CMD_APPEND_REJECT	:	// 거부
-		{
-			classUSER *pDestUSER = (classUSER*)g_pUserLIST->GetSOCKET( pPacket->m_cli_MCMD_APPEND_REPLY.m_wUserIDX );
-			if ( pDestUSER )
-				pDestUSER->Send_tag_MCMD_HEADER( MSGR_CMD_APPEND_REJECT, pDestUSER->Get_NAME() );
-			return true;
-		}
-
-		case MSGR_CMD_APPEND_ACCEPT :	// 쌍방에 추가..
-			g_pThreadMSGR->Add_MessengerCMD( this->Get_NAME(), MSGR_CMD_APPEND_ACCEPT, pPacket, this->m_iSocketIDX );
-			return true;
-
-		default :
-			g_pThreadMSGR->Add_MessengerCMD( this->Get_NAME(), pPacket->m_tag_MCMD_HEADER.m_btCMD, pPacket, this->m_iSocketIDX );
-	} // switch( pPacket->m_tag_MCMD_HEADER.m_btCMD )
-#endif
-
 	return true;
 }
 
-//-------------------------------------------------------------------------------------------------
-/// 메신져 :: 개인섭 테스트용함수
 bool classUSER::Recv_cli_MESSENGER_CHAT( t_PACKET *pPacket )
 {
-#ifdef	__INC_WORLD
-	if ( pPacket->m_HEADER.m_nSize <= 1+sizeof( cli_MESSENGER_CHAT ) )
-		return true;
-
-	g_pThreadMSGR->Add_MessengerCMD( this->Get_NAME(), 0x0ff, pPacket, this->m_iSocketIDX );
-#endif
 	return true;
 }
 
-//-------------------------------------------------------------------------------------------------
-/// 아이템 재밍/분해 실패 결과 통보
 bool classUSER::Send_gsv_CRAFT_ITEM_RESULT (BYTE btRESULT)
 {
 	classPACKET *pCPacket = Packet_AllocNLock ();
@@ -6783,7 +6462,7 @@ bool classUSER::Send_gsv_CRAFT_ITEM_RESULT (BYTE btRESULT)
 
 	return false;
 }
-/// 아이템 재밍/분해 결과 패킷 초기화
+
 classPACKET *classUSER::Init_gsv_CRAFT_ITEM_REPLY ()
 {
 	classPACKET *pCPacket = Packet_AllocNLock ();
@@ -7733,16 +7412,6 @@ bool classUSER::Recv_cli_ALIVE ()
 /// 클랜 관련 명령::: 개인서버 테스트용
 bool classUSER::Recv_cli_CLAN_COMMAND( t_PACKET *pPacket )
 {
-#ifdef	__INC_WORLD
-	if (  GCMD_CREATE == pPacket->m_cli_CLAN_COMMAND.m_btCMD ) {
-		if ( this->GetClanID() || !this->CheckClanCreateCondition( 0 ) ) {
-			// 창설 조건 안되~~~
-			this->Send_wsv_CLAN_COMMAND( RESULT_CLAN_CREATE_NO_CONDITION, NULL );
-			return true;
-		}
-	}
-	return g_pThreadGUILD->Add_ClanCMD( pPacket->m_cli_CLAN_COMMAND.m_btCMD, this->m_iSocketIDX, pPacket );
-#else
 	if (  GCMD_CREATE == pPacket->m_cli_CLAN_COMMAND.m_btCMD ) {
 		if ( this->GetClanID() || !this->CheckClanCreateCondition( 0 ) ) {
 			// 창설 조건 안되~~~
@@ -7753,30 +7422,11 @@ bool classUSER::Recv_cli_CLAN_COMMAND( t_PACKET *pPacket )
 		return g_pThreadGUILD->Add_ClanCMD( pPacket->m_cli_CLAN_COMMAND.m_btCMD, this->m_iSocketIDX, pPacket );
 	}
 	return true;
-#endif
 }
 bool classUSER::Recv_cli_CLAN_CHAT( t_PACKET *pPacket )
 {
 	if ( !(this->m_dwPayFLAG & PAY_FLAG_JP_BATTLE) )
 		return true;
-
-#ifdef	__INC_WORLD
-    char *szMsg;
-    short nOffset=sizeof( cli_CLAN_CHAT );
-
-    szMsg = Packet_GetStringPtr( pPacket, nOffset );
-    if ( szMsg ) {
-		if ( szMsg[ 0 ] == '/' ) {
-			if ( this->Check_CheatCODE( szMsg ) ) {
-				return ( !this->GetZONE() ? RET_SKIP_PROC : RET_OK );
-			}
-		}
-	}
-
-	if ( this->GetClanID() ) {
-		g_pThreadGUILD->Add_ClanCMD( GCMD_CHAT, this->GetClanID(), pPacket, this->Get_NAME() );
-	}
-#endif
 
 	return true;
 }
@@ -7807,19 +7457,11 @@ bool classUSER::Send_wsv_CLAN_COMMAND( BYTE btCMD, ... )
 
 	this->SendPacket( pCPacket );
 
-//#ifdef	__INC_WORLD
-//	if ( btCMD == RESULT_CLAN_MY_DATA ) {
-//		::CopyMemor( &this->m_CLAN, pCPacket->m_wsv_CLAN_COMMAND.;
-//		tag_MY_CLAN
-//	}
-//#endif
-
 	Packet_ReleaseNUnlock( pCPacket );
 
 	return true;
 }
 
-//-------------------------------------------------------------------------------------------------
 bool classUSER::Send_gsv_BILLING_MESSAGE( BYTE btMsgType, char *szMsg )
 {
 	classPACKET *pCPacket = Packet_AllocNLock ();
@@ -8079,54 +7721,14 @@ bool classUSER::HandlePACKET( t_PACKETHEADER *pPacketHeader )
 			case OST_SERVER_IPSEARCH :
 				return Recv_ost_SERVER_IPSEARCH( (t_PACKET*)pPacket );
 				break;
-			/*
-			/////////////////////////////////////////////////////////////////////
-			// Login Server Packet ...
-			case CLI_LOGIN_REQ :
-				// TODO:: init ...
-				Init_DefaultValue ();
-				return Recv_cli_LOGIN_REQ( pPacket );
-
-			case CLI_SELECT_SERVER :
-				return Recv_cli_SELECT_SERVER( pPacket );
-			/////////////////////////////////////////////////////////////////////
-			*/
 			case CLI_LOGOUT_REQ :
 				if ( this->m_pPartyBUFF ) {
 					this->m_pPartyBUFF->Sub_PartyUSER( this->m_nPartyPOS );		// CLI_LOGOUT_REQ
 				}
-				// 짤리도록..
 				return false;
-
-			//case CLI_STRESS_TEST :
-			//	return Recv_cli_STRESS_TEST( pPacket );
-
 			case CLI_JOIN_SERVER_REQ :
 				this->m_bVerified = true;
 				return Recv_cli_JOIN_SERVER_REQ( pPacket );
-
-#ifdef	__INC_WORLD
-			case CLI_CHAR_LIST :
-				return Recv_cli_CHAR_LIST( pPacket );
-
-			case CLI_CREATE_CHAR :
-				return Recv_cli_CREATE_CHAR( pPacket );
-
-			case CLI_DELETE_CHAR :
-				return Recv_cli_DELETE_CHAR( pPacket );
-
-			case CLI_SELECT_CHAR :
-				return Recv_cli_SELECT_CHAR( pPacket, true, 0, 0 );
-
-			case CLI_MESSENGER :
-				return Recv_cli_MESSENGER( pPacket );
-
-			case CLI_MESSENGER_CHAT :
-				return Recv_cli_MESSENGER_CHAT( pPacket );
-
-			case CLI_CLAN_COMMAND :
-				return this->Recv_cli_CLAN_COMMAND( pPacket );
-#endif
 			case CLI_ALIVE :
 				return this->Recv_cli_ALIVE ();
 
@@ -8135,7 +7737,6 @@ bool classUSER::HandlePACKET( t_PACKETHEADER *pPacketHeader )
 
 			case CLI_JOIN_ZONE :
 				this->HandleWorldPACKET ();
-				// 이 패킷을 받은 이후에는 게임 플레이용 패킷이다...
 				return Recv_cli_JOIN_ZONE ( pPacket );
 		} // switch ( pPacketHeader->m_wType )
 
@@ -8164,31 +7765,6 @@ bool classUSER::HandlePACKET( t_PACKETHEADER *pPacketHeader )
 int classUSER::Proc_ZonePACKET( t_PACKET *pPacket )
 {
     switch ( pPacket->m_HEADER.m_wType ) {
-#ifdef	__INC_WORLD
-		case CLI_CHATROOM :
-			return g_pChatROOMs->Recv_cli_CHATROOM( this, pPacket );
-		case CLI_CHATROOM_MSG :
-			return g_pChatROOMs->Recv_cli_CHATROOM_MSG( this, pPacket );
-
-		case CLI_MEMO	:			// 쪽지 보내자...
-			return g_pThreadSQL->Add_SqlPacketWithAVATAR (this, pPacket );
-
-		case CLI_MESSENGER :
-			return Recv_cli_MESSENGER( pPacket );
-
-		case CLI_MESSENGER_CHAT :
-			return Recv_cli_MESSENGER_CHAT( pPacket );
-
-		case CLI_CLAN_CHAT :
-			return Recv_cli_CLAN_CHAT( pPacket );
-
-		case CLI_CLANMARK_SET :
-			return Recv_cli_CLANMARK_SET( pPacket );
-		case CLI_CLANMARK_REQ :
-			return Recv_cli_CLANMARK_REQ( pPacket );
-		case CLI_CLANMARK_REG_TIME :
-			return Recv_cli_CLANMARK_REG_TIME( pPacket );
-#endif
 		case CLI_CLAN_COMMAND :
 			return this->Recv_cli_CLAN_COMMAND( pPacket );
 
@@ -8209,17 +7785,6 @@ int classUSER::Proc_ZonePACKET( t_PACKET *pPacket )
 				m_dwTimeToLogOUT = this->GetZONE()->GetTimeGetTIME();
 				this->Send_gsv_LOGOUT_REPLY( 0 );
 			}
-//#ifdef	__INC_WORLD
-//			return false;
-//#endif
-			//if ( this->m_pPartyBUFF ) {
-			//	this->m_pPartyBUFF->Sub_PartyUSER( this->m_nPartyPOS );		// CLI_CHAR_CHANGE
-			//}
-
-			//this->GetZONE()->Dec_UserCNT ();
-			//this->GetZONE()->Sub_DIRECT( this );
-			//// 짤리도록..
-			//g_pUserLIST->DeleteUSER( this, LOGOUT_MODE_CHARLIST );
 			return RET_SKIP_PROC;
 		}
         case CLI_LOGOUT_REQ :
@@ -8233,11 +7798,6 @@ int classUSER::Proc_ZonePACKET( t_PACKET *pPacket )
 				m_dwTimeToLogOUT = this->GetZONE()->GetTimeGetTIME();
 				this->Send_gsv_LOGOUT_REPLY( 0 );
 			}
-			//if ( this->m_pPartyBUFF ) {
-			//	this->m_pPartyBUFF->Sub_PartyUSER( this->m_nPartyPOS );		// CLI_LOGOUT_REQ
-			//}
-			//// 짤리도록..
-			//return RET_FAILED;
 			return RET_SKIP_PROC;
 
 		case CLI_REVIVE_REQ :

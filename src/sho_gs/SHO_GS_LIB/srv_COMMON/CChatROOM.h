@@ -1,4 +1,4 @@
-#if	defined( __SHO_WS ) || defined( __INC_WORLD )
+#if	defined( __SHO_WS )
 #ifndef	__CCHAT_ROOM_H
 #define	__CCHAT_ROOM_H
 #include "CDLList.h"

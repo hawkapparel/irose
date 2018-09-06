@@ -56,17 +56,9 @@ bool CSkillLIST::LoadSkillTable(const char* pFileName)
 	for (short nI=1; nI<m_SkillDATA.m_nDataCnt; nI++) {
 		if ( SKILL_ANI_CASTING_REPEAT_CNT(nI) ) {
 			if ( SKILL_ANI_CASTING_REPEAT(nI ) < 1 ) {
-				// 반복 동작 횟수가 있는 반복 동작이 없다 !!!
-				#ifdef	__INC_WORLD
-				char *pMsg = CStr::Printf ("스킬 반복 모션 번호 입력 필요 : %d 라인", nI );
-					::MessageBox( NULL, pMsg, "스킬 stb 데이타 입력 오류", MB_OK );
-				#endif
-
 				SKILL_ANI_CASTING_REPEAT_CNT(nI) = 0;
 			}
-		} // else
-		//if ( SKILL_ANI_CASTING_REPEAT(nI ) )	// 반복 동작이 있는데 반복 횟수가 0이면 1로 설정.
-		//	SKILL_ANI_CASTING_REPEAT_CNT(nI) = 1;
+		}
 
 #if	defined( __SERVER ) && !defined( __SHO_WS )
 		// 서버에서는 반복 모션이 있을경우 케스팅 동작의 애니속도를 반복 모션값을 참조하여 보정...

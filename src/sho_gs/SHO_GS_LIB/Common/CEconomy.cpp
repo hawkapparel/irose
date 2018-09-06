@@ -49,35 +49,18 @@ void CEconomy::Init (void)
 	// load from db ...
 }
 
-//-------------------------------------------------------------------------------------------------
-#if	defined( __SERVER ) || defined( __VIRTUAL_SERVER )
-#ifdef	__SERVER
 bool CEconomy::Load (FILE *fp)
-#else
-bool CEconomy::Load ( CFileSystem* pFileSystem )
-#endif
 {
 	int iTownCounter, iPopBase, iDevBase, iValue;
 
 	Init ();
 
-#ifdef	__SERVER
 	fread( &iTownCounter,	sizeof(int),	1,	fp);	//	int	: 체크 카운터
 	fread( &iPopBase,		sizeof(int),	1,	fp);	//  int	: 기준 인구
 	fread( &iDevBase,		sizeof(int),	1,	fp);	//	int	: 기준 발전량
-#else
-	pFileSystem->ReadInt32( &iTownCounter );	//	int	: 체크 카운터
-	pFileSystem->ReadInt32( &iPopBase );	//  int	: 기준 인구
-	pFileSystem->ReadInt32( &iDevBase );	//	int	: 기준 발전량
-#endif
 
-#ifdef	__INC_WORLD
-	if ( iTownCounter < 1 )
-		iTownCounter = 1;
-#else
-	if ( iTownCounter <= 1 )				// 갱신 주기가 1분 보다 작으면 24시간으로 강제 설정
+	if ( iTownCounter <= 1 )	
 		iTownCounter = 60 * 24;
-#endif
 
 	m_iTownCounter = iTownCounter;
 	#define	ECONMY_1MIN	( 1000*60 )			// 1 min
@@ -91,41 +74,27 @@ bool CEconomy::Load ( CFileSystem* pFileSystem )
 
 	for (short nP=MIN_PRICE_TYPE; nP<MAX_PRICE_TYPE; nP++) 
 	{
-	#ifdef	__SERVER
 		fread( &iValue,	sizeof(int),	1,	fp);
-	#else
-		pFileSystem->ReadInt32( &iValue );
-	#endif
 		m_nTown_CONSUM[ nP ] = iValue;
 	}
 
 	return true;
 }
-#endif
 
 
-//-------------------------------------------------------------------------------------------------
 #define	MIN_TOWN_ITEM	100
 #define	MAX_TOWN_ITEM	32000
 
-#if	defined( __SERVER ) || defined( __VIRTUAL_SERVER )
 bool CEconomy::Proc (DWORD dwCurTIME)
 {
 	if ( dwCurTIME - m_dwCheckTIME < m_dwTown_COUNTER )
 		return false;
 	m_dwCheckTIME  = dwCurTIME;
 
-	// * 현재 인구수(TOWN_POP)
 	m_iTownPOP += (int)( ( m_nTownDEV - m_btTOWN_RATE ) * m_iTownPOP / 3000.f );
-	
-	// * 마을 발전도
-	// m_nTownDEV 
 
     short nP;
-	// * TOWN_RATE = 각 생필품 종류별 물가들의 평균치.
 	for (nP=MIN_PRICE_TYPE; nP<MAX_PRICE_TYPE; nP++) {
-		// 소비량	(금속 기준 소비량 * (200 - 마을 발전도) * 마을 인구 ) / 150000
-		// 보유량에서 소비량 뺀다.
 		m_iTownITEM[ nP ] -= (int)( ( m_nTown_CONSUM[ nP ] * ( m_iTownCounter + 10 - m_nTownDEV*0.1f ) * m_iTownPOP ) / 50000 * ( m_iTownITEM[ nP ] * 0.01 + 50 ) / 100 );
 
 		if ( m_iTownITEM[ nP ] < MIN_TOWN_ITEM ) m_iTownITEM[ nP ] = MIN_TOWN_ITEM;
@@ -135,7 +104,6 @@ bool CEconomy::Proc (DWORD dwCurTIME)
 
 	int iTotRATE=0, iNewVALUE;
 	for (nP=MIN_PRICE_TYPE; nP<MAX_PRICE_TYPE; nP++) {
-		// ITEM_RATE 증감수치 =  (마을 인구 * 기준 소비량 / 10 - 아이템 보유량) / (현재 생필품 물가수치)
 		iNewVALUE = m_btItemRATE[ nP ] + ( m_iTownPOP * m_nTown_CONSUM[ nP ] / 10 - m_iTownITEM[ nP ] ) / 600;
 
 		if ( iNewVALUE < 45 ) 
@@ -150,10 +118,6 @@ bool CEconomy::Proc (DWORD dwCurTIME)
 	}
 
 	m_btTOWN_RATE = 80;
-	//m_btTOWN_RATE = iTotRATE / ( MAX_PRICE_TYPE-MIN_PRICE_TYPE );
-	//if ( m_btTOWN_RATE < 80  ) m_btTOWN_RATE = 80;
-	//else
-	//if ( m_btTOWN_RATE > 140 ) m_btTOWN_RATE = 140;
 
 	m_nCur_WorldPROD = ::Get_WorldPROD ();
 	m_nCur_WorldRATE = ::Get_WorldRATE ();
@@ -168,8 +132,7 @@ bool CEconomy::Proc (DWORD dwCurTIME)
 }
 
 
-//-------------------------------------------------------------------------------------------------
-void CEconomy::BuyITEM (tagITEM &sITEM)	// short nItemTYPE, short nItemNO, int iQuantity)
+void CEconomy::BuyITEM (tagITEM &sITEM)
 {
 	// 생필품은 ITEM_TYPE_USE, ITEM_TYPE_NATURAL !!!
 	switch( sITEM.GetTYPE() ) {
@@ -200,7 +163,7 @@ void CEconomy::SellITEM (tagITEM &sITEM, int iQuantity)
 		}
 	}
 }
-#endif
+
 
 //-------------------------------------------------------------------------------------------------
 void CEconomy::SetTownRATE (int iValue)

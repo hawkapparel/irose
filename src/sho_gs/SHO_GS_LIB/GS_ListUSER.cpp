@@ -7,11 +7,6 @@
 #include "GS_SocketASV.h"
 #include "IO_Quest.h"
 
-#ifdef	__INC_WORLD
-	#include "CChatROOM.h"
-	#include "CThreadGUILD.h"
-#endif
-
 extern void IncUserCNT( int iUserCNT, classUSER *pUSER );
 extern void DecUserCNT( int iUserCNT, classUSER *pUSER );
 
@@ -22,11 +17,7 @@ CUserLIST::CUserLIST ( UINT uiInitDataCNT, UINT uiIncDataCNT )
 								m_csHashACCOUNT( 4000 ),
 								m_csHashCHAR( 4000 ),
 								m_csNullZONE( 4000 ),
-#ifdef	__INC_WORLD
-							  IOCPSocketSERVER( "GS_SocketSERVER", 0, 2, true )
-#else
 							  IOCPSocketSERVER( "GS_SocketSERVER", 2, 2, true )
-#endif
 {
 	m_pHashACCOUNT	= new classHASH< classUSER* >( 1024 * 2 );
 	m_pHashCHAR		= new classHASH< classUSER* >( 1024 * 2 );
@@ -96,27 +87,10 @@ void CUserLIST::DeleteUSER (classUSER *pUSER, BYTE btLogOutMODE)
 		pUser2->m_iLinkedCartUsrIDX = 0;
 	}
 
-	//if ( pUSER->m_pPartyBUFF ) {
-	//	pUSER->m_pPartyBUFF->OnDisconnect( pUSER );	
-	//}
-
-#ifdef	__INC_WORLD
-	g_pChatROOMs->LeftUSER ( pUSER );
-#endif
-
-	// ZoneThread에서 바로 호출되어 올경우 소켓 닫고 삭제하기..
 	this->Del_SOCKET( pUSER->m_iSocketIDX );
 
-	// delete Character from Hash table...
 	m_csHashCHAR.Lock ();
 	if ( pUSER->m_HashCHAR ) {
-	#ifdef	__INC_WORLD
-		LogString( 0xffff, "%d Sub_CHAR[ %s:%s:%s ] ..\n", this->GetUsedSocketCNT(), pUSER->Get_ACCOUNT(), pUSER->Get_NAME(), pUSER->Get_IP() );
-
-		g_pThreadMSGR->Add_MessengerCMD( pUSER->Get_NAME(), MSGR_CMD_LOGOUT, NULL, 0 );
-		if ( pUSER->GetClanID() )
-			g_pThreadGUILD->Add_ClanCMD( GCMD_LOGOUT, pUSER->GetClanID(), NULL, pUSER->Get_NAME() );
-	#endif
 		if ( !m_pHashCHAR->Delete( pUSER->m_HashCHAR, pUSER ) ) {
 			g_LOG.CS_ODS( 0xffff, "ERROR *** Sub_CHAR( %s : %s) not found \n", pUSER->Get_ACCOUNT(), pUSER->Get_IP() );
 		}
@@ -137,17 +111,9 @@ void CUserLIST::DeleteUSER (classUSER *pUSER, BYTE btLogOutMODE)
 		::DecUserCNT( m_pHashACCOUNT->GetCount(), pUSER );
 	}
 	m_csHashACCOUNT.Unlock ();
-
-#ifdef	__INC_WORLD
-	LogString( 0xffff, "Delete Char:: %s, Account: %s [ %s ]\n", 
-			pUSER->Get_NAME(),
-			pUSER->Get_ACCOUNT(),
-			pUSER->m_IP.Get() );
-#endif
 	g_pThreadSQL->Add_BackUpUSER( pUSER, btLogOutMODE );
 }
 
-//-------------------------------------------------------------------------------------------------
 bool CUserLIST::SendPacketToSocketIDX (int iClientSocketIDX, classPACKET *pCPacket)
 {
 	// 반드시 pCPacket은 1 유저에게 보내는 패킷이어야 한다.
@@ -163,7 +129,6 @@ bool CUserLIST::SendPacketToSocketIDX (int iClientSocketIDX, classPACKET *pCPack
 	return false;
 }
 
-//-------------------------------------------------------------------------------------------------
 void CUserLIST::Check_SocketALIVE ()
 {
 	classPACKET *pCPacket = Packet_AllocNLock ();
@@ -197,10 +162,9 @@ void CUserLIST::Check_SocketALIVE ()
 //-------------------------------------------------------------------------------------------------
 void CUserLIST::Send_wsv_CREATE_CHAR (int iSocketIDX, BYTE btResult)
 {
-#ifndef	__INC_WORLD
 	assert( 0 && "Send_wsv_CREATE_CHAR" );
 	return;
-#endif
+
 	classPACKET *pCPacket = Packet_AllocNLock ();
 	if ( !pCPacket )
 		return;
@@ -258,19 +222,11 @@ void CUserLIST::Send_wsv_GUILD_COMMAND (int iSocketIDX, BYTE btResult, char *szS
 //-------------------------------------------------------------------------------------------------
 bool CUserLIST::Add_CHAR (classUSER *pUSER)
 {
-#ifdef	__INC_WORLD
-	LogString( LOG_DEBUG, "Add_CHAR[ iSockIDX:%d, %s:%s:%s ] ..\n", pUSER->m_iSocketIDX, pUSER->Get_ACCOUNT(), pUSER->Get_NAME(), pUSER->Get_IP() );
-#endif
 	// GS_CThreadSQL::Run_SqlPACKET()에서 호출되는 함수로 Lock 필요 없다.
 	pUSER->m_HashCHAR = CStrVAR::GetHASH( pUSER->Get_NAME() );
 	m_csHashCHAR.Lock ();
 	m_pHashCHAR->Insert( pUSER->m_HashCHAR, pUSER );
 	m_csHashCHAR.Unlock ();
-
-#ifdef	__INC_WORLD
-	g_pThreadMSGR->Add_MessengerCMD( pUSER->Get_NAME(), MSGR_CMD_LOGIN, NULL, pUSER->m_iSocketIDX, pUSER->m_dwDBID );
-	g_pThreadGUILD->Add_ClanCMD( GCMD_LOGIN, pUSER->m_iSocketIDX, NULL, pUSER->Get_NAME() );
-#endif
 
 	return true;
 }
@@ -320,35 +276,21 @@ bool CUserLIST::Add_ACCOUNT (int iSocketIDX, t_PACKET *pRecvPket, char *szAccoun
 			g_pSockASV->Send_zws_ADD_ACCOUNT( szAccount, pUSER->Get_MD5PW(), pUSER->Get_IP() );
 
 			// 존에서 빠진 사용자 리스트에 등록...
-			g_pUserLIST->Add_NullZONE( &pUSER->m_ZoneNODE );	// CUserLIST::Add_ACCOUNT
+			g_pUserLIST->Add_NullZONE( &pUSER->m_ZoneNODE );
 
 			pUSER->m_dwLSID     = pRecvPket->m_wls_CONFIRM_ACCOUNT_REPLY.m_dwLSID;
 			pUSER->m_dwWSID		= pRecvPket->m_wls_CONFIRM_ACCOUNT_REPLY.m_dwWSID;
 			pUSER->m_dwRIGHT	= pRecvPket->m_wls_CONFIRM_ACCOUNT_REPLY.m_dwRIGHT;
-#ifndef	__INC_WORLD
 			pUSER->m_dwPayFLAG  = pRecvPket->m_wls_CONFIRM_ACCOUNT_REPLY.m_dwPayFLAG;
-#else
-			pUSER->m_dwPayFLAG	= 0x0ffffffff;
-#endif
-			// this->m_dwLoginTIME = pRecvPket->m_wls_CONFIRM_ACCOUNT_REPLY.m_dwLoginTIME;
 
-			// insert hash table ...
 			m_csHashACCOUNT.Lock ();
 			m_pHashACCOUNT->Insert( pUSER->m_HashACCOUNT, pUSER );
 			::IncUserCNT( m_pHashACCOUNT->GetCount(), pUSER );
 			m_csHashACCOUNT.Unlock ();
 
-		#ifndef	__INC_WORLD
-			// 케릭터 선택해라...
 			t_PACKET *pSelCharPket = (t_PACKET*)new BYTE [ 256 ];
 			{
 				short nOffset = sizeof( wls_CONFIRM_ACCOUNT_REPLY ) + (short)strlen(szAccount)+1;	// + '\0'
-			/*
-				if ( pRecvPket->m_wls_CONFIRM_ACCOUNT_REPLY.m_dwIngStatusFLAG ) {
-					::CopyMemory( &pUSER->m_IngSTATUS, pRecvPket->m_wls_CONFIRM_ACCOUNT_REPLY.m_IngSTATUS, sizeof(CIngSTATUS) );
-					nOffset += ( sizeof(CIngSTATUS)-sizeof(DWORD) );
-				}
-			*/
 				char *szCharName = Packet_GetStringPtr( pRecvPket, nOffset );
 
 				pSelCharPket->m_HEADER.m_wType = CLI_SELECT_CHAR;
@@ -364,7 +306,6 @@ bool CUserLIST::Add_ACCOUNT (int iSocketIDX, t_PACKET *pRecvPket, char *szAccoun
 							);
 			}
 			SAFE_DELETE_ARRAY( pSelCharPket );
-		#endif
 		}
 		return true;
 	}
@@ -440,19 +381,14 @@ void CUserLIST::Send_zws_ACCOUNT_LIST (CClientSOCKET *pSrvSocket, bool bSendToGU
 	pCPacket->m_zws_ACCOUNT_LIST.m_nAccountCNT = 0;
 
 	tagHASH<classUSER*> *pAccNODE;
-#ifdef	__INC_WORLD
-	tag_WLS_ACCOUNT	sInfo;
-#else
 	tag_ZWS_ACCOUNT sInfo;
-#endif
+
 	m_csHashACCOUNT.Lock ();
 	for (int iL=0; iL<m_pHashACCOUNT->GetTableCount(); iL++) {
 		pAccNODE = m_pHashACCOUNT->GetEntryNode( iL );
 		while( pAccNODE ) {
 			sInfo.m_dwLSID		= pAccNODE->m_DATA->m_dwLSID;
-	#ifndef	__INC_WORLD
 			sInfo.m_dwGSID		= pAccNODE->m_DATA->m_iSocketIDX;
-	#endif
 			sInfo.m_dwLoginTIME = pAccNODE->m_DATA->m_dwLoginTIME;
 			pCPacket->AppendData( &sInfo, sizeof(tag_ZWS_ACCOUNT) );		// 12
 			pCPacket->AppendString( pAccNODE->m_DATA->Get_ACCOUNT() );		// 31

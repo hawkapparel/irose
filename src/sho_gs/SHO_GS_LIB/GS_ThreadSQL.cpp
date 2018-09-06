@@ -710,15 +710,7 @@ void GS_CThreadSQL::Execute ()
 							this->Sub_LoginACCOUNT( pUsrNODE->DATA.m_pUSER->Get_ACCOUNT() );
 					}
 				}
-
-			#ifdef	__INC_WORLD
-				// 개인서버일 경우 워프, 케릭터 리스트는 접속 종료 안함.
-				//if ( LOGOUT_MODE_LEFT == pUsrNODE->DATA.m_btLogOutMODE )
-			#endif
-				{
-					// 모든 classUSER()는 GS_CThreadSQL::Execute 삭제된다...
-					g_pUserLIST->FreeClientSOCKET( pUsrNODE->DATA.m_pUSER );
-				}
+				g_pUserLIST->FreeClientSOCKET( pUsrNODE->DATA.m_pUSER );
 			}
 
 			m_RunUserLIST.DeleteNFree( pUsrNODE );
@@ -737,26 +729,6 @@ void GS_CThreadSQL::Execute ()
 bool GS_CThreadSQL::Run_SqlPACKET( tagQueryDATA *pSqlPACKET )
 {
 	switch( pSqlPACKET->m_pPacket->m_wType ) {
-#ifdef	__INC_WORLD
-		case CLI_CHAR_LIST :
-			Proc_cli_CHAR_LIST	( pSqlPACKET );
-			break;
-
-		case CLI_CREATE_CHAR :
-			Proc_cli_CREATE_CHAR( pSqlPACKET );
-			break;
-
-		case CLI_DELETE_CHAR :
-			Proc_cli_DELETE_CHAR( pSqlPACKET );
-			break;
-
-		case CLI_MEMO :
-			Proc_cli_MEMO( pSqlPACKET );
-			break;
-		//case CLI_CLAN_COMMAND :
-		//	Proc_cli_CLAN_COMMAND( pSqlPACKET );
-		//	break;
-#endif
 		case CLI_MALL_ITEM_REQ :
 			Proc_cli_MALL_ITEM_REQ( pSqlPACKET );
 			break;
@@ -782,7 +754,6 @@ bool GS_CThreadSQL::Run_SqlPACKET( tagQueryDATA *pSqlPACKET )
 					Proc_LOAD_ZONE_DATA( pSqlPACKET->m_iTAG );
 					break;
 
-			#ifndef	__INC_WORLD
 				case SQL_ZONE_DATA_ECONOMY_SAVE :
 					Proc_SAVE_ZONE_DATA( pSqlPACKET->m_iTAG, pSqlZONE );
 					break;
@@ -795,7 +766,6 @@ bool GS_CThreadSQL::Run_SqlPACKET( tagQueryDATA *pSqlPACKET )
 				case SQL_ZONE_DATA_WORLDVAR_SAVE :
 					Proc_SAVE_WORLDVAR( pSqlZONE );
 					break;
-			#endif
 			}
 			break;
 		}

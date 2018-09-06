@@ -2,7 +2,7 @@
 #include "stdAFX.h"
 
 #include "CChatROOM.h"
-#if	defined( __SHO_WS ) || defined( __INC_WORLD )
+#if	defined( __SHO_WS )
 
 //-------------------------------------------------------------------------------------------------
 bool CChatROOM::ReqMake( classUSER *pUSER, cli_CHAT_ROOM_MAKE *pMake, char *szTitle, char *szPasswd)

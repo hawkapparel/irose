@@ -21,9 +21,6 @@ char *l_szAbility[] = {
 
 DWORD classUSER::A_Cheater ()
 {
-#ifdef	__INC_WORLD
-	return this->m_dwRIGHT & 0x7fffffff;
-#else
 	if ( CLIB_GameSRV::GetInstance()->IsTestServer() ) {
 		// 테섭 : 마스타, 개발자
 		return this->m_dwRIGHT & ( RIGHT_MASTER | RIGHT_DEV );
@@ -31,7 +28,6 @@ DWORD classUSER::A_Cheater ()
 		// 본섭 : 마스타
 		return this->m_dwRIGHT & RIGHT_MASTER;
 	}
-#endif
 }
 DWORD classUSER::B_Cheater ()
 {
@@ -560,24 +556,7 @@ short classUSER::Cheat_get ( CStrVAR *pStrVAR, char *pArg1, char *pArg2, char *s
 		this->Send_gsv_WHISPER( "<WORLD>::", pStrVAR->Get() );
 		return CHEAT_NOLOG;
 	}
-#ifdef	__INC_WORLD
-	else if( B_Cheater() && !strcmpi(pArg1, "PROPOINT") ) {
-		pStrVAR->Printf("PRO1:%f  PRO2:%f  PRO3:%f  PRO4:%f, SUC1:%f, SUC2:%f, SUC3:%f, SUC4:%f", 
-			m_fPROPOINT[ 0 ] , m_fPROPOINT[ 1 ] , m_fPROPOINT[ 2 ] , m_fPROPOINT[ 3 ] , 
-			m_fSUCPOINT[ 0 ] , m_fSUCPOINT[ 1 ] , m_fSUCPOINT[ 2 ] , m_fSUCPOINT[ 3 ]);
-		this->Send_gsv_WHISPER( "<<SERVER>>::", pStrVAR->Get() );
-		return CHEAT_NOLOG;
-	}
-#endif
-#ifdef __KCHS_BATTLECART__
-	else if( !strcmpi( pArg1, "pathp" ) ) {
-		pStrVAR->Printf ("Pat MaxHP : %d, Pat HP : %d, PatCoolTime:%u", this->GetCur_PatMaxHP(), this->GetCur_PatHP() , 
-			this->GetCur_PatCoolTIME() );
-		this->Send_gsv_WHISPER( "<Server>::", pStrVAR->Get() );
-		return CHEAT_NOLOG;
-	}
-#endif
-	
+
 	return CHEAT_INVALID;
 }
 
@@ -651,11 +630,7 @@ short classUSER::Cheat_mon ( char *pArg1, char *pArg2 )
 	if ( B_Cheater() ) {
 		int iMobIDX = atoi( pArg1 );
 		int iMobCNT = atoi( pArg2 );
-	#ifdef	__INC_WORLD
-		if ( iMobCNT > 2000 ) iMobCNT = 2000;
-	#else
 		if ( iMobCNT > 100 ) iMobCNT = 100;
-	#endif
 		this->GetZONE()->RegenCharacter( this->m_PosCUR.x, this->m_PosCUR.y, 1500, iMobIDX, iMobCNT, TEAMNO_MOB, true);
 	}
 	return CHEAT_PROCED;
@@ -672,11 +647,7 @@ short classUSER::Cheat_mon2 ( char *pArg1, char *pArg2, char *pArg3, char *pArg4
 		int iX = atoi( pArg2 );
 		int iY = atoi( pArg3 );
 		int iMobCNT = atoi( pArg4 );
-	#ifdef	__INC_WORLD
-		if ( iMobCNT > 2000 ) iMobCNT = 2000;
-	#else
 		if ( iMobCNT > 100 ) iMobCNT = 100;
-	#endif
 		this->GetZONE()->RegenCharacter( iX * 1000, iY * 1000, 1500, iMobIDX, iMobCNT, TEAMNO_MOB, true);
 		return CHEAT_PROCED;
 	}
@@ -782,11 +753,6 @@ short classUSER::Cheat_set ( classUSER *pUSER, char *pArg1, char *pArg2, char *p
 		if ( !strcmpi(pArg1, "LEV") ) {
 			pUSER->Set_LEVEL( atoi(pArg2) );
 			return CHEAT_SEND;
-		/*	존 분할로 운영시 월드 서버에서 파티 운영될수 있도록 전송하던...
-		#ifndef	__INC_WORLD
-			g_pSockLSV->Send_gsv_LEVEL_UP( LEVELUP_OP_USER, pUSER->m_dwWSID, pUSER->Get_LEVEL(), pUSER->m_GrowAbility.m_lEXP );
-		#endif
-		*/
 		} else 
 		if ( !strcmpi(pArg1, "FAME" ) ) {
 			int iValue = atoi(pArg2);

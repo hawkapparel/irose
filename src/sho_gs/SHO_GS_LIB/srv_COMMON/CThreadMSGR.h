@@ -5,17 +5,12 @@
  */
 #ifndef	__CTHREAD_MSGR_H
 #define	__CTHREAD_MSGR_H
-#if defined(__SHO_WS) || defined(__INC_WORLD)
+#if defined(__SHO_WS)
 //-------------------------------------------------------------------------------------------------
 
 #define	MAX_FRIEND_COUNT		35	// < ( max_packet_size / max_char_name_len )
 
 class CMessenger;
-
-#ifdef	__INC_WORLD
-	class classUSER;
-	typedef	classUSER	CWS_Client;
-#endif
 	
 #ifdef __SHO_WS
 	class CWS_Client;

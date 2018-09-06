@@ -1,5 +1,4 @@
 #include "stdAFX.h"
-//#if defined(__SHO_WS) || defined(__INC_WORLD)
 
 #ifdef	__SHO_WS
 	#include "CWS_Client.h"
@@ -225,18 +224,6 @@ bool CClan::AddClanSKILL (short nSkillNo)
 				this->m_ClanBIN.m_SKILL[ nI ] = ClanBIN.m_SKILL[ nI ];
 				this->Send_UpdateInfo ();
 
-//#ifdef	__SHO_WS
-//				this->m_ClanBIN.m_SKILL[ nI ] = ClanBIN.m_SKILL[ nI ];
-//				this->Send_UpdateInfo ();
-//#else
-//				if ( g_pThreadGUILD->Query_UpdateClanBINARY( this->m_dwClanID, (BYTE*)&ClanBIN, sizeof( tagClanBIN ) ) ) {
-//					this->m_ClanBIN.m_SKILL[ nI ] = ClanBIN.m_SKILL[ nI ];
-//			#ifdef	__INC_WORLD		// 개인서버면...
-//					this->Send_UpdateInfo ();
-//			#endif
-//				} else 
-//					return false;
-//#endif
 				return true;
 			}
 		}
@@ -266,19 +253,6 @@ bool CClan::DelClanSKILL (short nSkillNo)
 			this->m_ClanBIN.m_SKILL[ nI ] = ClanBIN.m_SKILL[ nI ];
 			this->Send_UpdateInfo ();
 
-//#ifdef	__SHO_WS
-//			// send to all clan members
-//			this->m_ClanBIN.m_SKILL[ nI ] = ClanBIN.m_SKILL[ nI ];
-//			this->Send_UpdateInfo ();
-//#else
-//			if ( g_pThreadGUILD->Query_UpdateClanBINARY( this->m_dwClanID, (BYTE*)&ClanBIN, sizeof( tagClanBIN ) ) ) {
-//				this->m_ClanBIN.m_SKILL[ nI ] = ClanBIN.m_SKILL[ nI ];
-//		#ifdef	__INC_WORLD		// 개인서버면...
-//				this->Send_UpdateInfo ();
-//		#endif
-//			} else
-//				return false;
-//#endif
 			return true;
 		}
 	}
@@ -1124,29 +1098,8 @@ bool CThreadGUILD::Run_GuildPACKET ( tagCLAN_CMD *pGuildCMD )
 					if ( !this->Query_UpdateClanDATA( "intMONEY", pGuildCMD->m_pPacket ) ) // CLVAR_ADD_ZULY,  pGuildCMD->m_pPacket->m_gsv_ADJ_CLAN_VAR.m_iAdjValue ) )
 						return true;
 					break;
-			#ifdef	__INC_WORLD
-				case CLVAR_ADD_SKILL :	// 클랜 오너에 의해서만 명령이 하달됨...
-				{
-					// 개인섭만 적용... GS에서는 Find_CLAN은 무조건 NULL !!!
-					CClan *pClan = this->Find_CLAN( pGuildCMD->m_pPacket->m_gsv_ADJ_CLAN_VAR.m_dwClanID );
-					if ( pClan ) {
-						pClan->AddClanSKILL( pGuildCMD->m_pPacket->m_gsv_ADJ_CLAN_VAR.m_iAdjValue );
-					}
-					break;
-				}
-				case CLVAR_DEL_SKILL :	// 클랜 멤버에 의해서도 명령이 하달될수 있음..
-					// 개인섭만 적용...GS에서는 Find_CLAN은 무조건 NULL !!!
-					CClan *pClan = this->Find_CLAN( pGuildCMD->m_pPacket->m_gsv_ADJ_CLAN_VAR.m_dwClanID );
-					if ( pClan ) {
-						pClan->DelClanSKILL( pGuildCMD->m_pPacket->m_gsv_ADJ_CLAN_VAR.m_iAdjValue );
-					}
-					break;
-			#endif
 			}
-			#if !defined(__INC_WORLD)
-				// GS에서 호출되는 함수로 WS에 전송...
-				g_pSockLSV->Send_gsv_ADJ_CLAN_VAR( pGuildCMD->m_pPacket );
-			#endif
+			g_pSockLSV->Send_gsv_ADJ_CLAN_VAR( pGuildCMD->m_pPacket );
 #endif
 			return true;
 		}
@@ -1201,11 +1154,7 @@ bool CThreadGUILD::Run_GuildPACKET ( tagCLAN_CMD *pGuildCMD )
 							pFindUSER->UnlockSOCKET ();
 							return true;
 						}
-
-						#ifndef	__INC_WORLD
-						// 월드섭으루 클랜 생성 통보....
 						g_pSockLSV->Send_zws_CREATE_CLAN( pFindUSER->m_dwWSID, pFindUSER->m_HashCHAR );
-						#endif
 						return true;
 					} else {
 						this->Query_DeleteCLAN ( pClan->m_Name.Get() );

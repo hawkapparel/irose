@@ -1068,14 +1068,7 @@ BYTE CObjCHAR::Skill_ApplyIngSTATUS(short nSkillIDX, CObjCHAR *pSpeller)
 		}
 
 		if ( SKILL_SUCCESS_RATIO( nSkillIDX ) ) {
-			// 성공도 0 일경우는 계산없이 무조건 성공...
 			if ( STATE_PRIFITS_LOSSES( nIngSTB ) ) {
-				// 불리
-				// 상대 레벨 * 0.4 + (상대 항마력-10) * 0.5 - 자신레벨 * 0.4 - (자신 항마력-10) * 0.5
-//#ifndef	__INC_WORLD
-//				if ( SKILL_SUCCESS_RATIO( nSkillIDX ) < ( this->Get_LEVEL() * 0.4f + ( this->Get_RES()-10 ) * 0.5f - pSpeller->Get_LEVEL() * 0.4f - ( pSpeller->Get_RES()-10 ) *0.5f + (1+RANDOM(100)) ) )
-//					continue;
-//#else
 #ifdef	__APPLY_2ND_JOB
 				// 후에 면역력 수치 넣어서 계산식 수정할곳...
 				if ( SKILL_SUCCESS_RATIO( nSkillIDX ) * ( pSpeller->Get_LEVEL() * 2 + pSpeller->Get_INT()+20 ) / ( this->Get_RES()*0.6f + 5 + this->Get_AVOID() ) <= (1+RANDOM(100)) ) 
@@ -1406,9 +1399,6 @@ bool CObjCHAR::Skill_START (CObjCHAR *pTarget)
 bool CObjCHAR::Attack_START (CObjCHAR *pTarget)
 {
 	if ( !m_pCurMOTION->m_wTatalAttackFrame ) {
-#ifdef	__INC_WORLD
-		assert( 0 != m_pCurMOTION->m_wTatalAttackFrame );
-#endif
 		return false;
 	}
 

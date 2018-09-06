@@ -26,45 +26,19 @@
 
 // 최대 게임 객체수 ( 사용자 포함 )
 #define	MAX_GAME_OBJECTS			65535
-#ifdef	__INC_WORLD
-	// 개인 서버 :: 최대 접속 가능자.
-	#undef	MAX_ZONE_USER_BUFF
-	#define	MAX_ZONE_USER_BUFF			64
+#define	DEF_GAME_USER_POOL_SIZE		8192
+#define	INC_GAME_USER_POOL_SIZE		1024
 
-	#define	DEF_GAME_USER_POOL_SIZE		128
-	#define	INC_GAME_USER_POOL_SIZE		128
+#define	DEF_GAME_PARTY_POOL_SIZE	4096
+#define	INC_GAME_PARTY_POOL_SIZE	1024
 
-	#define	DEF_GAME_PARTY_POOL_SIZE	128
-	#define	INC_GAME_PARTY_POOL_SIZE	128
+#define	INC_RECV_IO_POOL_SIZE		2048
+#define	INC_SEND_IO_POOL_SIZE		8192
+#define	INC_PACKET_POOL_SIZE		8192
 
-	#define	INC_RECV_IO_POOL_SIZE		( DEF_GAME_USER_POOL_SIZE )
-	#define	INC_SEND_IO_POOL_SIZE		( DEF_GAME_USER_POOL_SIZE )
-	#define	INC_PACKET_POOL_SIZE		( DEF_GAME_USER_POOL_SIZE )
-
-	#include "CChatROOM.h"
-	CChatRoomLIST	*g_pChatROOMs=NULL;
-
-	#include "CThreadMSGR.h"
-	CThreadMSGR		*g_pThreadMSGR = NULL;
-
-	#define	DEF_RECV_IO_POOL_SIZE		( DEF_GAME_USER_POOL_SIZE + INC_GAME_USER_POOL_SIZE )
-	#define	DEF_SEND_IO_POOL_SIZE		( DEF_GAME_USER_POOL_SIZE + INC_GAME_USER_POOL_SIZE )
-	#define	DEF_PACKET_POOL_SIZE		( DEF_RECV_IO_POOL_SIZE + DEF_SEND_IO_POOL_SIZE )
-#else
-	#define	DEF_GAME_USER_POOL_SIZE		8192
-	#define	INC_GAME_USER_POOL_SIZE		1024
-
-	#define	DEF_GAME_PARTY_POOL_SIZE	4096
-	#define	INC_GAME_PARTY_POOL_SIZE	1024
-
-	#define	INC_RECV_IO_POOL_SIZE		2048
-	#define	INC_SEND_IO_POOL_SIZE		8192
-	#define	INC_PACKET_POOL_SIZE		8192
-
-	#define	DEF_RECV_IO_POOL_SIZE		( DEF_GAME_USER_POOL_SIZE + DEF_GAME_USER_POOL_SIZE/2 )
-	#define	DEF_SEND_IO_POOL_SIZE		32768
-	#define	DEF_PACKET_POOL_SIZE		49152	// 32768+16834
-#endif
+#define	DEF_RECV_IO_POOL_SIZE		( DEF_GAME_USER_POOL_SIZE + DEF_GAME_USER_POOL_SIZE/2 )
+#define	DEF_SEND_IO_POOL_SIZE		32768
+#define	DEF_PACKET_POOL_SIZE		49152	// 32768+16834
 
 //-------------------------------------------------------------------------------------------------
 STBDATA			 g_TblHAIR;
@@ -197,7 +171,6 @@ VOID CALLBACK GS_TimerProc (HWND hwnd/* handle to window */, UINT uMsg/* WM_TIME
 		case GS_TIMER_WORLD_TIME :
 		{
 			g_pZoneLIST->Inc_WorldTIME ();
-#ifndef	__INC_WORLD
 			// 한국
 			if ( 0 == ( g_pZoneLIST->m_dwAccTIME & 0x00f ) ) {
 				// 0x00f = 16, 10초 * 16 = 160초 = 2.6초
@@ -219,7 +192,6 @@ VOID CALLBACK GS_TimerProc (HWND hwnd/* handle to window */, UINT uMsg/* WM_TIME
 					g_pUserLIST->CloseIdleSCOKET( 90*1000 );
 					break;
 			}
-#endif
 
 			if( Get_WorldVAR( WORLD_VAR_DAY ) > g_iChatLogDAY ) /// 하루가 지나면 로그 파일을 바꿔라
 			{
@@ -303,15 +275,9 @@ CLIB_GameSRV::CLIB_GameSRV ( EXE_GS_API *pExeAPI )
 #endif
 
 
-#ifndef	__INC_WORLD
 	COMPILE_TIME_ASSERT( MAX_ZONE_USER_BUFF > 4096 );
-#endif
 	COMPILE_TIME_ASSERT( sizeof(gsv_SELECT_CHAR) < 1024 );
-#ifdef FRAROSE
-	COMPILE_TIME_ASSERT( sizeof(tagGrowAbility) < 394 );
-#else
 	COMPILE_TIME_ASSERT( sizeof(tagGrowAbility) < 384 );
-#endif
 	COMPILE_TIME_ASSERT( (sizeof(__int64) + sizeof(tagITEM)*INVENTORY_TOTAL_SIZE) == sizeof(CInventory) );
 
 	m_pExeAPI = pExeAPI; 
@@ -334,16 +300,6 @@ CLIB_GameSRV::~CLIB_GameSRV ()
 		SAFE_DELETE( g_pThreadLOG );
 	}
 
-#ifdef	__INC_WORLD
-	if ( g_pChatROOMs ) {
-		SAFE_DELETE( g_pChatROOMs );
-	}
-
-	if ( g_pThreadMSGR ) {
-		g_pThreadMSGR->Free ();
-		SAFE_DELETE( g_pThreadMSGR );
-	}
-#endif
 	if ( g_pThreadGUILD ) {
 		g_pThreadGUILD->Free ();
 		SAFE_DELETE( g_pThreadGUILD );
@@ -363,7 +319,6 @@ CLIB_GameSRV::~CLIB_GameSRV ()
 
 	SAFE_DELETE( g_pSockLSV );
 	SAFE_DELETE( g_pSockASV );
-//	SAFE_DELETE( g_pSockLOG );
 
 	Free_BasicDATA ();
 	g_pCharDATA->Destroy ();
@@ -532,10 +487,6 @@ bool CLIB_GameSRV::CheckSTB_NPC ()
 			} else {
 				do {
 					pQuestTrigger->m_iOwerNpcIDX = nI;	// 죽을때 발생되는 트리거다.
-#ifdef	__INC_WORLD__
-					g_LOG.CS_ODS( 0xffff, " ** Check next:%d, Set Trigger \"%s\" Owner to NPC %d \n", 
-							pQuestTrigger->GetCheckNext(), pQuestTrigger->m_Name.Get(), nI );
-#endif
 					pQuestTrigger = pQuestTrigger->m_pNextTrigger;
 				} while( pQuestTrigger );
 			}
@@ -564,14 +515,6 @@ bool CLIB_GameSRV::CheckSTB_DropITEM ()
 				 sITEM.m_cType >  ITEM_TYPE_RIDE_PART ||
 				 sITEM.m_cType == ITEM_TYPE_QUEST) && iDropITEM > 1000 ) 
 			{
-				// 아이템 타입 오류...
-				#ifdef	__INC_WORLD
-				if ( nI ) {
-					char *pMsg = CStr::Printf ("%d 라인 %d 컬럼 입력값: %d", nI, nC, DROPITEM_ITEMNO( nI, nC ) );
-						 ::MessageBox( NULL, pMsg, "드롭아이템 stb 데이타 입력 오류", MB_OK );
-				}
-				#endif
-
 				DROPITEM_ITEMNO( nI, nC ) = 0;
 				continue;
 			}
@@ -592,11 +535,6 @@ bool CLIB_GameSRV::CheckSTB_DropITEM ()
 			
 			
 			if ( sITEM.m_nItemNo > g_pTblSTBs[ sITEM.m_cType ]->m_nDataCnt ) {
-				// 아이템 번호 오류...
-			#ifdef	__INC_WORLD
-				char *pMsg = CStr::Printf ("%d 라인 %d 컬럼 입력값: %d", nI, nC, DROPITEM_ITEMNO( nI, nC ) );
-				::MessageBox( NULL, pMsg, "드롭아이템 stb 데이타 입력 오류", MB_OK );
-			#endif
 				DROPITEM_ITEMNO( nI, nC ) = 0;
 				continue;
 			}
@@ -633,14 +571,6 @@ bool CLIB_GameSRV::CheckSTB_Motion ()
 			nFileIDX = FILE_MOTION( nX, nY );
 			if ( !nFileIDX )
 				continue;
-
-			if ( !g_MotionFILE.IDX_GetMOTION( nFileIDX, 0 ) ) {
-			#ifdef	__INC_WORLD
-				char *pMsg = CStr::Printf ("File_motion.stb %d 라인 모션 필요, Type_motion.stb( %d, %d )", 
-					nFileIDX, nX, nY);
-				::MessageBox( NULL, pMsg, "모션 입력 오류", MB_OK );
-			#endif
-			}
 		}
 	}
 	return true;
@@ -980,9 +910,7 @@ void CLIB_GameSRV::Free_BasicDATA ()
 char* CLIB_GameSRV::GetZoneName( short nZoneNO )
 {
 	if ( nZoneNO > 0 && nZoneNO < g_TblZONE.m_nDataCnt ) {
-		#ifndef	__INC_WORLD
 		if ( nZoneNO >= TEST_ZONE_NO ) return NULL;
-		#endif
 
         if ( ZONE_NAME( nZoneNO ) && ZONE_FILE( nZoneNO ) ) {
 			char *szZoneFILE = CStr::Printf("%s%s", BASE_DATA_DIR, ZONE_FILE( nZoneNO ));
@@ -1002,20 +930,16 @@ short CLIB_GameSRV::InitLocalZone( bool bAllActive )
 
 	::FillMemory( m_pCheckedLocalZONE, sizeof(bool)*g_TblZONE.m_nDataCnt, bAllActive );
 
-#ifndef	__INC_WORLD
 	for (short nI=TEST_ZONE_NO; nI<g_TblZONE.m_nDataCnt; nI++) {
 		m_pCheckedLocalZONE[ nI ] = false;
 	}
-#endif
 
 	return g_TblZONE.m_nDataCnt;
 }
 bool CLIB_GameSRV::CheckZoneToLocal(short nZoneNO, bool bChecked)
 {
 	if ( nZoneNO > 0 && nZoneNO < g_TblZONE.m_nDataCnt ) {
-		#ifndef	__INC_WORLD
 		if ( nZoneNO >= TEST_ZONE_NO ) return false;
-		#endif
 
 		m_pCheckedLocalZONE[ nZoneNO ] = bChecked;
 		return m_pCheckedLocalZONE[ nZoneNO ];
@@ -1072,31 +996,13 @@ bool CLIB_GameSRV::ConnectSERVER( char *szDBServerIP,		char *szDBName,
 	g_pThreadSQL->Resume ();
 
 	CStrVAR stLogODBC;
-#ifndef	__INC_WORLD
 	stLogODBC.Set( "SHO_LOG" );
-#else
-	stLogODBC.Set( szDBName );
-#endif
 
 	g_pThreadLOG = new GS_CThreadLOG;
 	if ( !g_pThreadLOG->Connect( USE_ODBC, szDBServerIP, m_LogUser.Get(), m_LogPW.Get(), stLogODBC.Get(), 32, 1024*8) ) {
 		return false;
 	}
 	g_pThreadLOG->Resume ();
-
-//	g_pThreadSQL->Sql_TEST ();
-//	return false;
-
-
-#ifdef	__INC_WORLD
-	g_pThreadMSGR = new CThreadMSGR( 16, 0 );
-	if ( !g_pThreadMSGR->Connect( USE_MY_SQL_AGENT ? USE_MY_SQL:USE_ODBC, (char*)szDBServerIP, szDBUser, szDBPassword, szDBName, 32, 1024*8) ) {
-		return false;
-	}
-	g_pThreadMSGR->Resume ();
-
-	g_pChatROOMs = new CChatRoomLIST( 20 );
-#endif
 	
 	g_pThreadGUILD = new CThreadGUILD( 32, 16 );
 	if ( !g_pThreadGUILD ||
@@ -1106,11 +1012,7 @@ bool CLIB_GameSRV::ConnectSERVER( char *szDBServerIP,		char *szDBName,
 	g_pThreadGUILD->Resume ();
 
 #define	MALL_DB_IP		"127.0.0.1"
-#ifdef	__INC_WORLD
-	#define	MALL_DB_NAME	"SHO"
-#else
-	#define	MALL_DB_NAME	"SHO_MALL"
-#endif
+#define	MALL_DB_NAME	"SHO_MALL"
 
 	if ( *szMallUser != '?' ) {
 		g_pThreadMALL = new GS_CThreadMALL;
@@ -1134,10 +1036,8 @@ bool CLIB_GameSRV::Start( HWND hMainWND, char *szServerName, char *szClientListe
 {
 	srand( timeGetTime() );
 
-#ifndef	__INC_WORLD
 	if ( _strnicmp( szServerName, "TEST", 4 ) )
 		m_bTestServer = false;
-#endif
 
 	m_dwUserLIMIT = MAX_ZONE_USER_BUFF;
 
@@ -1170,19 +1070,7 @@ bool CLIB_GameSRV::Start( HWND hMainWND, char *szServerName, char *szClientListe
 	m_btChannelNO = btChannelNO;
 	m_btLowAGE = btLowAge;
 	m_btHighAGE = btHighAge;
-
-	// 접속된 IP로 공개되도록...
-#ifdef	__INC_WORLD
-	char *pHostName = CStr::GetString();
-	char *pIP = CStr::GetString();
-
-	CUtil::Get_HostName( pHostName, CStr::GetBufferLength() );
-	CUtil::Get_IPAddressFromHostName( pHostName, pIP, CStr::GetBufferLength() );
-
-	m_ServerIP.Set( pIP /* "127.0.0.1" */ );
-#else
 	m_ServerIP.Set( szClientListenIP );
-#endif
 
 	LogString( 0xfff, "sizeof(classUSER)	== %d \n", sizeof( classUSER ) );
 	LogString( 0xfff, "sizeof(tagQuestData) == %d \n", sizeof( tagQuestData ) );
@@ -1210,14 +1098,7 @@ bool CLIB_GameSRV::Start( HWND hMainWND, char *szServerName, char *szClientListe
 
 	g_pObjMGR = new CObjMNG( MAX_GAME_OBJECTS );
 	g_pZoneLIST = CZoneLIST::Instance ();
-
-#ifdef	__INC_WORLD
-	// !!! 반드시 존 데이타 로딩하기 전에....
-	COMPILE_TIME_ASSERT( sizeof( tagWorldVAR ) > 1 );
-	g_pThreadSQL->Load_WORLDVAR( g_pZoneLIST->m_pVAR, sizeof( tagWorldVAR ) );
-#else
 	g_pThreadURL = new CurlTHREAD;
-#endif
 
 	g_pZoneLIST->InitZoneLIST( BASE_DATA_DIR );
 

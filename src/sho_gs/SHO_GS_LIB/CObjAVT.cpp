@@ -866,9 +866,6 @@ void CObjAVT::Check_PerFRAME (DWORD dwPassTIME)
 						iAdd = (int)( this->GetOri_MaxHP()/12.f + 1 + this->GetAdd_RecoverHP() );
 						iArua = ( this->m_IngSTATUS.IsSubSET( FLAG_SUB_ARUA_FAIRY ) ) ? iAdd >> 1 : 0;
 						this->Add_HP( iAdd+iArua );
-#ifdef	__INC_WORLD
-						g_LOG.CS_ODS( 0xffff, "ADD HP:: %d = %d + %d \n", iAdd+iArua, iAdd, iArua );
-#endif
 						// RECOVER_MP= (MAX_MP)/12+1+ ITEM_RECOVER_MP (1이하 버림) 대만 2005.6.19 kchs
 						iAdd = (int)( this->GetOri_MaxMP()/12.f + 1 + this->GetAdd_RecoverMP() );
 						iArua = ( this->m_IngSTATUS.IsSubSET( FLAG_SUB_ARUA_FAIRY ) ) ? iAdd >> 1 : 0;
@@ -887,37 +884,6 @@ void CObjAVT::Check_PerFRAME (DWORD dwPassTIME)
 			}
 		}
 	}
-
-#ifdef __KCHS_BATTLECART__
-	if( GetCur_PatHP() <= 0 && GetCur_PatCoolTIME() <= 0 ) // 정지 상태이고 PAT HP가 0이고 쿨타임이 작동중이 아니면.. 쿨타임 시작
-	{
-		if( 3 == Get_PatHP_MODE() )
-		{
-			SetCur_PatCoolTIME( PAT_COOLTIME );
-			Send_gsv_PATSTATE_CHAGE( 0, PAT_COOLTIME ); 
-		}
-		else if( Get_PatHP_MODE() == 0 && GetCur_PatMaxHP() > 0)
-		{
-			Set_PatHP_MODE( 2 );
-		}
-	}
-
-	m_dwPatTIME += dwPassTIME;
-	if( m_dwPatTIME > CHECK_PAT_COOL_TIME )
-	{
-		m_dwPatTIME = 0; // m_dwPatTIME은 초기화가 안 되기 때문에 0으로 해줘야 한다.. 아니면.. 엄청나게 큰값에서 논다.
-		if( GetCur_PatHP() <= 0 && GetCur_PatCoolTIME() > 0 )	// 현재 카트 체력이 0이면 쿨타임 돌고 있는 것이다.
-		{
-			#pragma message( "====> 다음 버젼에서 카트 체력 검사할 것 if( GetCur_PatMaxHP() > 0 ) 쿨타임 값 감소.. " )
-			if( SubCur_PatCoolTIME( PAT_DECREASE_COOLTIME_PER_SEC ) <= 0)
-			{
-				SetCur_PatHP( GetCur_PatMaxHP() );
-				Send_gsv_PATSTATE_CHAGE( 1, 0 );
-			}
-		}
-	}
-#endif
-
 }
 
 

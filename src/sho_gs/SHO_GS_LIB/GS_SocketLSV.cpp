@@ -169,38 +169,6 @@ void GS_lsvSOCKET::Recv_wls_CONFIRM_ACCOUNT_REPLY ()
 {
 	short nOffset = sizeof( wls_CONFIRM_ACCOUNT_REPLY );
 
-#ifndef	__INC_WORLD
-	/*
-	if ( m_pRecvPket->m_wls_CONFIRM_ACCOUNT_REPLY.m_dwIngStatusFLAG ) {
-		nOffset += ( sizeof(CIngSTATUS) - sizeof(DWORD) );
-	}
-
-	#ifndef	__SKIP_WS_PARTY
-	if ( m_pRecvPket->m_wls_CONFIRM_ACCOUNT_REPLY.m_wPartyWSID ) {
-		// 소속 파티가 있다.
-		if ( m_pRecvPket->m_wls_CONFIRM_ACCOUNT_REPLY.m_HasPartyINFO ) {
-			// 로컬 파티를 생성한다.
-			tagWSPartyINFO *pParty;
-
-			pParty = (tagWSPartyINFO*)Packet_GetDataPtr( m_pRecvPket, nOffset, sizeof( tagWSPartyINFO ) );
-
-			pParty->m_cMemberCNT;
-			pParty->m_btPartyLEV;
-			pParty->m_iPartyEXP;
-
-			nOffset += sizeof( tagWSPartyINFO );
-		} else {
-			// 로컬 파티에 추가...
-		}
-	}
-	#endif
-	*/
-#else
-	// 아래 두 라인 순서 주의 !!
-	m_pRecvPket->m_wls_CONFIRM_ACCOUNT_REPLY.m_dwGSID = m_pRecvPket->m_wls_CONFIRM_ACCOUNT_REPLY.m_dwWSID;
-	m_pRecvPket->m_wls_CONFIRM_ACCOUNT_REPLY.m_dwWSID = m_pRecvPket->m_wls_CONFIRM_ACCOUNT_REPLY.m_dwLSID;
-#endif
-
 	char *szAccount = Packet_GetStringPtr( m_pRecvPket, nOffset );
 	if ( !g_pUserLIST->Add_ACCOUNT( m_pRecvPket->m_wls_CONFIRM_ACCOUNT_REPLY.m_dwGSID, m_pRecvPket, szAccount ) ) {
 		// 그새 접속이 끊겼는가 ???
@@ -214,8 +182,6 @@ void GS_lsvSOCKET::Recv_lsv_ANNOUNCE_CHAT ()
 	g_pZoneLIST->Send_gsv_ANNOUNCE_CHAT( m_pRecvPket );
 }
 
-//-------------------------------------------------------------------------------------------------
-// 다른 사용자에 의해 로그인됐다... 강제 종료 시킴...
 void GS_lsvSOCKET::Recv_wls_KICK_ACCOUNT ()
 {
 	short nOffset   = sizeof( t_PACKETHEADER );
@@ -224,28 +190,13 @@ void GS_lsvSOCKET::Recv_wls_KICK_ACCOUNT ()
 	g_pUserLIST->Kick_ACCOUNT( szAccount );
 }
 
-
-/*
-void GS_lsvSOCKET::Recv_lsv_CHECK_ACCOUNT ()
-{
-	short nOffset=sizeof( lsv_CHECK_ACCOUNT );
-	char *szAccount = Packet_GetStringPtr( m_pRecvPket, nOffset );
-
-	if ( !g_pUserLIST->Find_ACCOUNT( szAccount ) ) {
-		// 못찾았으면 서버에 삭제 전송...
-		this->Send_gsv_SUB_ACCOUNT( szAccount );
-	}
-}
-*/
-
-//-------------------------------------------------------------------------------------------------
 void GS_lsvSOCKET::Send_gsv_CHEAT_REQ( classUSER *pUSER, DWORD dwReqWSID, DWORD dwReplyWSID, char *szCheatCode)
 {
 	// 월드 서버에 치트코드 요청
 	classPACKET *pCPacket = Packet_AllocNLock ();
 	if ( !pCPacket )
 		return;
-//	this->Lock ();
+
 	{
 		pCPacket->m_HEADER.m_wType = GSV_CHEAT_REQ;
 		pCPacket->m_HEADER.m_nSize = sizeof( srv_CHEAT );
@@ -260,7 +211,7 @@ void GS_lsvSOCKET::Send_gsv_CHEAT_REQ( classUSER *pUSER, DWORD dwReqWSID, DWORD 
 
 		m_SockLSV.Packet_Register2SendQ( pCPacket );
 	}
-//	this->Unlock ();
+
 	Packet_ReleaseNUnlock( pCPacket );
 	return;
 }
@@ -464,21 +415,13 @@ bool GS_lsvSOCKET::Send_gsv_CHANGE_CHAR( classUSER *pUSER )
 	classPACKET *pCPacket = Packet_AllocNLock ();
 	if ( !pCPacket )
 		return true;
-#ifdef	__INC_WORLD
-	pCPacket->m_HEADER.m_wType = WSV_CHAR_CHANGE;
-	pCPacket->m_HEADER.m_nSize = sizeof( t_PACKETHEADER );
 
-	pUSER->SendPacket( pCPacket);
-#else
 	pCPacket->m_HEADER.m_wType = GSV_CHANGE_CHAR;
 	pCPacket->m_HEADER.m_nSize = sizeof( gsv_CHANGE_CHAR );
 
 	pCPacket->AppendString( pUSER->Get_ACCOUNT() );
-	//pCPacket->m_gsv_CHANGE_CHAR.m_dwWSID		= pUSER->m_dwWSID;
-	//pCPacket->m_gsv_CHANGE_CHAR.m_HashACCOUNT	= pUSER->m_HashACCOUNT;
 
 	m_SockLSV.Packet_Register2SendQ( pCPacket );
-#endif
 
 	Packet_ReleaseNUnlock( pCPacket );
 	return true;
@@ -597,22 +540,12 @@ bool GS_lsvSOCKET::Proc_SocketMSG (WPARAM wParam, LPARAM lParam)
 		{
 			m_SockLSV.OnConnect ( nErrorCode );
 			if ( !nErrorCode ) {
-				#ifdef	__INC_WORLD
-					g_LOG.CS_ODS( 0xffff, "Connected to LOGIN server \n");
-				#else
-					g_LOG.CS_ODS( 0xffff, "Connected to WORLD server \n");
-				#endif
+				g_LOG.CS_ODS( 0xffff, "Connected to WORLD server \n");
 				m_bTryCONN = false;
 
 				if ( m_pReconnectTimer )
 					m_pReconnectTimer->Stop ();
 				this->Send_zws_SERVER_INFO ();
-
-				#ifdef	__INC_WORLD
-				// 월드 서버인양 로그인 서버에 채널 리스트 전송...
-				this->Send_wls_CHANNEL_LIST ();
-				#endif
-
 				this->Send_srv_ACTIVE_MODE( true );
 				CLIB_GameSRV *pGSV = CLIB_GameSRV::GetInstance();
 				if ( pGSV ) 
@@ -622,11 +555,7 @@ bool GS_lsvSOCKET::Proc_SocketMSG (WPARAM wParam, LPARAM lParam)
 					m_pReconnectTimer->Start ();
 				if ( !m_bTryCONN ) {
 					m_bTryCONN = true;
-					#ifdef	__INC_WORLD
-						g_LOG.CS_ODS( 0xffff, "Connect failed to LOGIN server \n");
-					#else
-						g_LOG.CS_ODS( 0xffff, "Connect failed to WORLD server \n");
-					#endif
+					g_LOG.CS_ODS( 0xffff, "Connect failed to WORLD server \n");
 				}
 			}
 			break;
@@ -635,11 +564,7 @@ bool GS_lsvSOCKET::Proc_SocketMSG (WPARAM wParam, LPARAM lParam)
 		{
 			m_SockLSV.OnClose ( nErrorCode );
 
-		#ifdef	__INC_WORLD
-			g_LOG.CS_ODS( 0xffff, "Disconnected form LOGIN server \n");
-		#else
-			g_LOG.CS_ODS( 0xffff, "Disconnected from WORLD server \n");
-		#endif
+		g_LOG.CS_ODS( 0xffff, "Disconnected from WORLD server \n");
 
 			if ( m_pReconnectTimer )
 				m_pReconnectTimer->Start ();

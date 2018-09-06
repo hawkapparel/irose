@@ -1,4 +1,3 @@
-
 #include "stdAFX.h"
 #include "IO_SKILL.h"
 #include "IO_QUEST.h"
@@ -11,28 +10,13 @@
 #include "../GameCommon/Skill.h"
 #include "../Util/ClassTIME.h"
 
-//---------------------------------------------------------------------------------------------
-///
-/// 트리거의 구체적 설명은 QuestTool2의 QuestInfo.h 를 참조하시오.
-///
-///
-///
-//---------------------------------------------------------------------------------------------
+#include "../Interface/it_mgr.h"
+#include "../System/CGame.h"
 
+#include "../Util/LogWnd.h"
+#include "..\GameProc\CDayNNightProc.h"
 
-#ifndef	__SERVER
-	#include "../Interface/it_mgr.h"
-	#include "../System/CGame.h"
-
-	#include "../Util/LogWnd.h"
-	#include "..\GameProc\CDayNNightProc.h"
-
-	#include "../Event/QuestRewardQueue.h"
-#else
-	#include "ZoneLIST.h"
-
-	extern short Get_WorldTIME ();
-#endif
+#include "../Event/QuestRewardQueue.h"
 
 
 t_HASHKEY Make_EventObjectID(int iZoneNO, int iMapX, int iMapY, int iEventID)
@@ -45,7 +29,7 @@ t_HASHKEY Make_EventObjectID(int iZoneNO, int iMapX, int iMapY, int iEventID)
 
 CQuestDATA g_QuestList;
 
-//-------------------------------------------------------------------------------------------------
+
 template <class dType1, class dType2>
 inline bool Check_QuestOP( BYTE btOP, dType1 iLeft, dType2 iRight)
 {
@@ -2401,11 +2385,7 @@ void CQuestDATA::LoadQuestTrigger (CFileSystem* pFileSystem, unsigned int uiTrig
 	for (unsigned int uiT=0; uiT<uiTriggerCNT; uiT++) {
 		pTrigger = new CQuestTRIGGER;
 
-	#ifdef	__SERVER
-		if ( !pTrigger->Load( fpIN ) ) 
-	#else
 		if ( !pTrigger->Client_Load( pFileSystem ) ) 
-	#endif
 		{
 			_ASSERT( 0 );
 			SAFE_DELETE( pTrigger );
@@ -2417,16 +2397,10 @@ void CQuestDATA::LoadQuestTrigger (CFileSystem* pFileSystem, unsigned int uiTrig
 		tagHASH< CQuestTRIGGER* > *pHashNode = m_HashQUEST.Search( HashKey );
 		pFindTrigger = pHashNode ? pHashNode->m_DATA : NULL;
 		if ( pFindTrigger ) {
-		#if	defined( __INC_WORLD ) || !defined( __SERVER )
 			g_LOG.CS_ODS(0xffff, "ERROR:: QUEST TRIGGER: HashKey is equal at \"%s\" skip \"%s\" trigger, [ %s ]\n", pTrigger->m_Name.Get(), pFindTrigger->m_Name.Get(), szFileName );
-		#endif
 			SAFE_DELETE( pTrigger );
 			continue;
 		}
-
-#if	defined( __INC_WORLD )
-		g_LOG.CS_ODS(0xffff, "QUEST TRIGGER: \"%s\" registered\n", pTrigger->m_Name.Get() );
-#endif
 
 		m_HashQUEST.Insert( HashKey, pTrigger );
 		if ( pPrevTrigger ) {
@@ -2437,36 +2411,6 @@ void CQuestDATA::LoadQuestTrigger (CFileSystem* pFileSystem, unsigned int uiTrig
 	}
 }
 
-#ifdef	__SERVER
-bool CQuestDATA::LoadDATA (char *szFileName)
-{
-	FILE *fpIN;
-
-	fpIN = fopen( szFileName, "rb" );
-	if ( NULL == fpIN )
-		return false;
-
-	unsigned long ulPatternCNT, ulSize;
-	fread( &ulSize,			1,		sizeof(unsigned long),		fpIN);
-	fread( &ulPatternCNT,	1,		sizeof(unsigned long),		fpIN);
-	short nStrLen;
-	fread( &nStrLen,		1,		sizeof(short),				fpIN);
-	fseek( fpIN,	nStrLen,	SEEK_CUR);
-
-	unsigned int uiTriggerCNT;
-	for (unsigned long ulP=0; ulP<ulPatternCNT; ulP++) {
-		fread( &uiTriggerCNT,	1,	sizeof(UINT),	fpIN );
-		fread( &nStrLen,		1,	sizeof(short),	fpIN );
-		fseek( fpIN,	nStrLen,	SEEK_CUR );
-
-		this->LoadQuestTrigger( fpIN, uiTriggerCNT, szFileName );
-	}
-
-	fclose( fpIN );
-
-	return true;
-}
-#else
 bool CQuestDATA::Client_LoadDATA (char *szFileName)
 {
 	CFileSystem* pFileSystem = (CVFSManager::GetSingleton()).GetFileSystem();
@@ -2499,7 +2443,6 @@ bool CQuestDATA::Client_LoadDATA (char *szFileName)
 
 	return true;
 }
-#endif
 
 void CQuestDATA::Free ()
 {

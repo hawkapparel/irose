@@ -1,12 +1,6 @@
 
 #include "stdAFX.h"
-#if defined(__SHO_WS) || defined(__INC_WORLD)
-
-
-#ifdef	__INC_WORLD
-#include "LIB_gsMAIN.h"
-#include "GS_ListUSER.h"
-#endif
+#if defined(__SHO_WS)
 
 #ifdef	__SHO_WS
 #include "CWS_Client.h"

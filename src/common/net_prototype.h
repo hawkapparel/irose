@@ -604,39 +604,29 @@
 #define PXY_SET_RIGHTS				0x07ef
 
 
-//-------------------------------------------------------------------------------------------------
-
 struct cli_CHECK_AUTH : public t_PACKETHEADER {
-	/*
-		각 모듈별 데이타...
-		필리핀의 경우 GG_AUTH_DATA 구조체
-	*/
-} ;
-#define	AUTH_MODULE_nPROTECT	0xf1
+};
+
 struct srv_CHECK_AUTH : public t_PACKETHEADER {
 	BYTE	m_btModuleTYPE;
-	/*
-		각 모듈별 데이타...
-		필리핀의 경우 GG_AUTH_DATA 구조체
-	*/
-} ;
+};
 
 struct srv_ERROR : public t_PACKETHEADER {
 	WORD	m_wErrorCODE;
-	// szErrorMSG[]
-} ;
+};
 
 
 struct lsv_ERROR : public srv_ERROR {
-} ;
+};
 struct gsv_ERROR : public srv_ERROR {
-} ;
+};
 
 
 struct gsv_GM_COMMAND : public t_PACKETHEADER {
 	BYTE	m_btCMD;
 	WORD	m_wBlockTIME;
-} ;
+};
+
 #define	GM_CMD_SHUT		0x00		//	채팅 금지..
 #define	GM_CMD_LOGOUT	0x01		//	접속 끊고 나가라...
 

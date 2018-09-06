@@ -11,8 +11,6 @@
 #include "../util/CSocketWND.h"
 #include "../gameproc/LiveCheck.h"
 
-////005. 5. 23 박 지호
-//#include "../nProtect/NProtect.h"
 #define PACKET_SEED 0x6648495
 
 CNetwork *g_pNet;
@@ -266,11 +264,7 @@ void CNetwork::Proc_ZonePacket ()
 				Recv_gsv_PATSTATE_CHANGE();
 				break;
 
-			case SRV_CHECK_AUTH :			
-				//2005.5.23 박지호	
-				/*m_nProtectSys.Auth_FromServer(m_pRecvPacket->m_srv_CHECK_AUTH.m_btModuleTYPE,
-							(GG_AUTH_DATA*)&m_pRecvPacket->m_pDATA[sizeof(srv_CHECK_AUTH)]);*/
-						
+			case SRV_CHECK_AUTH :									
 				break;	
 			case GSV_SET_NPC_SHOW :
 				Recv_gsv_SET_NPC_SHOW ();
@@ -781,18 +775,11 @@ void CNetwork::Proc ()
 	}
 }
 
-//-------------------------------------------------------------------------------------------------
-//2005. 5. 23 박 지호 
 void CNetwork::Send_AuthMsg (void)
 {
 
 	m_pSendPacket->m_HEADER.m_wType = CLI_CHECK_AUTH;
 	m_pSendPacket->m_HEADER.m_nSize = sizeof( cli_CHECK_AUTH );
-	//Packet_AppendData( m_pSendPacket, &m_nProtectSys.GetAuthData(),sizeof( GG_AUTH_DATA ) );
 	Send_PACKET( m_pSendPacket );
 
 }
-
-//-------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------

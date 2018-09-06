@@ -19,7 +19,6 @@
 #include "../IO_Terrain.h"
 #include "../CCamera.h"
 #include "../CSkyDOME.H"
-//#include "../nProtect/nProtect.h"
 #include "../Misc/GameUtil.h"
 #include "tgamectrl/time2.h"
 #include "SystemProcScript.h"

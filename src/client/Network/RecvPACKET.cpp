@@ -1,6 +1,3 @@
-/*
-$Header: /Client/Network/RecvPACKET.cpp 690   05-10-27 10:18a Choo0219 $
-*/
 #include "stdAFX.h"
 #include "CNetwork.h"
 #include "Game.h"
@@ -65,20 +62,12 @@ $Header: /Client/Network/RecvPACKET.cpp 690   05-10-27 10:18a Choo0219 $
 #include "GameProc/DelayedExp.h"
 
 #include "../Tutorial/TutorialEventManager.h"
-//#include "../nProtect/NProtect.h"
 #include "../GameProc/UseItemDelay.h"
 
 #include "triggerinfo/triggerinfo.h"
 
-// 서버에서 받은 전역 번수들 설정...
 void SetServerVAR( tagVAR_GLOBAL *pVAR )
 {
-	// short	m_nWorld_PRODUCT;					// 제조 관련
-	// DWORD	m_dwUpdateTIME;						// 갱신된 시간.
-	// short	m_nWorld_RATE;						// 경제 관련 :: 세계물가 80~140
-	// BYTE		m_btTOWN_RATE;						// 마을 물가					80~140
-	// BYTE		m_btItemRATE[ MAX_PRICE_TYPE ];		// 아이템별 물가				1~127
-
 	::Set_WorldPROD( pVAR->m_nWorld_PRODUCT );
 	::Set_WorldRATE( pVAR->m_nWorld_RATE );
 
@@ -453,10 +442,6 @@ bool CRecvPACKET::Recv_lsv_LOGIN_REPLY ()
 		g_ClientStorage.SaveOptionLastConnectID();
 	}
 
-	///nProtect  박 지호
-	//m_nProtectSys.Set_UserID(g_GameDATA.m_Account.Get());
-
-
 	return true;
 }
 
@@ -465,10 +450,6 @@ int CRecvPACKET::Recv_lsv_SELECT_SERVER ()
 {
 	LogString (LOG_DEBUG, "Recv_lsv_SELECT_SERVER:: Result: %d ", m_pRecvPacket->m_lsv_SELECT_SERVER.m_btResult);
 
-	///
-	/// Recv proc
-	/// 내부에서 정상 동작 여부 확인...
-	///
 	CSelectServer* pSelectServer = (CSelectServer*)g_EUILobby.GetEUI( EUI_SELECT_SERVER );
 
 	if( pSelectServer == NULL )

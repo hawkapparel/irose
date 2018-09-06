@@ -91,8 +91,6 @@
 
 #include "../sfx/SFXManager.h"
 #include "../sfx/SFXFont.h"
-
-//#include "../nProtect/nProtect.h"
 #include "../misc/gameutil.h"
 
 #include "GameProc/UseItemDelay.h"
@@ -238,23 +236,10 @@ void CGame::GameLoop()
 
 		ProcCommand();
 
-		//m_nProtectSys.Check_nProtectSafe();
-
-		//if( m_nProtectSys.IsGameExit() )
-			//g_pCApp->SetExitGame();
-
 	} while( !g_pCApp->IsExitGame() );
 
 	Exit();
 }
-//
-//void CGame::UpdateMousePosition()
-//{
-//	m_ptPrevMouse = m_ptCurrMouse;
-//	GetCursorPos( &m_ptCurrMouse );
-//	
-//	ScreenToClient( CApplication::Instance()->GetHWND(), &m_ptCurrMouse );
-//}
 
 int CGame::Init()
 {

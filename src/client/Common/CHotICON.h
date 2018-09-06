@@ -1,10 +1,5 @@
 #ifndef	__CHOTICON_H
 #define	__CHOTICON_H
-#pragma warning (disable:4201)
-//-------------------------------------------------------------------------------------------------
-
-/// 최대 단축 아이콘 등록 가능 갯수
-#ifdef _NEW_UI
 
 #define	MAX_ICONS_PAGES			6	// normal 4 + ext 2
 #define	MAX_ICONS_PAGES_NORMAL	4
@@ -13,17 +8,6 @@
 #define	HOT_ICONS_PER_PAGE		8
 
 #define	MAX_HOT_ICONS			48
-
-#else
-
-#define	MAX_ICONS_PAGES			4
-#define	MAX_ICONS_PAGES_NORMAL	4
-
-#define	HOT_ICONS_PER_PAGE		8
-
-#define	MAX_HOT_ICONS			32
-
-#endif
 
 
 enum t_HotIconTYPE 

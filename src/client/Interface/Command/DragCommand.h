@@ -17,13 +17,10 @@ public:
 class CTCmdDragInven2QuickBar : public CTCommand
 {
 public:
-#ifdef _NEW_UI
-		CTCmdDragInven2QuickBar(void){	m_nType = DLG_TYPE_QUICKBAR;	}
-	CTCmdDragInven2QuickBar( short nType )	{	m_nType = nType;	}
-#else
-	CTCmdDragInven2QuickBar(void){};
-	virtual ~CTCmdDragInven2QuickBar(void){};
-#endif
+
+	CTCmdDragInven2QuickBar(void){ m_nType = DLG_TYPE_QUICKBAR; }
+	CTCmdDragInven2QuickBar( short nType )	{ m_nType = nType; }
+
 	virtual bool	Exec( CTObject* pObj );
 	short			m_nType;
 };
@@ -33,13 +30,8 @@ class CTCmdDragSkill2QuickBar : public CTCommand
 {
 public:
 
-#ifdef _NEW_UI
 	CTCmdDragSkill2QuickBar(void){	m_nType = DLG_TYPE_QUICKBAR;	};
 	CTCmdDragSkill2QuickBar( short nType )	{	m_nType = nType;	}
-#else
-		CTCmdDragSkill2QuickBar(void){	m_nType = DLG_TYPE_QUICKBAR;	}
-	CTCmdDragSkill2QuickBar( short nType )	{	m_nType = nType;	}
-#endif
 
 	virtual ~CTCmdDragSkill2QuickBar(void){}
 	virtual bool	Exec( CTObject* pObj );
@@ -60,13 +52,9 @@ public:
 class CTCmdDragItemFromQuickBar : public CTCommand
 {
 public:
-#ifdef _NEW_UI
-		CTCmdDragItemFromQuickBar(void){	m_nType = DLG_TYPE_QUICKBAR;	}
+	CTCmdDragItemFromQuickBar(void){	m_nType = DLG_TYPE_QUICKBAR;	}
 	CTCmdDragItemFromQuickBar( short nType )	{	m_nType = nType;	}
-#else
-	CTCmdDragItemFromQuickBar(void){};
-	virtual ~CTCmdDragItemFromQuickBar(void){};
-#endif
+
 	virtual bool	Exec( CTObject* pObj );
 	short			m_nType;
 };
@@ -74,7 +62,6 @@ public:
 /// 퀵바안에서 등록된 아이템(스킬등 포함)을 위치 이동한다.
 class CTCmdMoveIconInQuickBar : public CTCommand
 {
-#ifdef _NEW_UI
 	public:
 	CTCmdMoveIconInQuickBar(void){	m_nType = DLG_TYPE_QUICKBAR;	}
 	CTCmdMoveIconInQuickBar( short nType )	{	m_nType = nType;	}
@@ -82,13 +69,6 @@ class CTCmdMoveIconInQuickBar : public CTCommand
 	virtual ~CTCmdMoveIconInQuickBar(void){};
 	virtual bool	Exec( CTObject* pObj );
 	short			m_nType;
-#else
-public:
-	CTCmdMoveIconInQuickBar(void){};
-	virtual ~CTCmdMoveIconInQuickBar(void){};
-	virtual bool	Exec( CTObject* pObj );
-
-#endif
 };
 
 

@@ -145,9 +145,7 @@ public:
 	CChatDLG*			GetChatDLG();
 	CDialogDlg*			GetQueryDLG();
 	CQuickBAR*			GetQuickBAR();
-#ifdef _NEW_UI
 	CQuickBAR*			GetQuickBAR_EXT(); // 2nd skillbar
-#endif
 	CMinimapDLG*		GetMinimapDLG();
 	CExchangeDLG*		GetExchangeDLG();
 	CPrivateChatDlg*	GetPrivateChatDlg( DWORD dwUserTag );

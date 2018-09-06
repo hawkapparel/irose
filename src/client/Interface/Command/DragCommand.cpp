@@ -31,11 +31,8 @@ bool CTCmdDragInven2QuickBar::Exec( CTObject* pObj )
 	POINT ptMouse;
 	CGame::GetInstance().Get_MousePos( ptMouse );
 
-#ifdef _NEW_UI
 	CTDialog* pDlg = g_itMGR.FindDlg( m_nType );
-#else
-	CTDialog* pDlg = g_itMGR.FindDlg( DLG_TYPE_QUICKBAR );
-#endif
+
 	if( pDlg == NULL )
 	{
 		assert( 0 && "Not Found QuickBar Dialog @CTCmdDragInven2QuickBar::Exec" );
@@ -183,8 +180,6 @@ bool	CTCmdDragItemFromQuickBar::Exec( CTObject* pObj )
 bool	CTCmdMoveIconInQuickBar::Exec( CTObject* pObj )
 {
 
-#ifdef _NEW_UI
-
 	if( pObj == NULL )
 	{
 		assert( pObj && "Invalid Arg @CTCmdItemFromQuickBar::Exec");	
@@ -241,67 +236,6 @@ bool	CTCmdMoveIconInQuickBar::Exec( CTObject* pObj )
 	g_pNet->Send_cli_SET_HOTICON( (BYTE)nNewSlotIndex, hotICON );
 	
 	return true;
-
-
-#else
-	if( pObj == NULL )
-	{
-		assert( pObj && "Invalid Arg @CTCmdItemFromQuickBar::Exec");	
-		return true;
-	}
-	
-	CIconQuick* pIcon = (CIconQuick*)pObj;
-	
-	short nPrevSlotIndex = pIcon->GetQuickBarSlotIndex();
-
-	if( nPrevSlotIndex < 0 || nPrevSlotIndex >= MAX_HOT_ICONS )
-	{
-		LogString( LOG_NORMAL,"Invalid QuickBar SlotIndex @CTCmdDragItemFromQuickBar::Exec");
-		return true;
-	}
-
-
-	CTDialog* pDlg = g_itMGR.FindDlg( DLG_TYPE_QUICKBAR );
-	if( pDlg == NULL )
-	{
-		assert( pDlg && "Not Found QuickBar Dialog @CTCmdMoveIconInQuickBar::Exec" );
-		return true;
-	}
-	CQuickBAR* pQuickBar = ( CQuickBAR*) pDlg;
-
-
-	POINT ptMouse;
-	CGame::GetInstance().Get_MousePos( ptMouse );
-
-	
-	short nNewSlotIndex = pQuickBar->GetMouseClickSlot( ptMouse );
-	if( nNewSlotIndex < 0 || nNewSlotIndex >= MAX_HOT_ICONS )
-	{
-		LogString( LOG_NORMAL,"Invalid QuickBar SlotIndex @CTCmdDragItemFromQuickBar::Exec");
-		return true;
-	}
-
-	if( nNewSlotIndex == nPrevSlotIndex )
-	{
-		LogString( LOG_NORMAL,"SlotIndex Is Same @CTCmdDragItemFromQuickBar::Exec");
-		return true;
-	}
-	///이전 슬롯 비우기
-	tagHotICON hotICON;
-	hotICON.m_cType = 0;
-	hotICON.m_nSlotNo = 0;
-	g_pNet->Send_cli_SET_HOTICON( (BYTE)nPrevSlotIndex, hotICON );
-
-
-	///새로운 슬롯으로 이동
-	CHotIconSlot* pHotIconSlot	= g_pAVATAR->GetHotIconSlot();
-	hotICON						= pHotIconSlot->GetHotItem( nPrevSlotIndex );
-
-	g_pNet->Send_cli_SET_HOTICON( (BYTE)nNewSlotIndex, hotICON );
-	
-	return true;	
-
-#endif
 }
 
 bool CTCmdDragItemEquipFromInven::Exec( CTObject* pObj )

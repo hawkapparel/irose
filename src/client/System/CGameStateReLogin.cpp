@@ -91,13 +91,12 @@ int CGameStateReLogin::Enter( int iPrevStateID )
 			CQuickBAR* pQuickbarDlg = (CQuickBAR*)pDlg;
 			pQuickbarDlg->Clear();
 		}
-#ifdef _NEW_UI // 2nd SkillBar
+
 		if( CTDialog* pDlg = g_itMGR.FindDlg( DLG_TYPE_QUICKBAR_EXT ) )
 		{
 			CQuickBAR* pQuickbarDlg = (CQuickBAR*)pDlg;
 			pQuickbarDlg->Clear();
 		}	
-#endif
 
 		CItemSlot* pItemSlot = g_pAVATAR->GetItemSlot();
 		pItemSlot->Clear();

@@ -301,27 +301,18 @@ void IT_MGR::Free()
 		pDlg = *iter;
 		g_ClientStorage.SetSavedDialogPos( pDlg->GetDialogType(), pDlg->GetPosition());
 
-
-	/*	if( pDlg->GetDialogType() == DLG_TYPE_CHAT )
-		{
-			CChatDLG* pChatDlg = (CChatDLG*)pDlg;
-			g_ClientStorage.SetChatDlgType( pChatDlg->GetListType() );
-		}*/
-
 		/////Quick Type
 		if( pDlg->GetDialogType() == DLG_TYPE_QUICKBAR )
 		{
 			CQuickBAR* pQuickBarDlg = (CQuickBAR*)pDlg;
 			g_ClientStorage.SetQuickBarDlgType( pQuickBarDlg->GetType());
 		}
-#ifdef _NEW_UI
-		/////Quick Type 2nd SkillBar
+
 		if( pDlg->GetDialogType() == DLG_TYPE_QUICKBAR_EXT )
 		{
 			CQuickBAR* pQuickBarDlg = (CQuickBAR*)pDlg;
 			g_ClientStorage.SetQuickBarExtDlgType( pQuickBarDlg->GetType());
 		}
-#endif
 	}
 	g_TblHELP.Free();
 	FreeDLG();
@@ -536,15 +527,10 @@ void IT_MGR::InitDLG()
 	pQuickBAR->Create("DlgQuickBar");
 	AppendDlg( DLG_TYPE_QUICKBAR, pQuickBAR, pQuickBAR->GetControlID() );
 
-
-	//Ext QuickBar
-#ifdef _NEW_UI 
-	
 	pQuickBAR = new CQuickBAR( DLG_TYPE_QUICKBAR_EXT );
 	pQuickBAR->Create("DlgQuickBar");
 	pQuickBAR->SetQuickBarType( QUICKBAR_TYPE_EXTENSION );
 	AppendDlg( DLG_TYPE_QUICKBAR_EXT, pQuickBAR, pQuickBAR->GetControlID() );
-#endif
 
 	CQuestDlg* pQuestDlg = new CQuestDlg;
 	pQuestDlg->Create("DlgQuest");
@@ -749,15 +735,12 @@ CQuickBAR*	IT_MGR::GetQuickBAR()
 	return pDLG;
 }
 
-#ifdef _NEW_UI // 2nd SkillBar
 CQuickBAR*	IT_MGR::GetQuickBAR_EXT()
 {
 	CQuickBAR*	pDLG = (CQuickBAR*)FindDlg( DLG_TYPE_QUICKBAR_EXT );
 	return pDLG;
 }
-#endif
 
-/// 미니맵 다이알로그를 얻어온다.
 CMinimapDLG* IT_MGR::GetMinimapDLG()
 {
 	CMinimapDLG* pDLG = (CMinimapDLG*)FindDlg( DLG_TYPE_MINIMAP );
@@ -937,13 +920,12 @@ void IT_MGR::UpdateQuickSlot()
 	{
 		pDLG->UpdateHotIconSlot();
 	}
-#ifdef _NEW_UI // 2nd SkillBar
+
 	pDLG = GetQuickBAR_EXT();
 	if(pDLG) 
 	{
 		pDLG->UpdateHotIconSlot();
 	}
-#endif
 }
 
 
@@ -1450,13 +1432,12 @@ void IT_MGR::SetInterfacePosBySavedData()
 			CQuickBAR* pQuickBarDlg = (CQuickBAR*)pDlg;
 			pQuickBarDlg->ChangeType( g_ClientStorage.GetQuickBarDlgType() ,true);
 		}
-#ifdef _NEW_UI // 2nd SkillBar
+
 		if( pDlg->GetDialogType() == DLG_TYPE_QUICKBAR_EXT )
 		{
 			CQuickBAR* pQuickBarDlg = (CQuickBAR*)pDlg;
 			pQuickBarDlg->ChangeType( g_ClientStorage.GetQuickBarExtDlgType() ,true);
 		}
-#endif
 	}
 }
 

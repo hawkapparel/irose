@@ -1049,14 +1049,13 @@ void CGame::CreateSelectedAvata()
 		CQuickBAR* pQuickBar = ( CQuickBAR*) pDlg;
 		pItemSlot->AddObserver( pQuickBar );
 	}
-#ifdef _NEW_UI // 2nd Skillbar
+
 	pDlg = g_itMGR.FindDlg( DLG_TYPE_QUICKBAR_EXT );
 	if( pDlg )
 	{
 		CQuickBAR* pQuickBar = ( CQuickBAR*) pDlg;
 		pItemSlot->AddObserver( pQuickBar );
 	}
-#endif
 
 	pDlg = g_itMGR.FindDlg( DLG_TYPE_INFO );
 	if( pDlg )

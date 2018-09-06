@@ -41,10 +41,8 @@ CSkillListItem::CSkillListItem(void)
 	CTCommand* pCmd = new CTCmdDragSkill2QuickBar;
 	m_pDragItem->AddTarget( DLG_TYPE_QUICKBAR, pCmd );
 
-#ifdef _NEW_UI 2nd SkillBar
 	pCmd = new CTCmdDragSkill2QuickBar( DLG_TYPE_QUICKBAR_EXT );
 	m_pDragItem->AddTarget( DLG_TYPE_QUICKBAR_EXT, pCmd );
-#endif
 
 	m_Slot.SetDragAvailable();
 	m_Slot.SetDragItem( m_pDragItem );

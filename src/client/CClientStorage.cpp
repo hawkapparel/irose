@@ -23,10 +23,7 @@ CClientStorage::CClientStorage(void)
 	m_bShowPartyMemberHpGuage = true;
 	m_bHasSavedDialogPos	= false;
 	m_iQuickBarDlgType		= CQuickBAR::TYPE_HORIZONTAL;
-#ifdef _NEW_UI // 2nd SkillBar
 	m_iQuickBarExtDlgType	= CQuickBAR::TYPE_HORIZONTAL;
-#endif
-//	m_iChatDlgType			= CChatDLG::LIST_TYPE_SMALL;
 }
 
 CClientStorage::~CClientStorage(void)
@@ -119,9 +116,7 @@ void CClientStorage::Load()
 	
 
 	m_iQuickBarDlgType = GetPrivateProfileInt("DIALOG","QUICKBARDLGTYPE", CQuickBAR::TYPE_HORIZONTAL, g_szIniFileName );
-#ifdef _NEW_UI // 2nd Skill Bar
 	m_iQuickBarExtDlgType = GetPrivateProfileInt("DIALOG","QUICKBAREXTDLGTYPE", CQuickBAR::TYPE_HORIZONTAL, g_szIniFileName );
-#endif
 }
 
 void CClientStorage::LoadAvatarData()
@@ -233,10 +228,8 @@ void CClientStorage::Save()
 	itoa( m_iChatDlgType, szTemp, 10 );
 	WritePrivateProfileString("DIALOG","CHATDLGTYPE", szTemp, g_szIniFileName );
 
-#ifdef _NEW_UI // 2nd skill bar
 	_itoa( m_iQuickBarDlgType, szTemp,10 );
 	WritePrivateProfileString("DIALOG","QUICKBAREXTDLGTYPE", szTemp, g_szIniFileName );
-#endif
 }
 
 void CClientStorage::SetVideoOption( t_OptionVideo& option )

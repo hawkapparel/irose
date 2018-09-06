@@ -108,9 +108,7 @@ void	CIconSkill::GetToolTip( CInfo& ToolTip,  DWORD dwDialogType, DWORD dwType )
 	switch( dwDialogType )
 	{
 	case DLG_TYPE_QUICKBAR:
-#ifdef _NEW_UI // 2nd SkillBar
 	case DLG_TYPE_QUICKBAR_EXT:
-#endif
 		dwType = INFO_STATUS_FEW;
 		break;
 	default:

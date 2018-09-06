@@ -120,11 +120,9 @@ CItemDlg::CItemDlg(int iType)
 	///퀵바로의 이동
 	pCmd = new CTCmdDragInven2QuickBar;
 	m_pInvenDragItem->AddTarget( DLG_TYPE_QUICKBAR, pCmd );
-#ifdef _NEW_UI // 2nd SkillBar
-	///EX퀵바로의 이동
+
 	pCmd = new CTCmdDragInven2QuickBar( DLG_TYPE_QUICKBAR_EXT );
 	m_pInvenDragItem->AddTarget( DLG_TYPE_QUICKBAR_EXT, pCmd );
-#endif
 
 	///매매창으로의 이동
 	CTCmdNumberInput* pNumberCmd = new CTCmdAddItem2DealFromInventory;

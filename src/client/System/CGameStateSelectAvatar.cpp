@@ -12,7 +12,7 @@
 #include "../CSkyDOME.H"
 #include "../GameData/CGameDataCreateAvatar.h"
 #include "../CJustModelAVT.h"
-#include "../country.h"
+
 
 CGameStateSelectAvatar::CGameStateSelectAvatar(int iID)
 {
@@ -77,10 +77,6 @@ int CGameStateSelectAvatar::Enter( int iPrevStateID )
 
 	g_pSoundLIST->SetVolume( -10000 );
 	g_EUILobby.CreateAvataListDlg();
-
-	//박지호::아로아 데이터 초기화 
-	if(CCountry::GetSingleton().IsApplyNewVersion())
-		goddessMgr.Release();
 
 	return 0;
 }

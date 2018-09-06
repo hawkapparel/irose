@@ -23,9 +23,8 @@
 #include "../System/CGame.h"
 
 #include "../misc/gameutil.h"
-
-#include "../Country.h"
 #include "tgamectrl/SplitHangul.h"
+
 #define INFO_TEXT_WIDTH		26
 enum
 {

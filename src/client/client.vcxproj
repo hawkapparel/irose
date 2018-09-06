@@ -265,7 +265,6 @@
     <ClCompile Include="Terrain\RoughMap.cpp" />
     <ClCompile Include="Terrain\WideTerrain.cpp" />
     <ClCompile Include="CApplication.cpp" />
-    <ClCompile Include="Country.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Create</PrecompiledHeader>
@@ -652,7 +651,6 @@
     <ClInclude Include="Terrain\TerrainDef.h" />
     <ClInclude Include="Terrain\WideTerrain.h" />
     <ClInclude Include="CApplication.h" />
-    <ClInclude Include="Country.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="gamecommon\CDelegatedObservable.h" />

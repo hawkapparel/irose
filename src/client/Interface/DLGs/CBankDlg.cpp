@@ -17,8 +17,6 @@
 #include "../command/ctcmdnumberinput.h"
 #include "../command/uicommand.h"
 
-#include "../Country.h"
-
 #include "tgamectrl/tradiobox.h"
 #include "tgamectrl/tradiobutton.h"
 #include "tgamectrl/tbutton.h"
@@ -71,15 +69,7 @@ bool CBankDlg::Create( const char* szIDD )
 	sprintf(szTemp,"%s%d",STR_BANK,3);
 	SetTabButtonText(IID_BTN_TAB3,szTemp);
 
-	if( CCountry::GetSingleton().IsJapan() )
-	{
-		sprintf(szTemp,"%s%d",STR_BANK,4);
-		SetTabButtonText(IID_BTN_TAB4,szTemp);
-	}
-	else
-	{
-		SetTabButtonText(IID_BTN_TAB4,STR_PLATINUM );
-	}
+	SetTabButtonText(IID_BTN_TAB4,STR_PLATINUM );
 
 	CTButton* pBtn	= NULL;
 	CWinCtrl* pCtrl = Find( IID_BTN_SAVE );
@@ -112,25 +102,8 @@ void CBankDlg::Show()
 		CTRadioBox* pRadioBox = (CTRadioBox*)pCtrl;
 		pRadioBox->SetPressedButton( IID_BTN_TAB1 );
 	}
-
-/*	
-	if(CCountry::GetSingleton().IsJapan())
-	{
-		if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_EXTRA_STOCK) )
-		{
-			g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_USE_BANK_EXTRASPACE );
-
-			CWinCtrl* pCtrl = Find( IID_BTN_TAB4 );
-			if( pCtrl )
-			{
-				pCtrl->SetEnable(true);
-			}
-			return;
-		}        
-	}
-*/
-
 }
+
 void CBankDlg::MoveWindow( POINT pt )
 {
 	CTDialog::MoveWindow( pt );
@@ -139,6 +112,7 @@ void CBankDlg::MoveWindow( POINT pt )
 			m_Slots[iPage][iSlot].MoveWindow( m_sPosition );
 
 }
+
 void CBankDlg::Draw()
 {
 	if( !IsVision() ) return;

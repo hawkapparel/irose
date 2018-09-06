@@ -311,20 +311,6 @@ CLtbManager::~CLtbManager ()
 bool CLtbManager::Load ( int iLngType )
 {
 	m_LngType = (LANGUAGE_TYPE)iLngType;
-	
-	/*
-	m_pAI = new AStringTable ();
-	if(!m_pAI)
-		return false;
-	if(!m_pAI->Load (_LtbPath[ LTB_AI ]))
-		return false;
-	
-	m_pQuest = new AStringTable ();
-	if(!m_pQuest)
-		return false;
-	if(!m_pQuest->Load (_LtbPath[ LTB_QUEST ]))
-		return false;
-	*/
 
 	m_pEvent = new AStringTable ();
 	if(!m_pEvent)
@@ -338,34 +324,9 @@ bool CLtbManager::Load ( int iLngType )
 		return false;
 	}
 
-	/*const char * pMSG = NULL;
-	for(int r = 0; r < m_pEvent->GetRowCNT (); r++)
-	{
-		for(int c = 0; c < m_pEvent->GetClmnCNT (); c++)
-		{
-			pMSG = m_pEvent->GetMbcsString (r, c);
-		}
-	}*/
-
 	return true;
 }
 
-//const char * CLtbManager::GetAiString (int StrID)
-//{
-//	if(m_pAI)
-//		return m_pAI->GetMbcsString (m_LngType + 1, StrID);
-//
-//	return NULL;
-//}
-//
-//const char * CLtbManager::GetQuestString (int StrID)
-//{
-//	if(m_pQuest)
-//		return m_pQuest->GetMbcsString (m_LngType + 1, StrID);
-//
-//	return NULL;
-//}
-//
 const char * CLtbManager::GetEventString (int StrID)
 {
 	if(m_pEvent)

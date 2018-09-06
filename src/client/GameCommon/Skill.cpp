@@ -16,8 +16,6 @@
 #include "GameData/CParty.h"
 #include "IO_Terrain.h"
 #include "GameProc/SkillCommandDelay.h"
-
-#include "../Country.h"
 #include "../GameProc/UseItemDelay.h"
 
 CSkillManager	g_SkillManager;
@@ -155,72 +153,23 @@ void CSkill::SetSkillDelayTime( int iTime )
 	m_iElapsedTime = 0;
 }
 
-
-//----------------------------------------------------------------------------------------------------
-/// @param
-/// @brief draw icon..
-//----------------------------------------------------------------------------------------------------
 void CSkill::DrawIcon( int iX, int iY )
 {
 	
  	CTDrawImpl* pDrawObj = g_itMGR.GetDrawImplPtr();
 	short nIconNo = SKILL_ICON_NO( GetSkillIndex() );
 
-//-----------------------------------------------------------------------------------------------------
-/////////2005. 5. 30.  박 지호 
-	if(CCountry::GetSingleton().IsUseItemDelayNewVersion())
+
+	if( this->m_iSkillDelayTimer > 0 )
 	{
-		//스킬 딜레이 타입을 가져온다. 
-		int iDelayType = SKILL_RELOAD_TYPE( GetSkillIndex() );
-			
-		float srcTick = 0.0f;
-		float desTick = 0.0f;
+		float fProcessRate = (float)m_iSkillDelayTimer / (float)( SKILL_RELOAD_TIME( this->GetSkillIndex() ) * 200 );
 
-		//그룹타입이라면 처음 선택 되어진 타입의 딜레이 틱을 가져온다. 
-		if(iDelayType)
-		{
-		   srcTick = g_CurSkillDelayTick.GetUseItemDelay(iDelayType);
-		   desTick = g_UseSkillDelay.GetUseItemDelay( iDelayType );
-		}
-		//단독으로 구동되는 스킬이라면 자신의 딜레이 틱을 설정한다. 
-		else
-		{
-			srcTick = g_SkillList.GetDelayTickCount( GetSkillIndex() );
-		   desTick = g_SoloSkillDelayTick.GetUseItemDelay( GetSkillIndex() );
-		}
+		CReloadProcess* pReloadProcess = g_itMGR.GetReloadProcess();
+		pReloadProcess->Draw( iX , iY, IMAGE_RES_SKILL_ICON, nIconNo, fProcessRate );		
+	}else
+	{	pDrawObj->Draw( iX,	iY,	IMAGE_RES_SKILL_ICON, nIconNo ); 	}
 
-		//만약 딜레이 랜더링 중이라면...
-		if(desTick > 0.0f)	
-		{
-			float fProcessRate =  (desTick / srcTick);
-				
-			CReloadProcess* pReloadProcess = g_itMGR.GetReloadProcess();
-			pReloadProcess->Draw( iX , iY, IMAGE_RES_SKILL_ICON, nIconNo, fProcessRate );	
-		}
-		else
-		{
-			if( IsEnable() )		
-				pDrawObj->Draw( iX,	iY,	IMAGE_RES_SKILL_ICON, nIconNo ); 
-			else
-				pDrawObj->Draw( iX,	iY,	IMAGE_RES_SKILL_ICON, nIconNo ,D3DCOLOR_RGBA( 128, 128, 128, 255 )); 
-		}
-	}
-//-------------------------------------------------------------------------------------------------------
-	else
-	{
-		if( this->m_iSkillDelayTimer > 0 )
-		{
-			float fProcessRate = (float)m_iSkillDelayTimer / (float)( SKILL_RELOAD_TIME( this->GetSkillIndex() ) * 200 );
-
-			CReloadProcess* pReloadProcess = g_itMGR.GetReloadProcess();
-			pReloadProcess->Draw( iX , iY, IMAGE_RES_SKILL_ICON, nIconNo, fProcessRate );		
-		}else
-		{	pDrawObj->Draw( iX,	iY,	IMAGE_RES_SKILL_ICON, nIconNo ); 	}
-
-		CSkillCommandDelay::GetSingleton().Draw( iX, iY );
-	}
-	
-	
+	CSkillCommandDelay::GetSingleton().Draw( iX, iY );	
 }	
 
 
@@ -1097,72 +1046,21 @@ bool CSkillManager::FireSkill( int iSkillSlotIDX, int iTargetObj, D3DXVECTOR3 &P
 	if( CSkillManager::CheckConditionForFireSkill( pSkill->GetSkillIndex(), iCurrentTarget ) == false )
 			return false;
 
-
-	//------------------------------------------------------------------------------------------------
-//2005 5. 30 박 지호
-	//스킬 딜레이 타입 체크 후 재설정 만약 딜레이 중이라면 리턴 
- 	if(CCountry::GetSingleton().IsUseItemDelayNewVersion())
+	if( CSkillManager::CheckSkillTimer( iSkillSlotIDX ) == false )
 	{
-		int iDelayType = SKILL_RELOAD_TYPE( pSkill->GetSkillIndex() );
-		int iSkill	   = pSkill->GetSkillIndex();
-		float iDelayTick = g_SkillList.GetDelayTickCount( iSkill );
-
-		////0 이 아니면 딜레이를 설정한다. 
-		if( iDelayType )
-		{
-			//딜레이 타입을 넣어서 같은 타입이 딜레이 중이라면 사용할수 없다는 
-			//메세지를 채팅창에 출력한다. 
-			if( g_UseSkillDelay.GetUseItemDelay( iDelayType ) > 0.0f)
-			{
-				///Use item delay 가 설정되어 있다면 패스..
-				g_itMGR.AppendChatMsg( CStr::Printf("%s", STR_NOTIFY_04 ), IT_MGR::CHAT_TYPE_SYSTEM );
-				return false;
-			}
-		}
-		//공백일때 단독으로 설정한다. 
-		else
-		{	
-			//자기 자신의 딜렉 중이라면....
-			if( g_SoloSkillDelayTick.GetUseItemDelay( iSkill ) > 0.0f)
-			{	
-				g_itMGR.AppendChatMsg( CStr::Printf("%s", STR_NOTIFY_04 ), IT_MGR::CHAT_TYPE_SYSTEM );
-				return false;
-			}
-		} 
-		
-	} 
-//------------------------------------------------------------------------------------------------
-	else
+		g_itMGR.AppendChatMsg( CStr::Printf("%s", STR_NOTIFY_04 ), IT_MGR::CHAT_TYPE_SYSTEM );
+		return false;
+	}
+	
+	if( CSkillCommandDelay::GetSingleton().CanCastSkill() == false )
 	{
-		/// 스킬 타이머가 정지 했는가? (정지하지 않았다면 메세지 창에 출력)
-		if( CSkillManager::CheckSkillTimer( iSkillSlotIDX ) == false )
-		{
-			g_itMGR.AppendChatMsg( CStr::Printf("%s", STR_NOTIFY_04 ), IT_MGR::CHAT_TYPE_SYSTEM );
-			return false;
-		}
-		//if( CSkillManager::CheckConditionForFireSkill( pSkill->GetSkillIndex(), iCurrentTarget ) == false )
-		//	return false;
-
-		// 일단 여기서 깍자..소모치
-		// 여기서 깍으면 안된다.. 서버에서 거부할경우는 문제가 있다..
-		//CSkillManager::UpdateUseProperty( pSkill->GetSkillIndex() );
-
-		//-----------------------------------------------------------------------------------------------
-		/// 각 스킬별 딜레이가 아니라 모든 스킬 명령들에 대한 딜레이가 적용된다.
-		/// 여기서 현재 이전의 스킬 명령이후 정해진 딜레이가 지났는지 체크
-		//-----------------------------------------------------------------------------------------------	
-		if( CSkillCommandDelay::GetSingleton().CanCastSkill() == false )
-		{
-			g_itMGR.AppendChatMsg( CStr::Printf("%s", STR_NOTIFY_04 ), IT_MGR::CHAT_TYPE_SYSTEM );
-			return false;
-		}else
-		{
-			/// 스킬 입력 딜레이가 없을때는 새로 세팅
-			CSkillCommandDelay::GetSingleton().StartSkill();
-		}
+		g_itMGR.AppendChatMsg( CStr::Printf("%s", STR_NOTIFY_04 ), IT_MGR::CHAT_TYPE_SYSTEM );
+		return false;
+	}else
+	{
+		CSkillCommandDelay::GetSingleton().StartSkill();
 	}
  
-	/// request skill action	
 	pSkill->SendSkillActionReq( iSkillSlotIDX, iCurrentTarget, PosTO );
 	
 

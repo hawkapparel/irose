@@ -19,7 +19,6 @@
 #include "CGameStateReLogin.h"
 #include "SqliteDB.h"
 
-#include "../Country.h"
 #include "../Network/CNetwork.h"
 #include "../IO_Event.h"
 #include "../CClientStorage.h"
@@ -531,10 +530,6 @@ bool CGame::Load_BasicDATA2()
 
 	DWORD dwStartTime = timeGetTime();
 	g_SkillList.LoadSkillTable	( "3DData\\STB\\LIST_SKILL.STB" );
-
-	///NEW VERSION 용 데이타 로딩
-	if( CCountry::GetSingleton().IsApplyNewVersion() )
-		Load_NewVersionData();
 
 	/// NPC 테이블
 	g_TblNPC.Load2				( "3DDATA\\STB\\LIST_NPC.STB",		true, false );
@@ -1687,45 +1682,36 @@ void CGame::SetPayType( WORD paytype )
 
 WORD CGame::GetPayType()
 {
-	//JPN
-	if( CCountry::GetSingleton().IsJapan() )
+	//EXT 
+	if( m_paytype & PLAY_FLAG_EXTRA_CHAR 
+		&& m_paytype & PLAY_FLAG_EXTRA_STOCK  )
 	{
-		return m_paytype;
+		return PAY_PLATINUM;
 	}
-	//KOR
-	else
+	else if( m_paytype & PLAY_FLAG_KOREA_DEFAULT )
 	{
-		//EXT 
-		if( m_paytype & PLAY_FLAG_EXTRA_CHAR 
-			&& m_paytype & PLAY_FLAG_EXTRA_STOCK  )
+        return PAY_PREMIUM;
+	}
+	//NO EXT
+	else
+	{		
+		switch( m_paytype )
 		{
-			return PAY_PLATINUM;
-		}
-		else if( m_paytype & PLAY_FLAG_KOREA_DEFAULT )
-		{
-            return PAY_PREMIUM;
-		}
-		//NO EXT
-		else
-		{		
-			switch( m_paytype )
-			{
-			case BILLING_MSG_PAY_FU:// FU	로그인 된 사용자는 무료 아이디 사용자임을 나타낸다.
-				return PAY_FREE;
-			case BILLING_MSG_PAY_FQ:// FQ	로그인 된 사용자는 개인정량 사용자(프리미엄)임을 나타낸다.
-			case BILLING_MSG_PAY_FA:// FA	로그인 된 사용자는 개인정액 사용자(프리미엄)임을 나타낸다.
-				return PAY_PREMIUM;
-			case BILLING_MSG_PAY_GU:// GU	로그인 된 사용자는 게임방 사용자(플레티넘)임을 나타낸다.
-			case BILLING_MSG_PAY_GQ:// GQ	(플레티넘)게임방에서 로그인을 시도하였으나 게임방의 과금기간(시간)이 만료되어 개인정량으로 로그인 되었음을 나타낸다.
-			case BILLING_MSG_PAY_IQ:// IQ	(플레티넘)게임방에서 로그인을 시도하였으나 이미 계약된 IP 숫자를 모두 사용하고 있어 개인정량으로 로그인 되었음을 나타낸다.
-			case BILLING_MSG_PAY_FAP:// FAP	로그인 된 사용자는 개인정액 사용자(플레티넘)임을 나타낸다.
-				return PAY_PLATINUM;	
+		case BILLING_MSG_PAY_FU:// FU	로그인 된 사용자는 무료 아이디 사용자임을 나타낸다.
+			return PAY_FREE;
+		case BILLING_MSG_PAY_FQ:// FQ	로그인 된 사용자는 개인정량 사용자(프리미엄)임을 나타낸다.
+		case BILLING_MSG_PAY_FA:// FA	로그인 된 사용자는 개인정액 사용자(프리미엄)임을 나타낸다.
+			return PAY_PREMIUM;
+		case BILLING_MSG_PAY_GU:// GU	로그인 된 사용자는 게임방 사용자(플레티넘)임을 나타낸다.
+		case BILLING_MSG_PAY_GQ:// GQ	(플레티넘)게임방에서 로그인을 시도하였으나 게임방의 과금기간(시간)이 만료되어 개인정량으로 로그인 되었음을 나타낸다.
+		case BILLING_MSG_PAY_IQ:// IQ	(플레티넘)게임방에서 로그인을 시도하였으나 이미 계약된 IP 숫자를 모두 사용하고 있어 개인정량으로 로그인 되었음을 나타낸다.
+		case BILLING_MSG_PAY_FAP:// FAP	로그인 된 사용자는 개인정액 사용자(플레티넘)임을 나타낸다.
+			return PAY_PLATINUM;	
 			
-			default:
-				break;
-			}
+		default:
+			break;
 		}
-	}	
+	}
 	
 	return PAY_FREE;
 }
@@ -1847,11 +1833,9 @@ void	CGame::ResetAutoRun()
 //-------------------------------------------------------------------------------------------
 bool CGame::IsActiveRouteComboBox()
 {
-	if( CCountry::GetSingleton().IsCountry( CCountry::COUNTRY_JPN ) && !g_GameDATA.m_is_NHN_JAPAN )
-		return true;
-
 	return false;
 }
+
 void CGame::SetJapanPartnerString( const char* str )
 {
 	if( NULL == str )

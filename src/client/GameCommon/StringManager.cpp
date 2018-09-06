@@ -159,50 +159,7 @@ char* CStringManager::GetFontNameByCharSet( int iCharSet )
 
 	HRESULT hr = S_OK;
 	
-	switch( m_iLanguageType )
-	{
-		case LANGUAGE_KOR:
-			{
-				return "굴림체";
-			}
-			break;
-		case LANGUAGE_USA:
-			return "Verdana";///"Arial"
-			
-		case LANGUAGE_JPN:
-			{				
-				LOGFONT lf;
-				//to enumerate all styles of Arial font that cover the ANSI charset
-				strcpy( (LPSTR)&lf.lfFaceName, "굃굍 굊긕긘긞긏" );
-				/*if (FAILED(hr))
-				{
-					assert( 0 && "StringCchCopy error" );
-				}*/
-				lf.lfCharSet = iCharSet;
-
-				std::list< std::string > fontList;
-				HDC hdc = ::GetDC( g_pCApp->GetHWND() );
-				::EnumFontFamiliesEx(	hdc, 
-										&lf, 
-										(FONTENUMPROC) EnumFontFamExProc, 
-										(LPARAM) &fontList, 0);
-
-				/// "MS Gothic" 가 없다.
-				if( fontList.empty() )
-				{
-					return "MS PGothic";
-				}
-
-				return "굃굍 굊긕긘긞긏";
-			}
-			break;
-		case LANGUAGE_CHA_SIMPLE:			
-			return "SimSun";
-
-		case LANGUAGE_CHA_TRADITIONAL:
-			return "MingLiU";
-	}
-	return "Arial";
+	return "Verdana";///"Arial"
 }
 
 //-----------------------------------------------------------------------------------------------

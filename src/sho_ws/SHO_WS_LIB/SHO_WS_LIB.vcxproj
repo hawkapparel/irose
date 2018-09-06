@@ -110,7 +110,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\lib_util\DebugReport.cpp" />
     <ClCompile Include="CWS_Account.cpp" />
     <ClCompile Include="CWS_Party.cpp" />
     <ClCompile Include="SHO_WS_LIB.CPP">

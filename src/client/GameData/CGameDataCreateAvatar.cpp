@@ -8,8 +8,6 @@
 #include "../Interface/TypeResource.h"
 #include "../System/SystemProcScript.h"
 
-#include "../Country.h"
-
 const float c_AvatarPositions[5][3] = {
 										{ 520500, 520500, 100 },
 										{ 520270, 520653, 100 },
@@ -363,14 +361,7 @@ void CGameDataCreateAvatar::Update()
 
 			if( pAVT->IsPlatinum() )
 			{
-				if(CCountry::GetSingleton().IsJapan() || CCountry::GetSingleton().IsPhilipplines() )
-				{
-					
-				}
-				else
-				{
-					Info.AddString( STR_PLATINUM, g_dwYELLOW );
-				}				
+				Info.AddString( STR_PLATINUM, g_dwYELLOW );			
 			}
 
 			Info.SetPosition( pt );

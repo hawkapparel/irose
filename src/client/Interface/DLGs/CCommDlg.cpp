@@ -7,7 +7,6 @@
 #include "subclass/CChatRoomListItem.h"
 #include "../Command/UICommand.h"
 #include "../../SqliteDB.h"
-#include "../../Country.h"
 #include "../../System/CGame.h"
 
 #include "tgamectrl/tabbedpane.h"
@@ -46,56 +45,7 @@ unsigned CCommDlg::Process( unsigned uiMsg, WPARAM wParam, LPARAM lParam )
 		case WM_LBUTTONUP:
 			OnLButtonUp( uiProcID, wParam, lParam );
 			break;
-		case WM_LBUTTONDOWN:
-			{
-				if( uiProcID == IID_TABBUTTON_FRIEND )
-				{
-					if( CCountry::GetSingleton().IsJapan() )
-					{
-						if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_COMMUNITY) )
-						{
-							CWinCtrl* pCtrl = Find( IID_TABBEDPANE );
-
-							assert( pCtrl );
-							if( pCtrl == NULL ) return 0;
-							
-							assert( pCtrl->GetControlType() == CTRL_TABBEDPANE );
-							if( pCtrl->GetControlType() != CTRL_TABBEDPANE ) return 0;
-
-							CTabbedPane* pTabbedPane = (CTabbedPane*)pCtrl;
-
-							pTabbedPane->SetSelectedIndex( iCurrSelectTab );
-
-							g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_USE_FREINDLIST, CMsgBox::BT_OK, false );
-						}
-					}
-				}						
-				else if( uiProcID == IID_TABBUTTON_CHATROOM )
-				{
-					if( CCountry::GetSingleton().IsJapan() )
-					{
-						if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_COMMUNITY) )
-						{
-							CWinCtrl* pCtrl = Find( IID_TABBEDPANE );
-
-							assert( pCtrl );
-							if( pCtrl == NULL ) return 0;
-
-							assert( pCtrl->GetControlType() == CTRL_TABBEDPANE );
-							if( pCtrl->GetControlType() != CTRL_TABBEDPANE ) return 0;
-
-							CTabbedPane* pTabbedPane = (CTabbedPane*)pCtrl;
-
-							pTabbedPane->SetSelectedIndex( iCurrSelectTab );
-
-							g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_USE_CHATROOM, CMsgBox::BT_OK, false );
-						}
-					}
-				}
-			}
-			break;
 		default:
-
 			break;
 		}
 		return uiMsg;
@@ -289,24 +239,6 @@ void CCommDlg::Show()
 	LoadMemoFromDB();
 
 	ClearChatRoomList();
-	//g_pNet->Send_cli_CHAT_ROOM_LIST( 0, 0 );
-	if( CCountry::GetSingleton().IsJapan( ) )
-	{
-		if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_COMMUNITY) )
-		{
-			CWinCtrl* pCtrl = Find( IID_TABBEDPANE );
-
-			assert( pCtrl );
-			if( pCtrl == NULL ) return;
-			
-			assert( pCtrl->GetControlType() == CTRL_TABBEDPANE );
-			if( pCtrl->GetControlType() != CTRL_TABBEDPANE ) return;
-
-			CTabbedPane* pTabbedPane = (CTabbedPane*)pCtrl;
-
-			pTabbedPane->SetSelectedIndex( TAB_MAILBOX );
-		}        
-	}
 }
 
 void CCommDlg::ClearMemoList()

@@ -15,7 +15,6 @@
 #include "../GameData/CPrivateStore.h"
 #include "GameProc/preventduplicatedcommand.h"
 #include "../common/io_stb.h"
-#include "../Country.h"
 #include "../System/CGame.h"
 #include "../System/GameStateMovePlanet.h"
 
@@ -552,15 +551,6 @@ void CSendPACKET::Send_cli_CANTMOVE ()
 //-------------------------------------------------------------------------------------------------
 void CSendPACKET::Send_cli_ATTACK (int iClientTarget)
 {
-	if(CCountry::GetSingleton().IsJapan())
-	{
-		if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_BATTLE) )
-		{
-            g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_ATTACK );
-			return;
-		}        
-	}
-
 #ifdef	__VIRTUAL_SERVER
 	m_pSendPacket->m_HEADER.m_wType = GSV_ATTACK;
 	m_pSendPacket->m_HEADER.m_nSize = sizeof( gsv_ATTACK );
@@ -970,49 +960,6 @@ bool CSendPACKET::Send_cli_GET_FIELDITEM_REQ( CGameOBJ *pUSER, int iServerObject
 //-------------------------------------------------------------------------------------------------
 void CSendPACKET::Send_cli_TELEPORT_REQ( CGameOBJ *pUSER, short nWarpIDX)
 {
-
-	if(CCountry::GetSingleton().IsJapan())
-	{
-		int iZoneNum = TELEPORT_ZONE(nWarpIDX);
-		if( ZONE_PVP_STATE( iZoneNum ) == 11 )
-		{
-			if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_BATTLE) )
-			{
-				g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_USE_CLANAGIT );
-				return;
-			}        
-		}
-		if( ZONE_PLANET_NO(g_pTerrain->GetZoneNO()) != ZONE_PLANET_NO(iZoneNum) )
-		{
-			if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_BATTLE) )
-			{
-				g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_MOVE_PLANET );
-				return;
-			} 
-		}
-
-		if( ZONE_IS_UNDERGROUND(iZoneNum) )
-		{
-			if( ZONE_PLANET_NO(g_pTerrain->GetZoneNO()) == PLANET_JUNON )
-			{
-				if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_BATTLE) )
-				{
-					g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_ENTER_DUNGEON );
-					return;
-				} 
-			}
-			else
-			{
-				if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_DUNGEON_ADV) )
-				{
-					g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_ENTER_DUNGEON );
-					return;
-				} 
-			}			
-		}
-	}
-	
-
 	if ( !pUSER->IsA( OBJ_USER ) )	return;
 
 
@@ -1248,16 +1195,6 @@ void CSendPACKET::Send_cli_SELF_SKILL (BYTE btSkillSLOT)
 //-------------------------------------------------------------------------------------------------
 void CSendPACKET::Send_cli_TARGET_SKILL (int iClientTarget, BYTE btSkillSLOT)
 {
-
-	if(CCountry::GetSingleton().IsJapan())
-	{
-		if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_BATTLE) )
-		{
-			g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_ATTACK );
-			return;
-		}        
-	}
-
 #ifdef	__VIRTUAL_SERVER
 		m_pSendPacket->m_HEADER.m_wType = GSV_TARGET_SKILL;
 		m_pSendPacket->m_HEADER.m_nSize = sizeof( gsv_TARGET_SKILL );
@@ -1300,16 +1237,6 @@ void CSendPACKET::Send_cli_TARGET_SKILL (int iClientTarget, BYTE btSkillSLOT)
 //-------------------------------------------------------------------------------------------------
 void CSendPACKET::Send_cli_POSITION_SKILL (D3DVECTOR &PosTO, BYTE btSkillSLOT)
 {
-
-	if(CCountry::GetSingleton().IsJapan())
-	{
-		if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_BATTLE) )
-		{
-			g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_ATTACK );
-			return;
-		}        
-	}
-
 #ifdef	__VIRTUAL_SERVER
 		return;
 #else
@@ -1364,112 +1291,9 @@ void CSendPACKET::Send_cli_QUEST_REQ (BYTE btReqTYPE, BYTE btQuestSLOT, int iQue
 
 	this->Send_PACKET( m_pSendPacket );
 }
-/*
-void CSendPACKET::Send_cli_ADD_QUEST (BYTE btQuestIDX, int iQuestID)
-{
-#ifdef	__VIRTUAL_SERVER
-	return;
-#else
-	m_pSendPacket->m_HEADER.m_wType = CLI_ADD_QUEST;
-	m_pSendPacket->m_HEADER.m_nSize = sizeof( cli_ADD_QUEST );
-
-	m_pSendPacket->m_cli_ADD_QUEST.m_btQuestSLOT = btQuestIDX;
-	m_pSendPacket->m_cli_ADD_QUEST.m_iQuestID   = iQuestID;
-#endif
-
-	this->Send_PACKET( m_pSendPacket );
-}
-
-void CSendPACKET::Send_cli_DEL_QUEST (BYTE btQuestIDX, int iQuestID)
-{
-#ifdef	__VIRTUAL_SERVER
-	return;
-#else
-	m_pSendPacket->m_HEADER.m_wType = CLI_DEL_QUEST;
-	m_pSendPacket->m_HEADER.m_nSize = sizeof( cli_DEL_QUEST );
-
-	m_pSendPacket->m_cli_DEL_QUEST.m_btQuestSLOT = btQuestIDX;
-	m_pSendPacket->m_cli_DEL_QUEST.m_iQuestID   = iQuestID;
-#endif
-
-	this->Send_PACKET( m_pSendPacket );
-}
-
-void CSendPACKET::Send_cli_QUEST_DATA_REQ (BYTE btQuestIDX)
-{
-#ifdef	__VIRTUAL_SERVER
-	return;
-#else
-	m_pSendPacket->m_HEADER.m_wType = CLI_QUEST_DATA_REQ;
-	m_pSendPacket->m_HEADER.m_nSize = sizeof( cli_QUEST_DATA_REQ );
-
-	m_pSendPacket->m_cli_QUEST_DATA_REQ.m_btQuestSLOT = btQuestIDX;
-#endif
-
-	this->Send_PACKET( m_pSendPacket );
-}
-
-void CSendPACKET::Send_cli_SET_QUEST_VAR (BYTE btQuestIDX, BYTE btVarNO, int iValue)
-{
-#ifdef	__VIRTUAL_SERVER
-	return;
-#else
-	m_pSendPacket->m_HEADER.m_wType = CLI_SET_QUEST_VAR;
-	m_pSendPacket->m_HEADER.m_nSize = sizeof( cli_SET_QUEST_VAR );
-
-	m_pSendPacket->m_cli_SET_QUEST_VAR.m_btQuestSLOT = btQuestIDX;
-	m_pSendPacket->m_cli_SET_QUEST_VAR.m_btVarNO = btVarNO;
-	m_pSendPacket->m_cli_SET_QUEST_VAR.m_iValue = iValue;
-#endif
-
-	this->Send_PACKET( m_pSendPacket );
-}
-
-void CSendPACKET::Send_cli_SET_QUEST_SWITCH (BYTE btQuestIDX)
-{
-#ifdef	__VIRTUAL_SERVER
-	return;
-#else
-	m_pSendPacket->m_HEADER.m_wType = CLI_SET_QUEST_SWITCH;
-	m_pSendPacket->m_HEADER.m_nSize = sizeof( cli_SET_QUEST_SWITCH );
-
-	m_pSendPacket->m_cli_SET_QUEST_SWITCH.m_btQuestSLOT = btQuestIDX;
-	m_pSendPacket->m_cli_SET_QUEST_SWITCH.m_dwSWITCHES = g_pAVATAR->m_Quests.m_QUEST[ btQuestIDX ].Get_SWITCHs();
-#endif
-
-	this->Send_PACKET( m_pSendPacket );
-}
-
-void CSendPACKET::Send_cli_SET_QUEST_FAMEnPROGRESS (BYTE btUnionIDX, char cToAddFAME, char cToADDProgress)
-{
-#ifdef	__VIRTUAL_SERVER
-	return;
-#else
-	m_pSendPacket->m_HEADER.m_wType = CLI_SET_QUEST_FAMEnPROGRESS;
-	m_pSendPacket->m_HEADER.m_nSize = sizeof( cli_SET_QUEST_FAMEnPROGRESS );
-
-	m_pSendPacket->m_cli_SET_QUEST_FAMEnPROGRESS.m_btUnionIDX = btUnionIDX;
-	m_pSendPacket->m_cli_SET_QUEST_FAMEnPROGRESS.m_nToAdd_QuestFameOfUnion = cToAddFAME;
-	m_pSendPacket->m_cli_SET_QUEST_FAMEnPROGRESS.m_nToAdd_QuestProcOfUnion = cToADDProgress;
-#endif
-
-	this->Send_PACKET( m_pSendPacket );
-}
-*/
 
 bool CSendPACKET::Send_cli_TRADE_P2P( WORD wServerIdx, BYTE btResult ,char cSlotIdx )
 {
-
-	if(CCountry::GetSingleton().IsJapan())
-	{
-		if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_TRADE) )
-		{
-			g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_TRADE );
-			return false;
-		}        
-	}
-
-
 	m_pSendPacket->m_HEADER.m_wType = CLI_TRADE_P2P;
 	m_pSendPacket->m_HEADER.m_nSize = sizeof( cli_TRADE_P2P );
 	m_pSendPacket->m_cli_TRADE_P2P.m_btRESULT	= btResult;
@@ -1494,16 +1318,6 @@ void CSendPACKET::Send_cli_TRADE_P2P_ITEM( char	cTradeSLOT,short nInventoryIndex
 //-------------------------------------------------------------------------------------------------
 void CSendPACKET::Send_cli_PARTY_REQ(BYTE btRequest, DWORD dwDestIDXorTAG )
 {
-
-	if(CCountry::GetSingleton().IsJapan())
-	{
-		if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_BATTLE) )
-		{
-			g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_INVITE_PARTY );
-			return;
-		}        
-	}
-
 	m_pSendPacket->m_HEADER.m_wType = CLI_PARTY_REQ;
 	m_pSendPacket->m_HEADER.m_nSize = sizeof( cli_PARTY_REQ );
 
@@ -1555,16 +1369,6 @@ void CSendPACKET::Send_cli_ITEM_RESULT_REPORT( BYTE btREPORT, BYTE btItemType, s
 //-------------------------------------------------------------------------------------------------
 void CSendPACKET::Send_cli_MOVE_ITEM( BYTE btMoveTYPE,BYTE btFromIDX,tagITEM& MoveITEM,bool bPlatinum  )
 {
-
-	if(CCountry::GetSingleton().IsJapan())
-	{
-		if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_STOCK_SPACE) )
-		{
-			g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_USE_BANK );
-			return;
-		}		
-	}
-
 	m_pSendPacket->m_HEADER.m_wType = CLI_MOVE_ITEM;
 	m_pSendPacket->m_HEADER.m_nSize = sizeof( cli_MOVE_ITEM );
 	m_pSendPacket->m_cli_MOVE_ITEM.m_btMoveTYPE = btMoveTYPE;
@@ -1971,17 +1775,6 @@ void CSendPACKET::Send_cli_CLAN_CREATE( WORD wMarkBack, WORD wMarkCenter, char* 
 
 void CSendPACKET::Send_cli_CLAN_CHAT( char *szMsg )
 {
-
-	if(CCountry::GetSingleton().IsJapan())
-	{
-		if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_BATTLE) )
-		{
-			g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_USE_CLANCHAT );
-			return;
-		}        
-	}
-
-
 	assert( szMsg );
 	if ( szMsg == NULL || g_pNet->m_bWarping )
 		return;
@@ -2074,16 +1867,6 @@ void CSendPACKET::Send_cli_CLANMARK_REG_TIME()
 
 void CSendPACKET::Send_cli_MOVE_ZULY_INV2BANK( __int64 i64MoveZuly )
 {
-	if(CCountry::GetSingleton().IsJapan())
-	{
-		if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_STOCK_SPACE) )
-		{
-			g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_USE_BANK_MONEY );
-			return;
-		}        
-	}
-
-
 	m_pSendPacket->m_HEADER.m_wType = CLI_MOVE_ZULY;
 	m_pSendPacket->m_HEADER.m_nSize = sizeof( cli_MOVE_ZULY );
 	m_pSendPacket->m_cli_MOVE_ZULY.m_btMoveTYPE = MOVE_ZULY_TYPE_INV2BANK;
@@ -2093,16 +1876,6 @@ void CSendPACKET::Send_cli_MOVE_ZULY_INV2BANK( __int64 i64MoveZuly )
 
 void CSendPACKET::Send_cli_MOVE_ZULY_BANK2INV( __int64 i64MoveZuly )
 {
-
-	if(CCountry::GetSingleton().IsJapan())
-	{
-		if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_STOCK_SPACE) )
-		{
-			g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_USE_BANK_MONEY );
-			return;
-		}        
-	}
-
 	m_pSendPacket->m_HEADER.m_wType = CLI_MOVE_ZULY;
 	m_pSendPacket->m_HEADER.m_nSize = sizeof( cli_MOVE_ZULY );
 	m_pSendPacket->m_cli_MOVE_ZULY.m_btMoveTYPE = MOVE_ZULY_TYPE_BANK2INV;

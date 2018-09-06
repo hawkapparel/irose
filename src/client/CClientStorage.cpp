@@ -5,9 +5,6 @@
 #include "Game.h"
 #include "Common/IO_STB.H"
 #include "IO_Terrain.h"
-#include "../Country.h"
-
-
 
 
 CClientStorage	g_ClientStorage;
@@ -57,12 +54,7 @@ void CClientStorage::Load()
 	///JAPAN ROUTE
 	m_iJapanRoute = GetPrivateProfileInt("JAPAN","ROUTE", 1, g_szIniFileName );
 
-	///KeyBoard
-	///일본일경우 디폴트를 기존 방식( 자동엔터 )으로 한다.
-	if( CCountry::GetSingleton().IsJapan() )
-		m_KeyboardOption.iChattingMode = GetPrivateProfileInt("KEYBOARD","CHATMODE", 1, g_szIniFileName );
-	else
-		m_KeyboardOption.iChattingMode = GetPrivateProfileInt("KEYBOARD","CHATMODE", 0, g_szIniFileName );
+	m_KeyboardOption.iChattingMode = GetPrivateProfileInt("KEYBOARD","CHATMODE", 0, g_szIniFileName );
 
 	///LastConnected ID
 	if( GetPrivateProfileInt("LASTCONNECT","SAVE",0, g_szIniFileName ) )

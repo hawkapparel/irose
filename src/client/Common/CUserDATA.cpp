@@ -3,7 +3,6 @@
 #include "CUserDATA.h"
 #include "Object.h"
 #include "Calculation.h"
-#include "../Country.h"
 #include "../util/classTIME.h"
 
 #ifndef __SERVER
@@ -195,7 +194,7 @@ void CUserDATA::Cal_BattleAbility ()
 	if ( GetCur_HP() > GetCur_MaxHP() ) SetCur_HP( GetCur_MaxHP() );
 	if ( GetCur_MP() > GetCur_MaxMP() ) SetCur_MP( GetCur_MaxMP() );
 
-	if ( IsTAIWAN() && this->GetCur_MOVE_MODE() <= MOVE_MODE_RUN ) {
+	if ( this->GetCur_MOVE_MODE() <= MOVE_MODE_RUN ) {
 		// 대만 보행모드면...
 		int iCurAbility;
 		for (short nI=0; nI<BA_MAX; nI++) {
@@ -321,71 +320,44 @@ void CUserDATA::Cal_AddAbility ()
 	}
 }
 
-
-//-------------------------------------------------------------------------------------------------
-extern bool IsIROSE ();
 int CUserDATA::Cal_MaxHP ()
 {
 	int iA, iM1, iM2;
-	if ( IsTAIWAN() ) {
-		float fC;
-		switch( this->GetCur_JOB() ) {
-			case CLASS_SOLDIER_111 :	// 솔져(111)		[(LV+5)*SQRT(LV+20)*3.5+(STR*2)] + 아이템 증가치 
-										iA=5,	iM1=20, fC=3.5f;	break;
-			case CLASS_SOLDIER_121 :	// 나이트(121)		[(LV+5)*SQRT(LV+28)*3.5+(STR*2)] + 아이템 증가치 
-										iA=5,	iM1=28,	fC=3.5f;	break;
-			case CLASS_SOLDIER_122 :	// 챔프(122			[(LV+5)*SQRT(LV+22)*3.5+(STR*2)] + 아이템 증가치 
-										iA=5,	iM1=22,	fC=3.5f;	break;
+	float fC;
+	switch( this->GetCur_JOB() ) {
+		case CLASS_SOLDIER_111 :	// 솔져(111)		[(LV+5)*SQRT(LV+20)*3.5+(STR*2)] + 아이템 증가치 
+									iA=5,	iM1=20, fC=3.5f;	break;
+		case CLASS_SOLDIER_121 :	// 나이트(121)		[(LV+5)*SQRT(LV+28)*3.5+(STR*2)] + 아이템 증가치 
+									iA=5,	iM1=28,	fC=3.5f;	break;
+		case CLASS_SOLDIER_122 :	// 챔프(122			[(LV+5)*SQRT(LV+22)*3.5+(STR*2)] + 아이템 증가치 
+									iA=5,	iM1=22,	fC=3.5f;	break;
 
-			case CLASS_MAGICIAN_211 :	// 뮤즈(211)		[(LV+4)*SQRT(LV+26)*2.36+(STR*2)] + 아이템 증가치 
-										iA=4,	iM1=26,	fC=2.36f;	break;
-			case CLASS_MAGICIAN_221 :	// 매지션(221)		[(LV+5)*SQRT(LV+26)*2.37+(STR*2)] + 아이템 증가치 
-										iA=5,	iM1=26,	fC=2.37f;	break;
-			case CLASS_MAGICIAN_222 :	// 클레릭(222)		[(LV+7)*SQRT(LV+26)*2.4+(STR*2)] + 아이템 증가치 
-										iA=7,	iM1=26,	fC=2.4f;	break;
+		case CLASS_MAGICIAN_211 :	// 뮤즈(211)		[(LV+4)*SQRT(LV+26)*2.36+(STR*2)] + 아이템 증가치 
+									iA=4,	iM1=26,	fC=2.36f;	break;
+		case CLASS_MAGICIAN_221 :	// 매지션(221)		[(LV+5)*SQRT(LV+26)*2.37+(STR*2)] + 아이템 증가치 
+									iA=5,	iM1=26,	fC=2.37f;	break;
+		case CLASS_MAGICIAN_222 :	// 클레릭(222)		[(LV+7)*SQRT(LV+26)*2.4+(STR*2)] + 아이템 증가치 
+									iA=7,	iM1=26,	fC=2.4f;	break;
 
-			case CLASS_MIXER_311	 :	// 호커(311)		[(LV+5)*SQRT(LV+20)*2.7+(STR*2)] + 아이템 증가치
-										iA=5,	iM1=20,	fC=2.7f;	break;
-			case CLASS_MIXER_321	 :	// 레이더(321)		[(LV+5)*SQRT(LV+23)*3+(STR*2)] + 아이템 증가치
-										iA=5,	iM1=23,	fC=3.f;		break;
-			case CLASS_MIXER_322	 :	// 스카우트(322)	[(LV+5)*SQRT(LV+21)*2.7+(STR*2)] + 아이템 증가치
-										iA=5,	iM1=21,	fC=2.7f;	break;
+		case CLASS_MIXER_311	 :	// 호커(311)		[(LV+5)*SQRT(LV+20)*2.7+(STR*2)] + 아이템 증가치
+									iA=5,	iM1=20,	fC=2.7f;	break;
+		case CLASS_MIXER_321	 :	// 레이더(321)		[(LV+5)*SQRT(LV+23)*3+(STR*2)] + 아이템 증가치
+									iA=5,	iM1=23,	fC=3.f;		break;
+		case CLASS_MIXER_322	 :	// 스카우트(322)	[(LV+5)*SQRT(LV+21)*2.7+(STR*2)] + 아이템 증가치
+									iA=5,	iM1=21,	fC=2.7f;	break;
 
-			case CLASS_MERCHANT_411 :	// 딜러(411)		[(LV+5)*SQRT(LV+20)*2.7+(STR*2)] + 아이템 증가치
-										iA=5,	iM1=20,	fC=2.7f;	break;
-			case CLASS_MERCHANT_421 :	// 부루즈아(421)	[(LV+5)*SQRT(LV+20)*2.7+(STR*2)] + 아이템 증가치
-										iA=5,	iM1=20,	fC=2.7f;	break;
-			case CLASS_MERCHANT_422 :	// 아티잔(422)		[(LV+5)*SQRT(LV+20)*2.7+(STR*2)] + 아이템 증가치
-										iA=5,	iM1=20,	fC=2.7f;	break;
+		case CLASS_MERCHANT_411 :	// 딜러(411)		[(LV+5)*SQRT(LV+20)*2.7+(STR*2)] + 아이템 증가치
+									iA=5,	iM1=20,	fC=2.7f;	break;
+		case CLASS_MERCHANT_421 :	// 부루즈아(421)	[(LV+5)*SQRT(LV+20)*2.7+(STR*2)] + 아이템 증가치
+									iA=5,	iM1=20,	fC=2.7f;	break;
+		case CLASS_MERCHANT_422 :	// 아티잔(422)		[(LV+5)*SQRT(LV+20)*2.7+(STR*2)] + 아이템 증가치
+									iA=5,	iM1=20,	fC=2.7f;	break;
 
-			//case CLASS_VISITOR :		// 무직	비지터(00)	[(LV+4)*SQRT(LV+26)*2.36+(STR*2)] + 아이템 증가치
-			default :					iA=4,	iM1=26,	fC=2.36f;	break;
-		}
-
-		m_Battle.m_nMaxHP  = (short)( ( this->GetCur_LEVEL()+iA ) * sqrtf(this->GetCur_LEVEL()+iM1) * fC + ( this->GetCur_STR()*2 ) + this->m_iAddValue[ AT_MAX_HP ] );
-	} else {
-		switch( this->GetCur_JOB() ) {
-			case CLASS_SOLDIER_111 :	iA=7,	iM1=12, iM2=2;	break;
-			case CLASS_SOLDIER_121 :	iA=-3,	iM1=14,	iM2=2;	break;
-			case CLASS_SOLDIER_122 :	iA=2,	iM1=13,	iM2=2;	break;
-
-			case CLASS_MAGICIAN_211 :	iA=11,	iM1=10,	iM2=2;	break;
-			case CLASS_MAGICIAN_221 :	iA=11,	iM1=10,	iM2=2;	break;
-			case CLASS_MAGICIAN_222 :	iA=5,	iM1=11,	iM2=2;	break;
-
-			case CLASS_MIXER_311	 :	iA=10,	iM1=11,	iM2=2;	break;
-			case CLASS_MIXER_321	 :	iA=2,	iM1=13,	iM2=2;	break;
-			case CLASS_MIXER_322	 :	iA=11,	iM1=11,	iM2=2;	break;
-
-			case CLASS_MERCHANT_411 :	iA=12,	iM1=10,	iM2=2;	break;
-			case CLASS_MERCHANT_421 :	iA=13,	iM1=10,	iM2=2;	break;
-			case CLASS_MERCHANT_422 :	iA=6,	iM1=11,	iM2=2;	break;
-
-			//case CLASS_VISITOR :
-			default :					iA=12,	iM1=8,	iM2=2;	break;
-		}
-		m_Battle.m_nMaxHP  = ( this->GetCur_LEVEL()+iA ) * iM1 + ( this->GetCur_STR()*iM2 ) + this->m_iAddValue[ AT_MAX_HP ];
+		//case CLASS_VISITOR :		// 무직	비지터(00)	[(LV+4)*SQRT(LV+26)*2.36+(STR*2)] + 아이템 증가치
+		default :					iA=4,	iM1=26,	fC=2.36f;	break;
 	}
+	m_Battle.m_nMaxHP = (short)((this->GetCur_LEVEL() + iA) * sqrtf(this->GetCur_LEVEL() + iM1) * fC + (this->GetCur_STR() * 2) + this->m_iAddValue[AT_MAX_HP]);
+
 #ifdef _DEBUG
 	int test = this->GetPassiveSkillValue( AT_PSV_MAX_HP );
 #endif	
@@ -621,37 +593,17 @@ int CUserDATA::Cal_ATTACK ()
 			// 소모탄에 따른 공격력 계산...
 			switch( ShotTYPE ) {
 				case SHOT_TYPE_ARROW :
-					if ( IsTAIWAN() ) {
-						// 화살장착:[  (DEX*0.52 + STR*0.1 + LV*0.1+총알품질*0.5)+{(무기공격력+ 무기등급추가치) * (DEX*0.04+SEN*0.03+29) / 30} ] + 아이템 증가치
-						iAP = (int)( ( GetCur_DEX()*0.52f + GetCur_STR()*0.1f + GetCur_LEVEL()*0.1f + nItemQ*0.5f ) +
-									( ( iWeaponAP+ ITEMGRADE_ATK(pRightWPN->GetGrade()) ) * ( GetCur_DEX()*0.04f + GetCur_SENSE()*0.03f+29 ) / 30 ) ) ;
+					iAP = (int)( ( GetCur_DEX()*0.52f + GetCur_STR()*0.1f + GetCur_LEVEL()*0.1f + nItemQ*0.5f ) +
+								( ( iWeaponAP+ ITEMGRADE_ATK(pRightWPN->GetGrade()) ) * ( GetCur_DEX()*0.04f + GetCur_SENSE()*0.03f+29 ) / 30 ) ) ;
 
-					} else {
-						iAP = (int)( ( GetCur_DEX()*0.62f + GetCur_STR()*0.2f + GetCur_LEVEL()*0.2f + nItemQ ) +
-									( ( ( iWeaponAP+ ITEMGRADE_ATK(pRightWPN->GetGrade()) )+nItemQ*0.5f+8 ) * ( GetCur_DEX()*0.04f + GetCur_SENSE()*0.03f + 29 ) / 30.f ) ) ;
-					}
 					break;
 				case SHOT_TYPE_BULLET:
-					//iAP = (int)( ( GetCur_DEX()*0.4f + GetCur_CON()*0.5f + GetCur_LEVEL()*0.2f + nItemQ ) +
-					//			( ( (iWeaponAP+ITEMGRADE_ATK(pRightWPN->GetGrade()) )+nItemQ*0.6f+8 ) * ( GetCur_CON()*0.03f + GetCur_SENSE()*0.05f+29) / 30 ) );
-					// 2005/ 6 / 29일 필리핀 버젼부터 국내와 대만 버젼계산식 분리
-					if( IsTAIWAN() )
-						iAP = (int)( ( GetCur_DEX()*0.3f + GetCur_CON()*0.47f + GetCur_LEVEL()*0.1f + nItemQ * 0.8f) +
-						( ( (iWeaponAP+ITEMGRADE_ATK(pRightWPN->GetGrade()) ) ) * ( GetCur_CON()*0.04f + GetCur_SENSE()*0.05f+29) / 30 ) );
-					else
-						iAP = (int)( ( GetCur_DEX()*0.4f + GetCur_CON()*0.5f + GetCur_LEVEL()*0.2f + nItemQ ) +
-								( ( (iWeaponAP+ITEMGRADE_ATK(pRightWPN->GetGrade()) )+nItemQ*0.6f+8 ) * ( GetCur_CON()*0.03f + GetCur_SENSE()*0.05f+29) / 30 ) );
+					iAP = (int)( ( GetCur_DEX()*0.3f + GetCur_CON()*0.47f + GetCur_LEVEL()*0.1f + nItemQ * 0.8f) +
+					( ( (iWeaponAP+ITEMGRADE_ATK(pRightWPN->GetGrade()) ) ) * ( GetCur_CON()*0.04f + GetCur_SENSE()*0.05f+29) / 30 ) );
 					break;
 				case SHOT_TYPE_THROW :
-					//iAP = (int)( ( GetCur_STR()*0.52f + GetCur_CON()*0.5f + GetCur_LEVEL()*0.2f + nItemQ ) +
-					//			( ( (iWeaponAP+ITEMGRADE_ATK(pRightWPN->GetGrade()) )+nItemQ+12 ) * ( GetCur_CON()*0.04f + GetCur_SENSE()*0.05f+29) / 30 ) );
-					// 2005/ 6 / 29일 필리핀 버젼부터 국내와 대만 버젼계산식 분리
-					if( IsTAIWAN() )
-						iAP = (int)( ( GetCur_STR()*0.32f + GetCur_CON()*0.45f + GetCur_LEVEL()*0.1f + nItemQ * 0.8f ) +
-						( ( (iWeaponAP+ITEMGRADE_ATK(pRightWPN->GetGrade()) ) ) * ( GetCur_CON()*0.04f + GetCur_SENSE()*0.05f+29) / 30 ) );
-					else
-						iAP = (int)( ( GetCur_STR()*0.52f + GetCur_CON()*0.5f + GetCur_LEVEL()*0.2f + nItemQ ) +
-						( ( (iWeaponAP+ITEMGRADE_ATK(pRightWPN->GetGrade()) )+nItemQ+12 ) * ( GetCur_CON()*0.04f + GetCur_SENSE()*0.05f+29) / 30 ) );
+					iAP = (int)( ( GetCur_STR()*0.32f + GetCur_CON()*0.45f + GetCur_LEVEL()*0.1f + nItemQ * 0.8f ) +
+					( ( (iWeaponAP+ITEMGRADE_ATK(pRightWPN->GetGrade()) ) ) * ( GetCur_CON()*0.04f + GetCur_SENSE()*0.05f+29) / 30 ) );
 
 					break;
 			} 
@@ -910,13 +862,7 @@ float CUserDATA::Cal_RunSPEED ()
 			nItemSpeed += BACKITEM_MOVE_SPEED( nItemNo );
 		}
 		nItemSpeed += 20;
-		if ( IsTAIWAN() ) {
-			// SPE = {(신발 이동력 + 등장착 이동력+20)*5
-			//fMoveSpeed = nItemSpeed * 5 + this->m_iAddValue[ AT_SPEED ];
-			fMoveSpeed = nItemSpeed * ( GetCur_DEX() + 500.f ) / 100.f + this->m_iAddValue[ AT_SPEED ];
-		} else {
-			fMoveSpeed = nItemSpeed * ( GetCur_DEX() + 500.f ) / 100.f + this->m_iAddValue[ AT_SPEED ];
-		}
+		fMoveSpeed = nItemSpeed * ( GetCur_DEX() + 500.f ) / 100.f + this->m_iAddValue[ AT_SPEED ];
 
 		float fPsvSpd = GetPassiveSkillValue( AT_PSV_MOV_SPD ) + fMoveSpeed * GetPassiveSkillRate( AT_PSV_MOV_SPD )/100.f;
 		return ( fMoveSpeed + fPsvSpd );
@@ -2142,60 +2088,21 @@ bool CUserDATA::Reward_InitSTATUS (void)
 
 bool CUserDATA::Reward_InitSKILL (void)
 {
-
-
-//###############################################################################################
-	// 케릭터의 스킬을 초기화 한다.
-	/// 인터페이스의 스킬아이콘도 삭제 할수 있도록 수정 : 2005/ 6/ 30 - nAvy
-	if( CCountry::GetSingleton().IsApplyNewVersion() )
+	if( g_pAVATAR )
 	{
-		short nSkillIDX, n1LevSkillIDX;
-		int iRecoverySP = 0;
-
-		CSkillSlot*	p = NULL;
-		assert( g_pAVATAR );
-		if( g_pAVATAR )
-			p = g_pAVATAR->GetSkillSlot();
-
-		for (int iS=MAX_LEARNED_SKILL_PER_PAGE; iS<MAX_LEARNED_SKILL_CNT; iS++) {
-			nSkillIDX = this->m_Skills.m_nSkillINDEX[ iS ];
-			if ( 0 == nSkillIDX )
-				continue;
-
-			if( p )
-				p->RemoveBySlotIndex( iS );
-
-			this->m_Skills.m_nSkillINDEX[ iS ] = 0;
-
-			n1LevSkillIDX = SKILL_1LEV_INDEX( nSkillIDX );
-			do {
-				iRecoverySP += SKILL_NEED_LEVELUPPOINT( nSkillIDX );
-				nSkillIDX --;
-			} while( nSkillIDX > 0 && n1LevSkillIDX == SKILL_1LEV_INDEX( nSkillIDX ) );
-		}
-
-		this->AddCur_SkillPOINT( iRecoverySP );
-	}
-	
-	else
-	{
-		if( g_pAVATAR )
+		///Remove from SkillSlot 
+		if( CSkillSlot*	p = g_pAVATAR->GetSkillSlot() )
 		{
-			///Remove from SkillSlot 
-			if( CSkillSlot*	p = g_pAVATAR->GetSkillSlot() )
+			for( int i = MAX_LEARNED_SKILL_PER_PAGE; i < MAX_LEARNED_SKILL_CNT-MAX_LEARNED_SKILL_PER_PAGE; ++i )
 			{
-				for( int i = MAX_LEARNED_SKILL_PER_PAGE; i < MAX_LEARNED_SKILL_CNT-MAX_LEARNED_SKILL_PER_PAGE; ++i )
-				{
-					if( m_Skills.m_nSkillINDEX[i] )
-						p->RemoveBySlotIndex( i );
-				}
+				if( m_Skills.m_nSkillINDEX[i] )
+					p->RemoveBySlotIndex( i );
 			}
 		}
+	}
 				
-		short nNewSP = (int)( this->GetCur_LEVEL() * ( this->GetCur_LEVEL()+4 ) * 0.25f ) - 1;
- 		this->SetCur_SkillPOINT( nNewSP );
- 	}
- //##############################################################################################
+	short nNewSP = (int)( this->GetCur_LEVEL() * ( this->GetCur_LEVEL()+4 ) * 0.25f ) - 1;
+ 	this->SetCur_SkillPOINT( nNewSP );
 
 	///QuickSlot Update
 	g_itMGR.UpdateQuickSlot();

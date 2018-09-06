@@ -15,7 +15,8 @@
 #include "../../it_mgr.h"
 #include "../CSkillDlg.h"
 #include "../../../GameCommon/Skill.h"
-#include "../../../Country.h"
+
+
 CSkillListItem::CSkillListItem(void)
 {
 	CResourceMgr* pResMgr = CResourceMgr::GetInstance();
@@ -264,25 +265,6 @@ void CSkillListItem::Update( POINT ptMouse )
 					else
 						text_color = g_dwWHITE;
 					Info.AddString(CStr::Printf( "%s: %d", STR_REQUIRE_SP, iNeedSkillPoint) , text_color);
-
-					if( CCountry::GetSingleton().IsApplyNewVersion() )
-					{
-						//필요 줄리
-						if( iRequireJuly > g_pAVATAR->Get_MONEY() )
-							text_color = g_dwRED;
-						else
-							text_color = g_dwWHITE;
-
-						Info.AddString(CStr::Printf( "%s: %d", STR_REQUIRE_JULY, iRequireJuly ), text_color );
-						
-						//필요 레벨
-						if( iRequireLevel > g_pAVATAR->Get_LEVEL() )
-							text_color = g_dwRED;
-						else
-							text_color = g_dwWHITE;
-
-						Info.AddString(CStr::Printf( "%s: %d", STR_REQUIRE_LEVEL, iRequireLevel ), text_color );
-					}
 
 					POINT ptDraw = ptMouse;
 					ptDraw.y -= Info.GetHeight();

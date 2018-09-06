@@ -169,49 +169,6 @@ enum eUserCntIDX {
 } ;
 int	g_iUserCount[ USERCNT_MAX ];
 
-#define	LANG_KOR			0
-#define	LANG_ENG			1
-#define	LANG_JPN			2
-#define	LANG_TWAIN			3
-#define	LANG_CHINA			4
-#define LANG_PHILIPPINE		5
-#define LANG_USA			6
-#define LANG_EUROPE		    7
-
-bool IsJAPAN ()
-{
-	return ( LANG_JPN == ::Get_ServerLangTYPE() );
-}
-bool IsTAIWAN ()
-{
-#ifdef false
-#ifdef	__PHILIPPINES
-	return true;
-#else
-//	return ( LANG_TWAIN == ::Get_ServerLangTYPE() );
-	switch( ::Get_ServerLangTYPE() ) {
-		case LANG_TWAIN :
-		case LANG_PHILIPPINE :
-		case LANG_USA:
-		case LANG_EUROPE:
-			return true;
-	} 
-	return false;
-#endif
-#else
-	return true;
-#endif
-}
-bool IsIROSE ()
-{
-//	return ( LANG_ENG == ::Get_ServerLangTYPE() );
-	switch( ::Get_ServerLangTYPE() ) {
-		case LANG_TWAIN :
-		case LANG_ENG :
-			return true;
-	} 
-	return false;
-}
 
 VOID CALLBACK GS_TimerProc (HWND hwnd/* handle to window */, UINT uMsg/* WM_TIMER message */, UINT_PTR idEvent/* timer identifier */, DWORD dwTime/* current system time */ ) 
 {
@@ -248,39 +205,16 @@ VOID CALLBACK GS_TimerProc (HWND hwnd/* handle to window */, UINT uMsg/* WM_TIME
 		{
 			g_pZoneLIST->Inc_WorldTIME ();
 #ifndef	__INC_WORLD
-			// 일본
-			if ( LANG_JPN == ::Get_ServerLangTYPE() ) {
-				// if ( 0 == ( g_pZoneLIST->m_dwAccTIME & 0x07 ) ) {
-					// 10초 * 0x??간격 마다...
-				static DWORD dwJapanTime = g_pZoneLIST->m_dwAccTIME;
-				if ( 6 <= ( g_pZoneLIST->m_dwAccTIME - dwJapanTime ) ) {
-					dwJapanTime = g_pZoneLIST->m_dwAccTIME;
+			// 한국
+			if ( 0 == ( g_pZoneLIST->m_dwAccTIME & 0x00f ) ) {
+				// 0x00f = 16, 10초 * 16 = 160초 = 2.6초
+				CLIB_GameSRV *pGS = CLIB_GameSRV::GetInstance();
+				if ( pGS ) {
+					// http://roseonline.co.kr/statistics/stime.asp?channelip=xxx.xxx.xxx.xxx&cnt=1500
+					sprintf( g_szURL, "http://roseonline.co.kr/statistics/stime.asp?channelip=%s&cnt=%d",
+						pGS->GetServerIP(), g_pUserLIST->GetUsedSocketCNT() );
 
-					CLIB_GameSRV *pGS = CLIB_GameSRV::GetInstance();
-					if ( pGS ) {
-						// 일본
-						if ( LANG_JPN == ::Get_ServerLangTYPE() ) {
-							// http://www.roseon.jp/rta/reg_rta.asp?server_ip=xxx.xxx.xxx.xxx&total_count=3000&HG_count=1400&EX_count=500&BB_count=200
-							sprintf( g_szURL, "http://www.roseon.jp/rta/reg_rta.asp?server_ip=%s&total_count=%d&HG_count=%d&EX_count=%d&BB_count=%d&GL_count=%d",
-								pGS->GetServerIP(), g_pUserLIST->GetUsedSocketCNT(),
-								g_iUserCount[ USERCNT_HG ], g_iUserCount[ USERCNT_EX ], g_iUserCount[ USERCNT_BB ], g_iUserCount[ USERCNT_GL ] );
-
-							g_pThreadURL->SendURL( g_szURL );
-						}
-					}
-				}
-			} else {
-				// 한국
-				if ( 0 == ( g_pZoneLIST->m_dwAccTIME & 0x00f ) ) {
-					// 0x00f = 16, 10초 * 16 = 160초 = 2.6초
-					CLIB_GameSRV *pGS = CLIB_GameSRV::GetInstance();
-					if ( pGS ) {
-						// http://roseonline.co.kr/statistics/stime.asp?channelip=xxx.xxx.xxx.xxx&cnt=1500
-						sprintf( g_szURL, "http://roseonline.co.kr/statistics/stime.asp?channelip=%s&cnt=%d",
-							pGS->GetServerIP(), g_pUserLIST->GetUsedSocketCNT() );
-
-						g_pThreadURL->SendURL( g_szURL );
-					}
+					g_pThreadURL->SendURL( g_szURL );
 				}
 			}
 
@@ -294,21 +228,18 @@ VOID CALLBACK GS_TimerProc (HWND hwnd/* handle to window */, UINT uMsg/* WM_TIME
 			}
 #endif
 
-			if( IsTAIWAN() )
+			if( Get_WorldVAR( WORLD_VAR_DAY ) > g_iChatLogDAY ) /// 하루가 지나면 로그 파일을 바꿔라
 			{
-				if( Get_WorldVAR( WORLD_VAR_DAY ) > g_iChatLogDAY ) /// 하루가 지나면 로그 파일을 바꿔라
-				{
-					g_iChatLogDAY = Get_WorldVAR( WORLD_VAR_DAY );
-					if( ::g_ChatLOG.IsOpened() )
-						::g_ChatLOG.Close();
-					if( !::g_ChatLOG.Open( "USER" ) )
-						g_LOG.CS_OUT( 0xffff, "User Chat Log file can't be opened" );
+				g_iChatLogDAY = Get_WorldVAR( WORLD_VAR_DAY );
+				if( ::g_ChatLOG.IsOpened() )
+					::g_ChatLOG.Close();
+				if( !::g_ChatLOG.Open( "USER" ) )
+					g_LOG.CS_OUT( 0xffff, "User Chat Log file can't be opened" );
 
-					if( ::g_ChatGMLOG.IsOpened() )
-						::g_ChatGMLOG.Close();
-					if( !::g_ChatGMLOG.Open( "GM" ) )
-						g_LOG.CS_OUT( 0xffff, "GM Chat Log file can't be opened" );
-				}
+				if( ::g_ChatGMLOG.IsOpened() )
+					::g_ChatGMLOG.Close();
+				if( !::g_ChatGMLOG.Open( "GM" ) )
+					g_LOG.CS_OUT( 0xffff, "GM Chat Log file can't be opened" );
 			}
 
 			break;
@@ -326,52 +257,14 @@ void WriteLOG (char *szMSG)
 #define	TAG_EX	0x4540		// @E X
 #define	TAG_BB	0x4240		// @B B
 #define	TAG_GL	0x4740		// @G L
+
 void IncUserCNT( int iUserCNT, classUSER *pUSER )
 {
-	if ( IsJAPAN() ) {
-		char *szAccount = pUSER->Get_ACCOUNT();
-		if ( pUSER->Get_AccountLEN() >= 4 ) {
-			switch( *( (WORD *)(&szAccount[ pUSER->Get_AccountLEN()-3 ]) ) ) {
-				case TAG_HG :
-					g_iUserCount[ USERCNT_HG ] ++;
-					break;
-				case TAG_BB :
-					g_iUserCount[ USERCNT_BB ] ++;
-					break;
-				case TAG_EX :
-					g_iUserCount[ USERCNT_EX ] ++;
-					break;
-				case TAG_GL :
-					g_iUserCount[ USERCNT_GL ] ++;
-					break;
-			}
-		}
-	}
-
 	CLIB_GameSRV::ExeAPI()->SetUserCNT( iUserCNT );
 }
+
 void DecUserCNT( int iUserCNT, classUSER *pUSER )
 {
-	if ( IsJAPAN() ) {
-		char *szAccount = pUSER->Get_ACCOUNT();
-		if ( pUSER->Get_AccountLEN() >= 4 ) {
-			switch( *( (WORD *)(&szAccount[ pUSER->Get_AccountLEN()-3 ]) ) ) {
-				case TAG_HG :
-					g_iUserCount[ USERCNT_HG ] --;
-					break;
-				case TAG_BB :
-					g_iUserCount[ USERCNT_BB ] --;
-					break;
-				case TAG_EX :
-					g_iUserCount[ USERCNT_EX ] --;
-					break;
-				case TAG_GL :
-					g_iUserCount[ USERCNT_GL ] --;
-					break;
-			}
-		}
-	}
-
 	CLIB_GameSRV::ExeAPI()->SetUserCNT( iUserCNT );
 }
 
@@ -588,17 +481,14 @@ void CLIB_GameSRV::SystemINIT( HINSTANCE hInstance, char *szBaseDataDIR, int iLa
 
 	this->InitLocalZone( true );
 
-	if( IsTAIWAN() )
-	{
-		if( !g_ChatLOG.Open( "USER" ) )
-			g_LOG.CS_OUT( 0xffff, "User Chat Log file can't be opened" );
-		else
-			g_ChatLOG.Resume();
-		if( !g_ChatGMLOG.Open( "GM" ) )
-			g_LOG.CS_OUT( 0xffff, "GM Chat Log file can't be opened" );
-		else
-			g_ChatGMLOG.Resume();
-	}
+	if( !g_ChatLOG.Open( "USER" ) )
+		g_LOG.CS_OUT( 0xffff, "User Chat Log file can't be opened" );
+	else
+		g_ChatLOG.Resume();
+	if( !g_ChatGMLOG.Open( "GM" ) )
+		g_LOG.CS_OUT( 0xffff, "GM Chat Log file can't be opened" );
+	else
+		g_ChatGMLOG.Resume();
 }
 
 //-------------------------------------------------------------------------------------------------

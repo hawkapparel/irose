@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "CRestartDLG.h"
 #include "..\\..\\NetWork\\CNetwork.h"
-#include "../../Country.h"
 #include "../../IO_Terrain.h"
 
 
@@ -60,31 +59,5 @@ bool CRestartDLG::On_LButtonUP( unsigned iProcID )
 void CRestartDLG::Show()
 {
 	CTDialog::Show();
-	if( CCountry::GetSingleton().IsApplyNewVersion() )
-	{
-		CWinCtrl* pCtrl = NULL;
-		if( ZONE_IS_UNDERGROUND( g_pTerrain->GetZoneNO() ) )
-		{
-			if( pCtrl = Find( BTN_RESTART_SAVE_POSITION ) )
-				pCtrl->Hide();
-			if( pCtrl = Find( BTN_RESTART_DUNGEON_GATE ) )
-				pCtrl->Show();
-		}
-		else
-		{
-			if( pCtrl = Find( BTN_RESTART_SAVE_POSITION ) )
-				pCtrl->Show();
-			if( pCtrl = Find( BTN_RESTART_DUNGEON_GATE ) )
-				pCtrl->Hide();
-		}
-	}
-
-	//if( g_pAVATAR )
-	//{
-	//	if( g_pAVATAR->Get_LEVEL() < 10 || g_GameDATA.m_iPvPState )
-	//		SetEnableChild( IID_BTN_RESTART_SAVEDTOWN, false );
-	//	else
-	//		SetEnableChild( IID_BTN_RESTART_SAVEDTOWN, true );
-	//}
 }
 

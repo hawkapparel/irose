@@ -14,7 +14,6 @@
 
 
 #include "../CJustModelAVT.h"
-#include "../Country.h"
 
 #include "tgamectrl/tmsgbox.h"
 
@@ -90,15 +89,6 @@ void CSelectAvata::SendSelectAvataReq( )
 	if( CJustModelAVT* pSelectedAvt = refData.GetSelectedAvatar() )
 	{
 		if( pSelectedAvt->IsPlatinum() 
-			&& CCountry::GetSingleton().IsJapan() 
-			&& !(CGame::GetInstance().GetPayType() & PLAY_FLAG_EXTRA_CHAR) )
-		{			
-			g_EUILobby.ShowMsgBox( STR_JP_BILL_CANT_SELECT_CHARACTER ,CTMsgBox::BT_OK , true , GetDialogType() );
-			return;
-		}
-		else if( pSelectedAvt->IsPlatinum() 
-				&& !CCountry::GetSingleton().IsJapan()
-				&& !CCountry::GetSingleton().IsPhilipplines()
 				&& CGame::GetInstance().GetPayType() != CGame::PAY_PLATINUM )
 		{
 			g_EUILobby.ShowMsgBox( STR_ONLY_PLATINUM_SELECT_CHAR ,CTMsgBox::BT_OK , true , GetDialogType() );

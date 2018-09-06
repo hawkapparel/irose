@@ -15,8 +15,6 @@
 #include "GameCommon/Skill.h"
 #include "Event/Quest_FUNC.h"
 #include "Common/IO_PAT.h"
-#include "Country.h"
-
 
 
 void CObjCHAR::FireBulletWithPetWeapon( CObjCHAR* pTarget )
@@ -358,11 +356,6 @@ void CObjCHAR::ActionInFighting( int iActionIDX )
 			 		///<- 2005/7/25 카트 시스템 파츠 추가로 수정 : nAvy
 					///전처리기 정의로 구조가 바뀜에 따라 다시 복구 2005/8/31 navye
 					iSoundIDX  = PAT_HIT_SOUND( ((CObjCART*)this)->GetPetParts( RIDE_PART_ARMS ) );
-					//if( CCountry::GetSingleton().IsApplyBattleCart() )
-					//	iSoundIDX  = PAT_HIT_SOUND( ((CObjCART*)this)->GetPetParts( RIDE_PART_ARMS ) );
-					//else
-					//	iSoundIDX  = PAT_HIT_SOUND( ((CObjCART*)this)->GetPetParts( RIDE_PART_ABIL ) );
-					///->
 
 					if ( iSoundIDX )
 						g_pSoundLIST->IDX_PlaySound3D( iSoundIDX, Get_CurPOS() );

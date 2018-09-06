@@ -4,7 +4,6 @@
 #include "../Network/CNetwork.h"
 
 #include "../System/CGame.h"
-#include "../Country.h"
 #include "../Interface/it_MGR.h"
 
 CChatMember::CChatMember(WORD wServerIdx, const char* pszName )
@@ -175,16 +174,6 @@ void CChatRoom::Leave()
 
 void CChatRoom::SendReqMakeRoom( BYTE btRoomType, BYTE btMaxUser, char* pszTitle, char* pszPwd )
 {
-
-	if(CCountry::GetSingleton().IsJapan())
-	{
-		if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_COMMUNITY) )
-		{
-			g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_USE_CHATROOM );
-			return;
-		}        
-	}
-
 	assert( m_iState == STATE_DEACTIVATED );	
 	if( m_iState == STATE_DEACTIVATED )
 	{
@@ -196,16 +185,6 @@ void CChatRoom::SendReqMakeRoom( BYTE btRoomType, BYTE btMaxUser, char* pszTitle
 
 void CChatRoom::SendReqJoinRoom( BYTE btRoomType, WORD wRoomID, char* pszPwd )
 {
-
-	if(CCountry::GetSingleton().IsJapan())
-	{
-		if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_COMMUNITY) )
-		{
-			g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_USE_CHATROOM );
-			return;
-		}        
-	}	
-
 	assert( m_iState == STATE_DEACTIVATED );
 	if( m_iState == STATE_DEACTIVATED )
 	{

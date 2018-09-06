@@ -12,7 +12,6 @@
 #include "triggerinfo/triggerinfo.h"
 
 #include "Util/CheckHack.h"
-#include "Country.h"
 
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -115,8 +114,6 @@ int APIENTRY WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 	if( IsDuplicateApp() )
 		return FALSE;
 #endif
-
-	CCountry::GetSingleton().CheckCountry();
 
 	g_SystemInfo.CollectingSystemInfo();
 	int iWindowVersion = g_SystemInfo.GetWindowsVersion();

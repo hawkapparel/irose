@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include ".\callgm.h"
 #include "../System/SystemProcScript.h"
-#include "../Country.h"
+
 
 CCallGM::CCallGM(void)
 {
@@ -15,11 +15,9 @@ void CCallGM::CallGM( std::string& strServerName, std::string& strChannelName, s
 {
 	std::string strSendedString = strServerName + "_" + strChannelName + "_" + strMsg;
 
-	DWORD dwCountryCode = CCountry::GetSingleton().GetCountryCode();
-
 	CSystemProcScript::GetSingleton().CallLuaFunction( "SendGMCall", 
 												ZZ_PARAM_INT,
-												dwCountryCode,
+												0,
 												ZZ_PARAM_STRING,
 												strSendedString,
 												ZZ_PARAM_END );	

@@ -17,9 +17,6 @@
 #include "../CommandFilter.h"
 
 #include "../IO_Terrain.h"
-#include "../Country.h"
-
-
 
 enum SKILL_STATE
 {
@@ -29,31 +26,15 @@ enum SKILL_STATE
 	SKILL_ACTION_STATE = 3,
 };
 
-
-
 int Global_GetWorldTIME()
 {
 	return ::Get_WorldTIME();
 }
 
-
-
-//--------------------------------------------------------------------------------
-/// class : CObjTARGET
-/// @param
-/// @brief  : Target Object 를 구한다.( HP 체크 )
-//--------------------------------------------------------------------------------
-
 CAI_OBJ *CObjTARGET::Get_TargetOBJ()
 {	
 	return ( m_iServerTarget ) ? g_pObjMGR->Get_ClientCharOBJ( m_iServerTarget, true ) : NULL;
 }
-
-//--------------------------------------------------------------------------------
-/// class : CObAI
-/// @param
-/// @brief  : Constructor
-//--------------------------------------------------------------------------------
 
 CObjAI::CObjAI ()
 {
@@ -117,14 +98,7 @@ int	CObjAI::Get_WorldTIME(void)
 
 int	CObjAI::Cal_AtkAniSPEED( short nRightWeaponItemNO )
 {
-	if( CCountry::GetSingleton().IsApplyNewVersion() )
-	{
-		/// 100을 기준으로 계산됨.
-		float fWeaponSpeed = (int) ( 1500.f / ( WEAPON_ATTACK_SPEED( nRightWeaponItemNO ) + 5 ) );
-		return (int)( fWeaponSpeed + this->GetPsv_ATKSPEED(fWeaponSpeed, nRightWeaponItemNO ) );
-	}
-	else
-		return (int) ( this->GetPsv_ATKSPEED() + 1500.f / ( WEAPON_ATTACK_SPEED( nRightWeaponItemNO ) + 5 ) );
+	return (int) ( this->GetPsv_ATKSPEED() + 1500.f / ( WEAPON_ATTACK_SPEED( nRightWeaponItemNO ) + 5 ) );
 }
 
 
@@ -1940,12 +1914,6 @@ int CObjAI::ProcCMD_Skill2OBJECT ()
 	return 1;
 }
 
-
-//----------------------------------------------------------------------------------------------------
-/// @param
-/// @brief 현재 명령상태에 따른 회복 수치를 구한다.
-///			- 수정 : 계산식에서 최대HP의 값이 모든 최대 MP -> 순수 최대 HP( 버프, 패시브등을 뺀)로 수정		2005/7/13 - nAvy
-//----------------------------------------------------------------------------------------------------
 short CObjAI::Get_RecoverHP( short nRecoverMODE )	
 {
 	short nRecoverHP = 0;
@@ -1954,51 +1922,25 @@ short CObjAI::Get_RecoverHP( short nRecoverMODE )
 	{
 		case CMD_SIT :
 			{
-				if( CCountry::GetSingleton().IsApplyNewVersion() )
-					//nRecoverHP = this->GetAdd_RecoverHP() + this->Get_MaxHP() / 12.f + 1;
-					nRecoverHP = this->GetAdd_RecoverHP() + this->GetOri_MaxHP() / 12.f + 1;
-					
-				else
-					nRecoverHP = this->GetAdd_RecoverHP() + ( this->Get_CON()+30 ) / 8 * (nRecoverMODE+3) / 10;	
+				nRecoverHP = this->GetAdd_RecoverHP() + ( this->Get_CON()+30 ) / 8 * (nRecoverMODE+3) / 10;	
 			}
 			break;
 		default:
 			{
-				if( CCountry::GetSingleton().IsApplyNewVersion() )
-					//nRecoverHP = this->GetAdd_RecoverHP() + this->Get_MaxHP() / 50 + 1;
-					nRecoverHP = this->GetAdd_RecoverHP() + this->GetOri_MaxHP() / 50 + 1;
-				else
-					nRecoverHP = ( this->GetAdd_RecoverHP() + ( this->Get_CON()+40 ) / 6 ) / 6;	
+				nRecoverHP = ( this->GetAdd_RecoverHP() + ( this->Get_CON()+40 ) / 6 ) / 6;	
 			}
 			break;	
 	}
 	return nRecoverHP;
 }
 
-//----------------------------------------------------------------------------------------------------
-/// @param
-/// @brief 현재 명령상태에 따른 마나 회복 수치를 구한다.
-///			- 수정 : 계산식에서 최대MP의 값이 모든 최대 MP -> 순수 최대 MP( 버프, 패시브등을 뺀)로 수정		2005/7/13 - nAvy
-//----------------------------------------------------------------------------------------------------
 short CObjAI::Get_RecoverMP( short nRecoverMODE )	
 {	
 	short nRecoverMP = 0;
 	switch( Get_COMMAND() )
 	{
 	case CMD_SIT:
-		if( CCountry::GetSingleton().IsApplyNewVersion() )
-			//nRecoverMP = this->GetAdd_RecoverMP() + this->Get_MaxMP() / 12.f + 1;
-			nRecoverMP = this->GetAdd_RecoverMP() + this->GetOri_MaxMP() / 12.f + 1;
-		else
-			nRecoverMP = ( this->GetAdd_RecoverMP() + ( this->Get_CON()+20 ) / 10 * nRecoverMODE / 7 );
-		break;
-	default:
-		if( CCountry::GetSingleton().IsApplyNewVersion() )
-		{
-			//nRecoverMP = this->GetAdd_RecoverMP() + this->Get_MaxMP() / 35.f + 1;
-			nRecoverMP = this->GetAdd_RecoverMP() + this->GetOri_MaxMP() / 35.f + 1;
-		}
-		break;
+		nRecoverMP = ( this->GetAdd_RecoverMP() + ( this->Get_CON()+20 ) / 10 * nRecoverMODE / 7 );
 	}
 
 	return nRecoverMP;

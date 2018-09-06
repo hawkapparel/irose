@@ -31,7 +31,6 @@
 #include "Misc/GameUtil.h"
 #include "CommandFilter.h"
 #include "../GameProc/DelayedExp.h"
-#include "../Country.h"
 #include "../common/CInventory.h"
 #include "system/System_Func.h"
 
@@ -2398,24 +2397,12 @@ bool CObjCHAR::Hitted (CObjCHAR *pFromOBJ, int iEffectIDX, int iSkillIDX, bool b
 #define HIT_AROA_EFF 1613
 
 	BOOL IsAcceptAroa = FALSE;
-   if(CCountry::GetSingleton().IsApplyNewVersion())
-   {
-	   if(pFromOBJ->IsUSER() || pFromOBJ->IsPET())
-			IsAcceptAroa = TRUE;
-   }
-//-------------------------------------------------------------------------
 
-	//--------------------------------------------------------------------------------
-	/// 맞았을때 풀려야하는 효과들..
-	//--------------------------------------------------------------------------------
 	m_EndurancePack.ClearStateByHitted();
 
 
 	D3DXVECTOR3	pos = this->Get_CurPOS();
 
-	//--------------------------------------------------------------------------------
-	/// 효과만 적용시킬때는.. ApplyDamage 따위를 하지않는다.물론 타격치도..
-	//--------------------------------------------------------------------------------
 	if( !bJustEffect )
 	{			
 		if ( this->m_lDeadTIME ) 
@@ -4356,14 +4343,8 @@ void CObjCHAR::SetReviseMP( int mp )
 //-----------------------------------------------------------------------------
 void CObjCHAR::Calc_AruaAddAbility()
 {
-	if( CCountry::GetSingleton().IsApplyNewVersion() )
-	{
-		if( m_IsAroa )
-			m_AruaAddMoveSpeed   = GetOri_RunSPEED() * 0.2;
-		else
-			m_AruaAddMoveSpeed   = 0;
-	}
 }
+
 //-----------------------------------------------------------------------------
 /// @brief 공격속도
 //-----------------------------------------------------------------------------
@@ -4739,13 +4720,6 @@ int CObjNPC::GetEventValue()
 
 int CObjNPC::Proc ()
 {
-	if( CCountry::GetSingleton().IsApplyNewVersion() && ( this->m_nQuestSignal < 0 || g_pAVATAR->m_bQuestUpdate ) )
-	{
-		// 내 아바타의 퀘스트 상태가 갱신되었거나 이전에 퀘스트 상태를 판단한적이 없다면...
-		this->m_nQuestSignal = SC_QF_GetNpcQuestStatus( this->m_nCharIdx );
-		_RPT1( _CRT_WARN,"SC_QF_GetNpcQuestStatus :%d \n", m_nQuestSignal );
-	}
-
 	return CObjMOB::Proc ();
 }
 
@@ -5101,52 +5075,11 @@ void CObjAVT::DeleteGemmingEffect()
 	}
 }
 
-
-//2005.06. 15 박지호 
-//----------------------------------------------------------------------------------------------------		
-/// 대만일 경우 레어 아이템일때 glow 효과를 3단계 설정한다. 
-//----------------------------------------------------------------------------------------------------
 void CObjAVT::Set_RareITEM_Glow(void)
 {
-	
-	//대만이 아니면 리턴한다.
-//	if(!CCountry::GetSingleton().IsTAIWAN()) 
-//	  return;
-
-	//대만과 필리핀에 적용됩니다. 수정 2005.6.20 nAvy
-	if( !CCountry::GetSingleton().IsApplyNewVersion() )
-		return;
-
-	CInventory	m_Inventory;				
-	short		m_iType = 0;
-	
-
-	for( int i = 1; i < MAX_BODY_PART ; i++ )
-	{
-		int iItemIDX = m_sPartItemIDX[ i ].m_nItemNo;
-		
-		if( iItemIDX == 0 )
-			continue;
-		
-		//레어 아이템인지 체크한다. 
-		m_iType = m_Inventory.GetBodyPartToItemType(i);	
-			if(m_iType == MAX_BODY_PART)
-				continue;
-		
-
-		if(ITEM_RARE_TYPE(m_iType,m_sPartItemIDX[i].m_nItemNo) != 3)
-			continue;
-
-		//3단계 Glow 효과 설정 
-		m_sPartItemIDX[i].m_cGrade = 3;
-	}
-
+	return;
 }
 
-
-//----------------------------------------------------------------------------------------------------		
-/// @brief 재밍, 재련관련 이펙트..
-//----------------------------------------------------------------------------------------------------
 void CObjAVT::CreateGradeEffect()
 {
 	CMODEL<CCharPART> *pCharPART = NULL;
@@ -5474,13 +5407,6 @@ void CObjAVT::RideCartToggle( bool bRide )
 //-------------------------------------------------------------------------------------------------
 #define	CHECK_TIME	1500
 
-//--------------------------------------------------------------------------------
-/// class : CObjAVT
-/// @param  : 
-/// @brief  : HP와MP리젠이 CObjAI::RecoverHPnMP() 에서 처리되므로 이전 코드인 이곳은 지운다.	- 2004/02/11 : nAvy 
-///           Aroa상태일경우 50% 추가로 회복속도증가											- 2005/07/12 : nAvy
-//--------------------------------------------------------------------------------
-
 int CObjAVT::Proc ()
 {
 	m_dwElapsedTime += m_dwFrameElapsedTime;
@@ -5491,17 +5417,8 @@ int CObjAVT::Proc ()
 	///if( GetStamina() > 3000 )
 	{
 		int	iRecoverStateCheckTime = RECOVER_STATE_CHECK_TIME_OLD;
-		if( CCountry::GetSingleton().IsApplyNewVersion() )
-			iRecoverStateCheckTime = RECOVER_STATE_CHECK_TIME_NEW;
-
 		int iRecoverStateSitOnGround = RECOVER_STATE_SIT_ON_GROUND_OLD;
-		if( CCountry::GetSingleton().IsApplyNewVersion() )
-			iRecoverStateSitOnGround = RECOVER_STATE_SIT_ON_GROUND_NEW;
-
-
 		int iRecoverStateStopWalk    = RECOVER_STATE_STOP_OR_WALK_OLD;
-		if( CCountry::GetSingleton().IsApplyNewVersion() )
-			iRecoverStateStopWalk = RECOVER_STATE_STOP_OR_WALK_NEW;
 
 
 
@@ -6249,14 +6166,7 @@ void CGoddessMgr::Release_List(GODDESSSTR* pGDS)
 //허용국가 체크 
 BOOL CGoddessMgr::Permission_Country(void)
 {
-
-	//국가  체크 후 결과를 세팅한다. 
-	if( CCountry::GetSingleton().IsApplyNewVersion())
-		return TRUE;
-
-
 	return FALSE;
-
 }
 
 

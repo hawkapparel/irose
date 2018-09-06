@@ -1347,17 +1347,7 @@ bool GS_CThreadSQL::Proc_cli_CREATE_CHAR( tagQueryDATA *pSqlPACKET )
 		return true;
 	}
 
-
-	// 시작 위치..
-	WORD wPosBeginner;
-	if ( IsTAIWAN() ) {
-		wPosBeginner = 0;// 강제로 북쪽~~~
-	} else {
-		wPosBeginner = pPacket->m_cli_CREATE_CHAR.m_nZoneNO;
-		if ( wPosBeginner >= MAX_BEGINNER_POS ) {
-			wPosBeginner = RANDOM(MAX_BEGINNER_POS);
-		}
-	}
+	WORD wPosBeginner = 0;
 	
 	// 만들자 !!!
 	m_pDefaultBE[ nDefRACE ].m_btCharRACE = (BYTE)nDefRACE;
@@ -1365,8 +1355,7 @@ bool GS_CThreadSQL::Proc_cli_CREATE_CHAR( tagQueryDATA *pSqlPACKET )
 	//m_pDefaultBE[ nDefRACE ].m_PosSTART   = g_ZoneLIST.Get_StartPOS( nZoneIDX );
 	m_pDefaultBE[ nDefRACE ].m_PosSTART   = s_BeginnerPOS[ wPosBeginner ];
 	
-	// 초기 부활장소 지정...
-	short nDefReviveZoneNO = IsTAIWAN() ? BEGINNER_ZONE : ADVENTURE_ZONE;
+	short nDefReviveZoneNO = BEGINNER_ZONE;
 
 	pZONE = g_pZoneLIST->GetZONE( nDefReviveZoneNO );
 	m_pDefaultBE[ nDefRACE ].m_nReviveZoneNO = pZONE->Get_ZoneNO();

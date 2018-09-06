@@ -18,7 +18,6 @@
 #include "../util/clipboardutil.h"
 #include "../System/CGame.h"
 
-#include "../Country.h"
 #include "../Game.h"
 #include "../Object.h"
 #include "../Bullet.h"
@@ -361,7 +360,7 @@ void CGameStateMain::Render_GameMENU()
 															g_DayNNightProc.GetWorldTime(), g_DayNNightProc.GetZoneTime(), g_DayNNightProc.GetBlendFactor() );
 
 			::drawFontf( g_GameDATA.m_hFONT[ FONT_NORMAL ], false, 220, 100, g_dwRED, "( WorldRATE: %d, WorldPROD:%d, Country Code:%d )",
-				Get_WorldRATE(), Get_WorldPROD (), CCountry::GetSingleton().GetCountryCode() );
+				Get_WorldRATE(), Get_WorldPROD (), 0 );
 
 			
 
@@ -461,22 +460,8 @@ int CGameStateMain::ProcKeyboardInput(UINT uiMsg, WPARAM wParam, LPARAM lParam )
 				break;
 #pragma message("일본어의 경우 변환키와 중복되지 않는지 테스트해보아야 한다")
 			case 192://` : 줍기
-				if( CCountry::GetSingleton().IsApplyNewVersion() && 
-					CTControlMgr::GetInstance()->GetKeyboardInputType() == CTControlMgr::INPUTTYPE_NORMAL &&
-					NULL == CTEditBox::s_pFocusEdit )
-				{
-					assert( g_pAVATAR );
-					CSkillSlot* pSkillSlot = g_pAVATAR->GetSkillSlot();
-					assert( pSkillSlot );
-
-					CSkill* pSkill = pSkillSlot->GetSkillBySkillIDX( SKILLINDEX_PICKUP );
-					assert( pSkill );
-					if( pSkill )
-						pSkill->Execute();
-
-				}
 				break;
-				case VK_SHIFT://
+			case VK_SHIFT://
 				if(CTControlMgr::GetInstance()->GetKeyboardInputType() == CTControlMgr::INPUTTYPE_NORMAL && 
 					NULL == CTEditBox::s_pFocusEdit )
 				{

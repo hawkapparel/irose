@@ -12,7 +12,6 @@ $Header: /Client/Network/RecvPACKET.cpp 690   05-10-27 10:18a Choo0219 $
 #include "../CClientStorage.h"
 #include "../CJustModelAVT.h"
 #include "../SqliteDB.h"
-#include "../Country.h"
 
 #include "../System/CGame.h"
 #include "../GameData/ServerList.h"
@@ -1396,30 +1395,8 @@ void CRecvPACKET::Recv_gsv_MOB_CHAR ()
 				{					
 
 					int iSkillLevel = SKILL_LEVEL( iDoingSkillIDX );
-					int iMaxHP = 0;
-
-					///2005.06.29 대만 적용식 분리
-					if( CCountry::GetSingleton().IsApplyNewVersion() )
-					{
-						/// 소환수 타입에 따라 HP계산식 분리 2005/8/26 최종진 
-						switch( NPC_SUMMONMOB_TYPE( m_pRecvPacket->m_gsv_MOB_CHAR.m_nCharIdx ) )
-						{
-						case 0:
-							iMaxHP = (int)( NPC_HP( m_pRecvPacket->m_gsv_MOB_CHAR.m_nCharIdx	) + g_pAVATAR->Get_MaxHP() * 8 / 10 );
-							break;
-						case 1:
-							iMaxHP = (int)( NPC_HP( m_pRecvPacket->m_gsv_MOB_CHAR.m_nCharIdx	));
-							break;
-						default:
-							_RPTF0( _CRT_ASSERT,"알수 없는 타입(소환수 HP계산식구분)-LIST_NPC.STB의 29번컬럼" );
-							break;
-						}
-					}
-					else
-					{
-						iMaxHP = (int)( NPC_HP( m_pRecvPacket->m_gsv_MOB_CHAR.m_nCharIdx	) * ( iSkillLevel + 16 ) 
+					int iMaxHP = (int)( NPC_HP( m_pRecvPacket->m_gsv_MOB_CHAR.m_nCharIdx	) * ( iSkillLevel + 16 ) 
 							* ( g_pAVATAR->Get_LEVEL() + 85  ) / 2600.f );
-					}
 
 					CObjCHAR* pMobChar = g_pObjMGR->Get_CharOBJ( nCObj, true );
 					if( pMobChar )
@@ -2697,30 +2674,6 @@ void CRecvPACKET::Recv_gsv_SKILL_LEVELUP_REPLY ()
 				g_pAVATAR->Skill_LevelUp( m_pRecvPacket->m_gsv_SKILL_LEVELUP_REPLY.m_btSkillSLOT, m_pRecvPacket->m_gsv_SKILL_LEVELUP_REPLY.m_nSkillINDEX );
 				SE_SkillLevelUp( g_pAVATAR->Get_INDEX() );
 
-				if( CCountry::GetSingleton().IsApplyNewVersion() )
-				{
-					int skill_index = m_pRecvPacket->m_gsv_SKILL_LEARN_REPLY.m_nSkillIDX;			
-
-					int consume_july = SKILL_LEVELUP_NEED_ZULY( skill_index ) * 100;
-					int consume_sp   = SKILL_NEED_LEVELUPPOINT( skill_index );
-
-					std::string message;
-					if( consume_july )
-					{
-						message.append( CStr::Printf( STR_CONSUME_JULY, consume_july ) );
-						if( consume_sp )
-							message.append( "{BR}");
-
-						g_pAVATAR->Set_MONEY( g_pAVATAR->Get_MONEY() - consume_july );
-
-					}
-
-					if( consume_sp )
-						message.append( CStr::Printf( STR_CONSUME_SP , consume_sp ) );
-
-					if( consume_july || consume_sp )
-						g_itMGR.OpenMsgBox( message.c_str() , CMsgBox::BT_OK, false );
-				}
 				g_pAVATAR->UpdateAbility();
 			}
 			break;
@@ -3615,15 +3568,6 @@ void CRecvPACKET::Recv_gsv_TRADE_P2P()
 			CObjCHAR* pObjChar = g_pObjMGR->Get_ClientCharOBJ ( m_pRecvPacket->m_gsv_TRADE_P2P.m_wObjectIDX , true );
 			if( pObjChar )
 			{
-				if(CCountry::GetSingleton().IsJapan())
-				{
-					if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_TRADE) )
-					{
-						g_pNet->Send_cli_TRADE_P2P(  m_pRecvPacket->m_gsv_TRADE_P2P.m_wObjectIDX  , RESULT_TRADE_NO_CHARGE_TARGET  );
-						return;
-					}        
-				}
-
 				CTDialog* pDlg = g_itMGR.FindDlg( DLG_TYPE_EXCHANGE );
 				if( pDlg && !pDlg->IsVision() && !pDlg->IsInValidShow() && g_itMGR.FindMsgBox(CMsgBox::MSGTYPE_RECV_TRADE_REQ) == NULL && g_ClientStorage.IsApproveExchange() )
 				{
@@ -3752,15 +3696,6 @@ void CRecvPACKET::Recv_gsv_PARTY_REQ()
 	{
 	case PARTY_REQ_JOIN:///파티장이 파티에 들어올것을 요청했다.
 		{
-			if(CCountry::GetSingleton().IsJapan())
-			{
-				if( !(CGame::GetInstance().GetPayType() & PAY_FLAG_JP_BATTLE) )
-				{
-					g_pNet->Send_cli_PARTY_REPLY( PAATY_REPLY_NO_CHARGE_TARGET, wObjSvrIdx );
-					return;
-				}        
-			}
-
 			if( !Party.IsValidJoinParty()  || g_itMGR.IsOpenedMsgBox( CMsgBox::MSGTYPE_RECV_PARTY_REQ ) || !g_ClientStorage.IsApproveParty() )
 				g_pNet->Send_cli_PARTY_REPLY( PARTY_REPLY_BUSY, wObjSvrIdx );
 			else
@@ -3779,15 +3714,6 @@ void CRecvPACKET::Recv_gsv_PARTY_REQ()
 		}
 	case PARTY_REQ_MAKE:///파티중이 아닌 다른 아바타가 파티 결성을 요청했다.
 		{
-			if(CCountry::GetSingleton().IsJapan())
-			{
-				if( !(CGame::GetInstance().GetPayType() & PAY_FLAG_JP_BATTLE) )
-				{
-					g_pNet->Send_cli_PARTY_REPLY( PAATY_REPLY_NO_CHARGE_TARGET, wObjSvrIdx );
-					return;
-				}        
-			}
-
 			if( !Party.IsValidJoinParty() || g_itMGR.IsOpenedMsgBox( CMsgBox::MSGTYPE_RECV_PARTY_REQ ) || !g_ClientStorage.IsApproveParty())
 				g_pNet->Send_cli_PARTY_REPLY( PARTY_REPLY_BUSY, wObjSvrIdx );
 			else
@@ -4598,15 +4524,6 @@ void CRecvPACKET::Recv_wsv_MESSENGER_CHAT ()
 	CFriendListItem* pItem = pCommDlg->FindFriend( m_pRecvPacket->m_wsv_MESSENGER_CHAT.m_dwUserTAG );
 	if( pItem )
 	{
-		if(CCountry::GetSingleton().IsJapan())
-		{
-			if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_COMMUNITY) )
-			{					
-				g_pNet->Send_cli_WHISPER(  (char*)pItem->GetName(), STR_JP_BILL_CANT_SEND_MSG );
-				return;
-			}        
-		}			
-
 		if( g_ClientStorage.IsApproveMessanger() )
 		{
 			CPrivateChatDlg* pPrivateChatDlg = g_itMGR.GetPrivateChatDlg( m_pRecvPacket->m_wsv_MESSENGER_CHAT.m_dwUserTAG );
@@ -5078,19 +4995,9 @@ void CRecvPACKET::Recv_gsv_PARTY_ITEM()
 		PartyMember Member;
 		if( refParty.GetMemberInfoByObjSvrIdx( m_pRecvPacket->m_gsv_PARTY_ITEM.m_wObjectIDX , Member ) )
 		{
-			//20050727 홍근 파티시에 아이탬 습득 메세지.
-			if( CCountry::GetSingleton().IsJapan() )
-			{				
-				g_itMGR.AppendChatMsg( 				
-					CStr::Printf( m_pRecvPacket->m_gsv_PARTY_ITEM.m_ITEM.GettingMESSAGE_Party( Member.m_strName.c_str() ) ),
-					IT_MGR::CHAT_TYPE_SYSTEM );
-			}
-			else
-			{
-				g_itMGR.AppendChatMsg( 
-					CStr::Printf("%s님이 %s", Member.m_strName.c_str(), m_pRecvPacket->m_gsv_PARTY_ITEM.m_ITEM.GettingMESSAGE() ),
-					IT_MGR::CHAT_TYPE_SYSTEM );
-			}
+			g_itMGR.AppendChatMsg( 
+				CStr::Printf("%s님이 %s", Member.m_strName.c_str(), m_pRecvPacket->m_gsv_PARTY_ITEM.m_ITEM.GettingMESSAGE() ),
+				IT_MGR::CHAT_TYPE_SYSTEM );
 		}		
 	}
 	_RPT1( _CRT_WARN,"Recv_gsv_PARTY_ITEM_2%d\n",g_GameDATA.GetGameTime() );
@@ -5532,20 +5439,6 @@ void CRecvPACKET::Recv_wsv_CLAN_COMMAND()
 			assert( pszMaster );
 			if( pszMaster )
 			{
-
-				if(CCountry::GetSingleton().IsJapan())
-				{
-					if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_BATTLE) )
-					{
-						g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_JOIN_CLAN );
-
-						CTCmdRejectReqJoinClan pCmdNo( pszMaster );
-						pCmdNo.Exec(NULL);
-
-						return;
-					}        
-				}
-
 				//MSGTYPE_RECV_CLANJOIN_REQ
 				if( g_itMGR.FindMsgBox( CMsgBox::MSGTYPE_RECV_CLANJOIN_REQ ) == NULL )
 				{

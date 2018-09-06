@@ -12,7 +12,6 @@
 #include "../interface/it_mgr.h"
 #include "../interface/CUIMediator.h"
 #include "../interface/Dlgs/CMinimapDlg.h"
-#include "../Country.h"
 
 #include "CGame.h"
 #include <crtdbg.h>
@@ -94,21 +93,6 @@ int CGameStateWarp::Enter( int iPrevStateID )
 		CGame::GetInstance().ChangeState( CGame::GS_MAIN );
 	}
 
-	if( CCountry::GetSingleton().IsApplyNewVersion() && g_pTerrain )
-	{
-		//int iZoneNum = TELEPORT_ZONE(nWarpIDX);
-		///야외 필드에서 던전으로 입장시 부활존이 지정되어 있다면
-		if( (0 == ZONE_IS_UNDERGROUND( iPrevZoneNum )) && ZONE_IS_UNDERGROUND(iNextZoneNum) && ZONE_REVIVE_ZONENO( iNextZoneNum ))
-		{
-			g_itMGR.AppendChatMsg( STR_CHANGED_STOREDTOWN_POS, IT_MGR::CHAT_TYPE_SYSTEM, D3DCOLOR_ARGB( 255, 206, 223, 136)  );
-		}
-		///부활지점이 데이타로 정의된 던젼에서 필드로 이동시
-		else if( ZONE_IS_UNDERGROUND( iPrevZoneNum ) && ZONE_REVIVE_ZONENO( iPrevZoneNum ) && (0 == ZONE_IS_UNDERGROUND( iNextZoneNum )) )
-		{
-			g_itMGR.AppendChatMsg( STR_RECOVERD_STOREDTOWN_POS, IT_MGR::CHAT_TYPE_SYSTEM, D3DCOLOR_ARGB( 255, 206, 223, 136)   );
-		}
-	}
-
 	return 0;
 }
 int CGameStateWarp::Leave( int iNextStateID )
@@ -152,42 +136,6 @@ int CGameStateWarp::Leave( int iNextStateID )
 
     pauseSpriteSFX( false );
 
-
-
-
-	///카트, 캐슬기어 이용불가 지역에 카트, 캐슬기어 탑승하고 입장시 강제로 내리게 한다.
-	if( CCountry::GetSingleton().IsApplyNewVersion() && g_pAVATAR->GetPetMode() >= 0 )
-	{
-		int iItemType = g_pAVATAR->m_Inventory.m_ItemRIDE[ 0 ].GetTYPE();
-		int iItemNo   = g_pAVATAR->m_Inventory.m_ItemRIDE[ 0 ].GetItemNO();
-
-		switch( ZONE_RIDING_REFUSE_FLAG( g_pTerrain->GetZoneNO() ) )
-		{
-		case 1:
-			if( (ITEM_TYPE( iItemType, iItemNo ) / 100 == 5) && (ITEM_TYPE( iItemType, iItemNo ) % 10 == 1 ) )
-			{
-				g_pAVATAR->SetCMD_TOGGLE( Reply.m_btRideMODE + Reply.m_btRunMODE );				
-				g_itMGR.AppendChatMsg( STR_CANT_USE_CART , IT_MGR::CHAT_TYPE_SYSTEM , D3DCOLOR_ARGB( 255, 206, 223, 136));				
-				return false;
-			}
-			break;
-		case 2:
-			if( (ITEM_TYPE( iItemType, iItemNo ) / 100 == 5) && (ITEM_TYPE( iItemType, iItemNo ) % 10 == 2 ) )
-			{
-				g_pAVATAR->SetCMD_TOGGLE( Reply.m_btRideMODE + Reply.m_btRunMODE);
-				g_itMGR.AppendChatMsg( STR_CANT_USE_CASTLEGEAR , IT_MGR::CHAT_TYPE_SYSTEM , D3DCOLOR_ARGB( 255, 206, 223, 136));				
-				return false;
-			}
-			break;
-		case 3:
-			g_pAVATAR->SetCMD_TOGGLE( Reply.m_btRideMODE + Reply.m_btRunMODE);
-			g_itMGR.AppendChatMsg(STR_CANT_USE_DRIVESKILL, IT_MGR::CHAT_TYPE_SYSTEM, D3DCOLOR_ARGB( 255, 206, 223, 136) );
-			break;
-		default:
-			break;
-		}
-		g_pAVATAR->UpdateAbility();///이동속도 재계산
-	}
 	return 0;
 }
 

@@ -24,7 +24,6 @@
 #include "../../Network/CNetwork.h"
 #include "../Dlgs/CCommDlg.h"
 #include "../ClanMarkTransfer.h"
-#include "../../Country.h"
 
 
 bool CTCmdTakeInItem2MakeDlg::Exec( CTObject* pObj )

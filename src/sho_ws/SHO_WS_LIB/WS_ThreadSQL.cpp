@@ -566,8 +566,6 @@ tPOINTF	s_BeginnerPOS[ MAX_BEGINNER_POS ] = {
 #define	BEGINNER_ZONE	20
 #define	ADVENTURE_ZONE	22
 
-//-------------------------------------------------------------------------------------------------
-extern bool IsTAIWAN();
 bool CWS_ThreadSQL::Proc_cli_CREATE_CHAR( tagQueryDATA *pSqlPACKET )
 {
 	t_PACKET *pPacket = (t_PACKET*)pSqlPACKET->m_pPacket;
@@ -676,16 +674,7 @@ bool CWS_ThreadSQL::Proc_cli_CREATE_CHAR( tagQueryDATA *pSqlPACKET )
 			return true;
 	}
 
-	// 시작 위치..
-	WORD wPosBeginner;
-	if ( IsTAIWAN() ) {
-		wPosBeginner = 0;// 강제로 북쪽~~~
-	} else {
-		wPosBeginner = pPacket->m_cli_CREATE_CHAR.m_nZoneNO;
-		if ( wPosBeginner >= MAX_BEGINNER_POS ) {
-			wPosBeginner = RANDOM(MAX_BEGINNER_POS);
-		}
-	}
+	WORD wPosBeginner = 0;
 	
 	// 만들자 !!!
 	m_pDefaultBE[ nDefRACE ].m_btCharSlotNO = btCharSlotNO;
@@ -696,7 +685,7 @@ bool CWS_ThreadSQL::Proc_cli_CREATE_CHAR( tagQueryDATA *pSqlPACKET )
 	m_pDefaultBE[ nDefRACE ].m_PosSTART   = s_BeginnerPOS[ wPosBeginner ];
 	
 	// 초기 부활장소 지정...
-	short nDefReviveZoneNO = IsTAIWAN() ? BEGINNER_ZONE : ADVENTURE_ZONE;
+	short nDefReviveZoneNO = BEGINNER_ZONE;
 
 	m_pDefaultBE[ nDefRACE ].m_nReviveZoneNO = nDefReviveZoneNO;
 	m_pDefaultBE[ nDefRACE ].m_PosREVIVE     = g_ZoneLIST.Get_StartRevivePOS( nDefReviveZoneNO );
@@ -758,20 +747,7 @@ bool CWS_ThreadSQL::Proc_cli_CREATE_CHAR( tagQueryDATA *pSqlPACKET )
 
 	return true;
 }
-/* ------------------------------------------------------------------------
- * 작성자 : 조욱상
- * Email  : icarus@trigger.co.kr
- * Date   : 
- * 설  명 : 아바타 삭제 및 삭제 대기처리
- * 수  정 :
-		이름 : 권형근
-		날짜 : Sep. 28 2005
-		설명 : 미국의 경우 아바타 삭제 요청시 24시간 이후 삭제됨.
-		내용 :	dwDelWaitTime = IsOnlyTAIWAN() ? DELETE_CHAR_WAIT_TIME*12 : DELETE_CHAR_WAIT_TIME;
-				=> dwDelWaitTime = IsOnlyTAIWAN() ? DELETE_CHAR_WAIT_TIME*12 : IsUSA() ? DELETE_CHAR_WAIT_TIME*24 : DELETE_CHAR_WAIT_TIME;
- * ------------------------------------------------------------------------ */
-extern bool IsOnlyTAIWAN();
-extern bool IsUSA();
+
 bool CWS_ThreadSQL::Proc_cli_DELETE_CHAR( tagQueryDATA *pSqlPACKET )
 {
 	t_PACKET *pPacket = (t_PACKET*)pSqlPACKET->m_pPacket;
@@ -816,7 +792,7 @@ bool CWS_ThreadSQL::Proc_cli_DELETE_CHAR( tagQueryDATA *pSqlPACKET )
 		// 삭제 대기
 		DWORD dwDelWaitTime;
 		
-		dwDelWaitTime = IsOnlyTAIWAN() ? DELETE_CHAR_WAIT_TIME*12 : IsUSA() ? DELETE_CHAR_WAIT_TIME*24 : DELETE_CHAR_WAIT_TIME;
+		dwDelWaitTime = DELETE_CHAR_WAIT_TIME;
 		dwCurAbsSEC = classTIME::GetCurrentAbsSecond() + dwDelWaitTime;
 		dwReaminSEC = dwDelWaitTime;
 	}

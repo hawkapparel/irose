@@ -5,16 +5,8 @@
 #include "../common/CEconomy.h"
 #include "Event/CTEventItem.h"
 #include "Event/CTEventManufacture.h"
-#include "../Country.h"
 
 
-
-
-
-//*------------------------------------------------------------------------*/
-/// 1. 제조후 사용된 재료아이템에 대한 삭제는 Client가 자체적으로 처리한다.
-/// 2. 보석의 경우 다른 제조와 다른 방식을 취한다. 주의할것
-//*------------------------------------------------------------------------*/
 CManufacture::CManufacture(void)
 {
 	m_iMakeType		= 0;
@@ -139,41 +131,19 @@ int CManufacture::GetEstimateProbability(int iItemDif, int iItemQuality, int iMa
 	double fProPoint3 = ( (fProPoint1 / 5 + iItemQuality) * ( 50 + 80) * (iCon / 2 + iP_Lv * 5 + iMatQuality * 2 + 630 ) ) / ( iNumMat + 7 ) / 2000.;
 	double fProPoint4 = ( (fProPoint1 + fProPoint2 + 40 ) * ( 50 + 50 )) / 200.;
 
-	/// 최소:0 ~ 최대:1
-	/// 예상 성공확률
-
 	double fSucProb1, fSucProb2, fSucProb3, fSucProb4;
 
-	if( CCountry::GetSingleton().IsApplyNewVersion() )
-	{
-		int avatar_lv = g_pAVATAR->Get_LEVEL();
+	fSucProb1 = ( 170 - ( iSucPoint1  / ( iMatQuality * (iCon/2 + iItemDif / 2 + 530 ) * nWorldProd / 800000.))) / 105.;
+	if( fSucProb1 > 1 ) fSucProb1 = 1;
 
-		fSucProb1 = ( 170 - ( iSucPoint1  / ( iMatQuality * (( iCon / avatar_lv ) * 100 + iItemDif / 2 + 430 ) * nWorldProd / 800000.))) / 105.;
-		if( fSucProb1 > 1 ) fSucProb1 = 1;
+	fSucProb2 = ( 200 - ( iSucPoint2 / (( iMatQuality + iItemDif / 2 ) * ( iCon / 2 + iP_Lv*6 + iMatQuality*2 + 770 ) / ( iNumMat+7) / 1600.))) / 105.;
+	if( fSucProb2 > 1 ) fSucProb2 = 1;
 
-		fSucProb2 = ( 200 - ( iSucPoint2 / (( iMatQuality + iItemDif / 2 ) * ( (iCon / avatar_lv) * 100 + iMatQuality * 2 + 640 ) / ( iNumMat+7) / 1600.))) / 105.;
-		if( fSucProb2 > 1 ) fSucProb2 = 1;
+	fSucProb3 = ( 180 - ( iSucPoint3 / ( ( fProPoint1 / 6 + iItemQuality) * ( iCon * 0.3f + iP_Lv*5 + iMatQuality*2 + 600) / ( iNumMat + 7 ) / 2000. ))) / 105.;
+	if( fSucProb3 > 1 ) fSucProb3 = 1;
 
-		fSucProb3 = ( 180 - ( iSucPoint3 / ( ( fProPoint1 / 6 + iItemQuality) * ( (iCon / avatar_lv ) * 100  + iMatQuality*2 + 500) / ( iNumMat + 7 ) / 2000. ))) / 105.;
-		if( fSucProb3 > 1 ) fSucProb3 = 1;
-
-		fSucProb4 = ( 150 - ( iSucPoint4 / ( ( fProPoint1 + fProPoint2 + 40 ) / 200 ))) / 105.;
-		if( fSucProb4 > 1 ) fSucProb4 = 1;
-	}
-	else
-	{
-		fSucProb1 = ( 170 - ( iSucPoint1  / ( iMatQuality * (iCon/2 + iItemDif / 2 + 530 ) * nWorldProd / 800000.))) / 105.;
-		if( fSucProb1 > 1 ) fSucProb1 = 1;
-
-		fSucProb2 = ( 200 - ( iSucPoint2 / (( iMatQuality + iItemDif / 2 ) * ( iCon / 2 + iP_Lv*6 + iMatQuality*2 + 770 ) / ( iNumMat+7) / 1600.))) / 105.;
-		if( fSucProb2 > 1 ) fSucProb2 = 1;
-
-		fSucProb3 = ( 180 - ( iSucPoint3 / ( ( fProPoint1 / 6 + iItemQuality) * ( iCon * 0.3f + iP_Lv*5 + iMatQuality*2 + 600) / ( iNumMat + 7 ) / 2000. ))) / 105.;
-		if( fSucProb3 > 1 ) fSucProb3 = 1;
-
-		fSucProb4 = ( 150 - ( iSucPoint4 / ( ( fProPoint1 + fProPoint2 + 40 ) / 200 ))) / 105.;
-		if( fSucProb4 > 1 ) fSucProb4 = 1;
-	}
+	fSucProb4 = ( 150 - ( iSucPoint4 / ( ( fProPoint1 + fProPoint2 + 40 ) / 200 ))) / 105.;
+	if( fSucProb4 > 1 ) fSucProb4 = 1;
 	
 	double fEstimateProbability = 0;
 	switch( iNumMat )
@@ -593,18 +563,6 @@ int CManufacture::LoadGemClassesFromSTB( t_eITEM itemType, int iMakeNo, int iSki
 		if( iMakeNo == ITEM_MAKE_NUM( itemType, i ) && iSkillLv >= iMakeLv )
 		{
 			m_MakableClasses.push_back( i );
-			++iAddClassCount;
-		}
-	}
-
-	///일본 이벤트용 보석 추가 -_-;
-	if(CCountry::GetSingleton().IsJapan() )
-	{
-		int pinkgem = 372;
-		iMakeLv = ITEM_SKILL_LEV( itemType, pinkgem );
-		if( iMakeNo == ITEM_MAKE_NUM( itemType, pinkgem ) && iSkillLv >= iMakeLv )
-		{
-			m_MakableClasses.push_back( pinkgem );
 			++iAddClassCount;
 		}
 	}

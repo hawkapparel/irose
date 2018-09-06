@@ -121,19 +121,11 @@ public :
 	// 카트는 스킬을 직접 하지 못한다 :: 스킬 사용시 탑승 아바타가 모션을 하는것으로 가정 !!!
 	int		GetANI_Casting ()		
 	{	
-		if ( IsTAIWAN() ) {
-			return SKILL_ANI_CASTING( Get_ActiveSKILL() );
-		}
-
-		return (  m_btRideMODE == RIDE_MODE_DRIVE ) ? ( m_nPatAniROW + PAT_ANI_CASTING	)	: SKILL_ANI_CASTING( Get_ActiveSKILL() );		
+		return SKILL_ANI_CASTING( Get_ActiveSKILL() );	
 	}
 	int		GetANI_Skill ()	
 	{	
-		if ( IsTAIWAN() ) {
-			return SKILL_ANI_ACTION_TYPE( Get_ActiveSKILL() );
-		}
-
-		return (  m_btRideMODE == RIDE_MODE_DRIVE ) ? ( m_nPatAniROW + PAT_ANI_SKILL	)	: SKILL_ANI_ACTION_TYPE( Get_ActiveSKILL() );	
+		return SKILL_ANI_ACTION_TYPE( Get_ActiveSKILL() );
 	}
 
 	int		GetANI_Sitting()		{	return AVT_ANI_SITTING;								}

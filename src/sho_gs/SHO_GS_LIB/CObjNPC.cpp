@@ -31,12 +31,7 @@ bool CObjMOB::Init (CZoneTHREAD *pZONE, short nCharIdx, float fXPos, float fYPos
 
 	m_fRunAniSPEED = 1.0f;
 
-	if ( IsTAIWAN() ) {
-		// 몬스터의 CRITICAL 수치는 몬스터의 (레벨 수치* 2.5) 을 사용한다. (대만 2005.06.01)
-		m_nCritical = (short) ( NPC_LEVEL( m_nCharIdx ) * 2.5f );
-	} else {
-		m_nCritical = (short)( NPC_LEVEL( m_nCharIdx ) * 0.6f );
-	}
+	m_nCritical = (short) ( NPC_LEVEL( m_nCharIdx ) * 2.5f );
 
 	m_fScale	= NPC_SCALE( m_nCharIdx ) / 100.f;
 	m_iOriMaxHP = NPC_LEVEL( m_nCharIdx ) * NPC_HP( m_nCharIdx );
@@ -556,53 +551,25 @@ void CObjSUMMON::SetCallerOBJ( int iOwnerOBJ, t_HASHKEY HashOwnerOBJ, int iOwner
 
 	short nSkillLEV = SKILL_LEVEL( nSkillIDX );
 
-	if( IsTAIWAN() )
-	{
-		// 2005-6-30(kchs) m_iOriMaxHP, m_iOriATK, m_iOriHIT, m_iOriDEF, m_iOriRES, m_iOriAVOID 모두 수정
-		if ( NPC_FACE_ICON( m_nCharIdx ) ) {
-			m_iOriMaxHP = NPC_HP( m_nCharIdx );
-		} else {
-			m_iOriMaxHP = (int)( NPC_HP( m_nCharIdx ) + pOwnerAVT->Get_MaxHP() * 0.8f );
-		}
+	if ( NPC_FACE_ICON( m_nCharIdx ) ) {
+		m_iOriMaxHP = NPC_HP( m_nCharIdx );
+	} else {
+		m_iOriMaxHP = (int)( NPC_HP( m_nCharIdx ) + pOwnerAVT->Get_MaxHP() * 0.8f );
+	}
 
-		m_iOriATK	= (int)( CObjMOB::GetOri_ATK()	+ pOwnerAVT->Get_ATK() * (nSkillLEV * 5 + 75 ) * 0.01f );
-		m_iOriHIT	= (int)( CObjMOB::GetOri_HIT()	+ pOwnerAVT->Get_HIT() );
-		m_iOriDEF	= (int)( CObjMOB::GetOri_DEF()	+ pOwnerAVT->Get_DEF() );
-		m_iOriRES	= (int)( CObjMOB::GetOri_RES()	+ pOwnerAVT->Get_RES() );
-		m_iOriAVOID = (int)( CObjMOB::GetOri_AVOID() + pOwnerAVT->Get_AVOID() );
-	}
-	else
-	{
-		m_iOriMaxHP = (int)( NPC_HP( m_nCharIdx )   * ( nSkillLEV + 16 ) * ( iOwnerLEVEL + 85  ) / 2600.f );
-		m_iOriATK	= (int)( CObjMOB::GetOri_ATK()	* ( nSkillLEV + 22 ) * ( iOwnerLEVEL + 100 ) / 4000.f );
-		m_iOriHIT	= (int)( CObjMOB::GetOri_HIT()	* ( nSkillLEV + 30 ) * ( iOwnerLEVEL + 50  ) / 3200.f );
-		m_iOriDEF	= (int)( CObjMOB::GetOri_DEF()	* ( nSkillLEV + 30 ) * ( iOwnerLEVEL + 80  ) / 4400.f );
-		m_iOriRES	= (int)( CObjMOB::GetOri_RES()	* ( nSkillLEV + 24 ) * ( iOwnerLEVEL + 90  ) / 3600.f );
-		m_iOriAVOID = (int)( CObjMOB::GetOri_AVOID()* ( nSkillLEV + 22 ) * ( iOwnerLEVEL + 90  ) / 3400.f );
-	}
+	m_iOriATK	= (int)( CObjMOB::GetOri_ATK()	+ pOwnerAVT->Get_ATK() * (nSkillLEV * 5 + 75 ) * 0.01f );
+	m_iOriHIT	= (int)( CObjMOB::GetOri_HIT()	+ pOwnerAVT->Get_HIT() );
+	m_iOriDEF	= (int)( CObjMOB::GetOri_DEF()	+ pOwnerAVT->Get_DEF() );
+	m_iOriRES	= (int)( CObjMOB::GetOri_RES()	+ pOwnerAVT->Get_RES() );
+	m_iOriAVOID = (int)( CObjMOB::GetOri_AVOID() + pOwnerAVT->Get_AVOID() );
 	this->Set_HP( m_iOriMaxHP );
 }
 
 int CObjSUMMON::Proc ()
 {
-	if ( IsTAIWAN() ) {
-		//CObjCHAR *pOwner = g_pObjMGR->Get_CharOBJ( this->GetCallerUsrIDX(), true );
-		//if ( pOwner && this->m_btSummonCMD != pOwner->Get_SummonCMD() ) {
-		//	if ( pOwner->Get_CharHASH() == this->GetCallerHASH() ) {
-		//		this->m_btSummonCMD = pOwner->Get_SummonCMD ();
-		//		;
-		//		;
-		//		;
-		//	}
-		//}
-	}
-
 	return CObjCHAR::Proc ();
 }
 
-//-------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------
 CObjNPC::CObjNPC ()
 {
 	//TODO:: Get npc data from db ...

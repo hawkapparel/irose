@@ -148,39 +148,6 @@ DWORD GetServerStartTIME ()
 	return g_dwStartTIME;
 }
 
-#define	LANG_KOR			0
-#define	LANG_ENG			1
-#define	LANG_JPN			2
-#define	LANG_TWAIN			3
-#define	LANG_CHINA			4
-#define LANG_PHILIPPINE		5
-#define LANG_USA			6
-#define LANG_EUROPE			7
-
-bool IsEUROPE ()
-{
-	return ( LANG_EUROPE == ::Get_ServerLangTYPE() );
-}
-
-bool IsUSA ()
-{
-	return ( LANG_USA == ::Get_ServerLangTYPE() );
-}
-
-bool IsJAPAN ()
-{
-	return ( LANG_JPN == ::Get_ServerLangTYPE() );
-}
-bool IsOnlyTAIWAN()
-{
-	return ( LANG_TWAIN == ::Get_ServerLangTYPE() );
-}
-bool IsTAIWAN ()
-{
-	return true;
-}
-
-
 SHO_WS::SHO_WS( EXE_WS_API *pExeAPI )
 {
 

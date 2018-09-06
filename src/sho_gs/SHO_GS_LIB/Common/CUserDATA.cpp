@@ -213,7 +213,7 @@ void CUserDATA::Cal_BattleAbility ()
 		pITEM = &this->m_Inventory.m_ItemEQUIP[ EQUIP_IDX_WEAPON_L ];
 		if ( pITEM->m_wHeader && pITEM->GetLife() )	iDefDura += pITEM->GetDurability();
 	} 
-	else if( this->GetCur_MOVE_MODE() > MOVE_MODE_RUN && IsTAIWAN() ) {
+	else if( this->GetCur_MOVE_MODE() > MOVE_MODE_RUN ) {
 		pITEM = &this->m_Inventory.m_ItemEQUIP[ EQUIP_IDX_HELMET ];
 		if ( pITEM->m_wHeader && pITEM->GetLife() )	iDefDura += pITEM->GetDurability();
 
@@ -231,22 +231,6 @@ void CUserDATA::Cal_BattleAbility ()
 
 		pITEM = &this->m_Inventory.m_ItemEQUIP[ EQUIP_IDX_WEAPON_L ];
 		if ( pITEM->m_wHeader && pITEM->GetLife() )	iDefDura += pITEM->GetDurability();
-	} else {
-		pITEM = &this->m_Inventory.m_ItemRIDE[ RIDE_PART_BODY ];
-		if ( pITEM->m_wHeader && pITEM->GetLife() )	iDefDura += pITEM->GetDurability();
-
-		pITEM = &this->m_Inventory.m_ItemRIDE[ RIDE_PART_ENGINE ];
-		if ( pITEM->m_wHeader && pITEM->GetLife() )	iDefDura += pITEM->GetDurability();
-
-		pITEM = &this->m_Inventory.m_ItemRIDE[ RIDE_PART_LEG ];
-		if ( pITEM->m_wHeader && pITEM->GetLife() )	iDefDura += pITEM->GetDurability();
-
-		pITEM = &this->m_Inventory.m_ItemRIDE[ RIDE_PART_ARMS ];
-		if ( pITEM->m_wHeader && pITEM->GetLife() )	iDefDura += pITEM->GetDurability();
-#ifdef __KCHS_BATTLECART__
-		pITEM = &this->m_Inventory.m_ItemRIDE[ RIDE_PART_ABIL ];
-		if ( pITEM->m_wHeader && pITEM->GetLife() )	iDefDura += pITEM->GetDurability();
-#endif
 	}
 	m_Battle.m_iDefDurabity = iDefDura;
 
@@ -300,7 +284,7 @@ void CUserDATA::Cal_BattleAbility ()
 
 	if ( GetCur_HP() > GetCur_MaxHP() ) SetCur_HP( GetCur_MaxHP() );
 
-	if ( IsTAIWAN() && this->GetCur_MOVE_MODE() <= MOVE_MODE_RUN ) {
+	if ( this->GetCur_MOVE_MODE() <= MOVE_MODE_RUN ) {
 		// 대만 보행모드면...
 		int iCurAbility;
 		for (nI=0; nI<BA_MAX; nI++) {
@@ -339,69 +323,45 @@ void CUserDATA::Cal_PatMaxHP ()
 #endif
 
 //-------------------------------------------------------------------------------------------------
-extern bool IsTAIWAN();
 int CUserDATA::Cal_MaxHP ()
 {
 	int iA, iM1, iM2;
-	if ( IsTAIWAN() ) {
-		float fC;
-		switch( this->GetCur_JOB() ) {
-			case CLASS_SOLDIER_111 :	// 솔져(111)		[(LV+5)*SQRT(LV+20)*3.5+(STR*2)] + 아이템 증가치 
-										iA=5,	iM1=20, fC=3.5f;	break;
-			case CLASS_SOLDIER_121 :	// 나이트(121)		[(LV+5)*SQRT(LV+28)*3.5+(STR*2)] + 아이템 증가치 
-										iA=5,	iM1=28,	fC=3.5f;	break;
-			case CLASS_SOLDIER_122 :	// 챔프(122			[(LV+5)*SQRT(LV+22)*3.5+(STR*2)] + 아이템 증가치 
-										iA=5,	iM1=22,	fC=3.5f;	break;
+	float fC;
+	switch( this->GetCur_JOB() ) {
+		case CLASS_SOLDIER_111 :	// 솔져(111)		[(LV+5)*SQRT(LV+20)*3.5+(STR*2)] + 아이템 증가치 
+									iA=5,	iM1=20, fC=3.5f;	break;
+		case CLASS_SOLDIER_121 :	// 나이트(121)		[(LV+5)*SQRT(LV+28)*3.5+(STR*2)] + 아이템 증가치 
+									iA=5,	iM1=28,	fC=3.5f;	break;
+		case CLASS_SOLDIER_122 :	// 챔프(122			[(LV+5)*SQRT(LV+22)*3.5+(STR*2)] + 아이템 증가치 
+									iA=5,	iM1=22,	fC=3.5f;	break;
 
-			case CLASS_MAGICIAN_211 :	// 뮤즈(211)		[(LV+4)*SQRT(LV+26)*2.36+(STR*2)] + 아이템 증가치 
-										iA=4,	iM1=26,	fC=2.36f;	break;
-			case CLASS_MAGICIAN_221 :	// 매지션(221)		[(LV+5)*SQRT(LV+26)*2.37+(STR*2)] + 아이템 증가치 
-										iA=5,	iM1=26,	fC=2.37f;	break;
-			case CLASS_MAGICIAN_222 :	// 클레릭(222)		[(LV+7)*SQRT(LV+26)*2.4+(STR*2)] + 아이템 증가치 
-										iA=7,	iM1=26,	fC=2.4f;	break;
+		case CLASS_MAGICIAN_211 :	// 뮤즈(211)		[(LV+4)*SQRT(LV+26)*2.36+(STR*2)] + 아이템 증가치 
+									iA=4,	iM1=26,	fC=2.36f;	break;
+		case CLASS_MAGICIAN_221 :	// 매지션(221)		[(LV+5)*SQRT(LV+26)*2.37+(STR*2)] + 아이템 증가치 
+									iA=5,	iM1=26,	fC=2.37f;	break;
+		case CLASS_MAGICIAN_222 :	// 클레릭(222)		[(LV+7)*SQRT(LV+26)*2.4+(STR*2)] + 아이템 증가치 
+									iA=7,	iM1=26,	fC=2.4f;	break;
 
-			case CLASS_MIXER_311	 :	// 호커(311)		[(LV+5)*SQRT(LV+20)*2.7+(STR*2)] + 아이템 증가치
-										iA=5,	iM1=20,	fC=2.7f;	break;
-			case CLASS_MIXER_321	 :	// 레이더(321)		[(LV+5)*SQRT(LV+23)*3+(STR*2)] + 아이템 증가치
-										iA=5,	iM1=23,	fC=3.f;		break;
-			case CLASS_MIXER_322	 :	// 스카우트(322)	[(LV+5)*SQRT(LV+21)*2.7+(STR*2)] + 아이템 증가치
-										iA=5,	iM1=21,	fC=2.7f;	break;
+		case CLASS_MIXER_311	 :	// 호커(311)		[(LV+5)*SQRT(LV+20)*2.7+(STR*2)] + 아이템 증가치
+									iA=5,	iM1=20,	fC=2.7f;	break;
+		case CLASS_MIXER_321	 :	// 레이더(321)		[(LV+5)*SQRT(LV+23)*3+(STR*2)] + 아이템 증가치
+									iA=5,	iM1=23,	fC=3.f;		break;
+		case CLASS_MIXER_322	 :	// 스카우트(322)	[(LV+5)*SQRT(LV+21)*2.7+(STR*2)] + 아이템 증가치
+									iA=5,	iM1=21,	fC=2.7f;	break;
 
-			case CLASS_MERCHANT_411 :	// 딜러(411)		[(LV+5)*SQRT(LV+20)*2.7+(STR*2)] + 아이템 증가치
-										iA=5,	iM1=20,	fC=2.7f;	break;
-			case CLASS_MERCHANT_421 :	// 부루즈아(421)	[(LV+5)*SQRT(LV+20)*2.7+(STR*2)] + 아이템 증가치
-										iA=5,	iM1=20,	fC=2.7f;	break;
-			case CLASS_MERCHANT_422 :	// 아티잔(422)		[(LV+5)*SQRT(LV+20)*2.7+(STR*2)] + 아이템 증가치
-										iA=5,	iM1=20,	fC=2.7f;	break;
+		case CLASS_MERCHANT_411 :	// 딜러(411)		[(LV+5)*SQRT(LV+20)*2.7+(STR*2)] + 아이템 증가치
+									iA=5,	iM1=20,	fC=2.7f;	break;
+		case CLASS_MERCHANT_421 :	// 부루즈아(421)	[(LV+5)*SQRT(LV+20)*2.7+(STR*2)] + 아이템 증가치
+									iA=5,	iM1=20,	fC=2.7f;	break;
+		case CLASS_MERCHANT_422 :	// 아티잔(422)		[(LV+5)*SQRT(LV+20)*2.7+(STR*2)] + 아이템 증가치
+									iA=5,	iM1=20,	fC=2.7f;	break;
 
-			//case CLASS_VISITOR :		// 무직	비지터(00)	[(LV+4)*SQRT(LV+26)*2.36+(STR*2)] + 아이템 증가치
-			default :					iA=4,	iM1=26,	fC=2.36f;	break;
-		}
-
-		m_Battle.m_nMaxHP  = (short)( ( this->GetCur_LEVEL()+iA ) * sqrtf(this->GetCur_LEVEL()+iM1) * fC + ( this->GetCur_STR()*2 ) + this->m_iAddValue[ AT_MAX_HP ] );
-	} else {
-		switch( this->GetCur_JOB() ) {
-			case CLASS_SOLDIER_111 :	iA=7,	iM1=12, iM2=2;	break;
-			case CLASS_SOLDIER_121 :	iA=-3,	iM1=14,	iM2=2;	break;
-			case CLASS_SOLDIER_122 :	iA=2,	iM1=13,	iM2=2;	break;
-
-			case CLASS_MAGICIAN_211 :	iA=11,	iM1=10,	iM2=2;	break;
-			case CLASS_MAGICIAN_221 :	iA=11,	iM1=10,	iM2=2;	break;
-			case CLASS_MAGICIAN_222 :	iA=5,	iM1=11,	iM2=2;	break;
-
-			case CLASS_MIXER_311	 :	iA=10,	iM1=11,	iM2=2;	break;
-			case CLASS_MIXER_321	 :	iA=2,	iM1=13,	iM2=2;	break;
-			case CLASS_MIXER_322	 :	iA=11,	iM1=11,	iM2=2;	break;
-
-			case CLASS_MERCHANT_411 :	iA=12,	iM1=10,	iM2=2;	break;
-			case CLASS_MERCHANT_421 :	iA=13,	iM1=10,	iM2=2;	break;
-			case CLASS_MERCHANT_422 :	iA=6,	iM1=11,	iM2=2;	break;
-
-			//case CLASS_VISITOR :
-			default :					iA=12,	iM1=8,	iM2=2;	break;
-		}
-		m_Battle.m_nMaxHP  = ( this->GetCur_LEVEL()+iA ) * iM1 + ( this->GetCur_STR()*iM2 ) + this->m_iAddValue[ AT_MAX_HP ];
+		//case CLASS_VISITOR :		// 무직	비지터(00)	[(LV+4)*SQRT(LV+26)*2.36+(STR*2)] + 아이템 증가치
+		default :					iA=4,	iM1=26,	fC=2.36f;	break;
 	}
+
+	m_Battle.m_nMaxHP  = (short)( ( this->GetCur_LEVEL()+iA ) * sqrtf(this->GetCur_LEVEL()+iM1) * fC + ( this->GetCur_STR()*2 ) + this->m_iAddValue[ AT_MAX_HP ] );
+	
 	iA = this->GetPassiveSkillValue( AT_PSV_MAX_HP ) + (short)( m_Battle.m_nMaxHP * this->GetPassiveSkillRate( AT_PSV_MAX_HP ) / 100.f );
 	m_Battle.m_nMaxHP += iA;
 	this->Cal_AruaMaxHP ();
@@ -466,13 +426,8 @@ int CUserDATA::Cal_MaxWEIGHT ()
 //-------------------------------------------------------------------------------------------------
 int CUserDATA::Cal_AvoidRATE ()
 {
-	if ( this->GetCur_MOVE_MODE() > MOVE_MODE_RUN && !IsTAIWAN() ) {
-		m_Battle.m_nAVOID = (short)( (GetCur_DEX()+10) * 0.8f + GetCur_LEVEL() * 0.5f );
-	} else {
-		//AVO = [ (DEX*1.6 + LV*0.3 + 5) * 0.4 + (방어구 품질합 * 0.3) ]
-		m_Battle.m_nAVOID = (short)( ( GetCur_DEX()*1.9f + GetCur_LEVEL()*0.3f + 10 ) * 0.4f ) + 
-			(short)( this->GetTot_DEF_DURABITY()*0.3f ) + this->GetTot_DEF_GRADE();
-	}
+	m_Battle.m_nAVOID = (short)( ( GetCur_DEX()*1.9f + GetCur_LEVEL()*0.3f + 10 ) * 0.4f ) + 
+		(short)( this->GetTot_DEF_DURABITY()*0.3f ) + this->GetTot_DEF_GRADE();
 	m_Battle.m_nAVOID += this->m_iAddValue[ AT_AVOID ];
 
 	int iPsv = this->GetPassiveSkillValue( AT_PSV_AVOID ) + (short)( this->m_Battle.m_nAVOID * this->GetPassiveSkillRate( AT_PSV_AVOID ) / 100.f );
@@ -487,10 +442,8 @@ int CUserDATA::Cal_AvoidRATE ()
 int CUserDATA::Cal_CRITICAL ()
 {
 
-	if ( this->GetCur_MOVE_MODE() > MOVE_MODE_RUN && IsTAIWAN() ) {
+	if ( this->GetCur_MOVE_MODE() > MOVE_MODE_RUN) {
 		m_Battle.m_iCritical  = (int)( GetCur_SENSE() + ( GetCur_CON() + 20 ) * 0.2f );
-	} else if ( this->GetCur_MOVE_MODE() > MOVE_MODE_RUN ) {
-		m_Battle.m_iCritical = (int)( GetCur_SENSE()*0.8f + GetCur_LEVEL() * 0.3f );
 	} else {
 		m_Battle.m_iCritical  = (int)( GetCur_SENSE() + ( GetCur_CON() + 20 ) * 0.2f );
 	}
@@ -539,16 +492,7 @@ int CUserDATA::Cal_HIT ()
 	int iHitRate;
 	tagITEM*pRightWPN; 
 
-	if ( this->GetCur_MOVE_MODE() <= MOVE_MODE_RUN ) {
-		pRightWPN = this->Get_EquipItemPTR( EQUIP_IDX_WEAPON_R );
-		if ( pRightWPN->GetItemNO() && pRightWPN->GetLife() > 0 ) {
-			iHitRate = (int) ( ( GetCur_CON() + 10 )*0.8f ) + 
-					   (int) ( ( ITEM_QUALITY(ITEM_TYPE_WEAPON,pRightWPN->GetItemNO()) ) * 0.6f + ITEMGRADE_HIT(pRightWPN->GetGrade()) + pRightWPN->GetDurability()*0.8f );
-		} else {
-			// 맨손
-			iHitRate = (int)( ( GetCur_CON() + 10 )*0.5f + 15 );
-		}
-	} else if ( this->GetCur_MOVE_MODE() > MOVE_MODE_RUN && IsTAIWAN() ) { // 탑승모드이고 타이완이면..
+	 if ( this->GetCur_MOVE_MODE() > MOVE_MODE_RUN ) {
 		pRightWPN = this->Get_EquipItemPTR( EQUIP_IDX_WEAPON_R );
 		if ( pRightWPN->GetItemNO() && pRightWPN->GetLife() > 0 ) {
 			iHitRate = (int) ( ( GetCur_CON() + 10 )*0.8f ) + 
@@ -664,32 +608,17 @@ int CUserDATA::Cal_ATTACK ()
 			// 소모탄에 따른 공격력 계산...
 			switch( ShotTYPE ) {
 				case SHOT_TYPE_ARROW :
-					if ( IsTAIWAN() ) {
-						// 화살장착:[  (DEX*0.52 + STR*0.1 + LV*0.1+총알품질*0.5)+{(무기공격력+ 무기등급추가치) * (DEX*0.04+SEN*0.03+29) / 30} ] + 아이템 증가치
-						iAP = (int)( ( GetCur_DEX()*0.52f + GetCur_STR()*0.1f + GetCur_LEVEL()*0.1f + nItemQ*0.5f ) +
-									( ( iWeaponAP+ ITEMGRADE_ATK(pRightWPN->GetGrade()) ) * ( GetCur_DEX()*0.04f + GetCur_SENSE()*0.03f+29 ) / 30 ) ) ;
-					} else {
-						iAP = (int)( ( GetCur_DEX()*0.62f + GetCur_STR()*0.2f + GetCur_LEVEL()*0.2f + nItemQ ) +
-									( ( ( iWeaponAP+ ITEMGRADE_ATK(pRightWPN->GetGrade()) )+nItemQ*0.5f+8 ) * ( GetCur_DEX()*0.04f + GetCur_SENSE()*0.03f + 29 ) / 30.f ) ) ;
-					}
+					iAP = (int)( ( GetCur_DEX()*0.52f + GetCur_STR()*0.1f + GetCur_LEVEL()*0.1f + nItemQ*0.5f ) +
+								( ( iWeaponAP+ ITEMGRADE_ATK(pRightWPN->GetGrade()) ) * ( GetCur_DEX()*0.04f + GetCur_SENSE()*0.03f+29 ) / 30 ) ) ;
 					break;
 				case SHOT_TYPE_BULLET:
-					if( IsTAIWAN() ) // kchs-to-modify 
-						iAP = (int)( ( GetCur_DEX()*0.3f + GetCur_CON()*0.47f + GetCur_LEVEL()*0.1f + nItemQ * 0.8f) +
-						( ( (iWeaponAP+ITEMGRADE_ATK(pRightWPN->GetGrade()) ) ) * ( GetCur_CON()*0.04f + GetCur_SENSE()*0.05f+29) / 30 ) );
-					else
-						iAP = (int)( ( GetCur_DEX()*0.4f + GetCur_CON()*0.5f + GetCur_LEVEL()*0.2f + nItemQ ) +
-								( ( (iWeaponAP+ITEMGRADE_ATK(pRightWPN->GetGrade()) )+nItemQ*0.6f+8 ) * ( GetCur_CON()*0.03f + GetCur_SENSE()*0.05f+29) / 30 ) );
+					iAP = (int)( ( GetCur_DEX()*0.3f + GetCur_CON()*0.47f + GetCur_LEVEL()*0.1f + nItemQ * 0.8f) +
+					( ( (iWeaponAP+ITEMGRADE_ATK(pRightWPN->GetGrade()) ) ) * ( GetCur_CON()*0.04f + GetCur_SENSE()*0.05f+29) / 30 ) );
 					break;
 
 				case SHOT_TYPE_THROW :
-					if( IsTAIWAN() ) // kchs-to-modify
-						iAP = (int)( ( GetCur_STR()*0.32f + GetCur_CON()*0.45f + GetCur_LEVEL()*0.1f + nItemQ * 0.8f ) +
-						( ( (iWeaponAP+ITEMGRADE_ATK(pRightWPN->GetGrade()) ) ) * ( GetCur_CON()*0.04f + GetCur_SENSE()*0.05f+29) / 30 ) );
-					else
-						iAP = (int)( ( GetCur_STR()*0.52f + GetCur_CON()*0.5f + GetCur_LEVEL()*0.2f + nItemQ ) +
-						( ( (iWeaponAP+ITEMGRADE_ATK(pRightWPN->GetGrade()) )+nItemQ+12 ) * ( GetCur_CON()*0.04f + GetCur_SENSE()*0.05f+29) / 30 ) );
-					break;
+					iAP = (int)( ( GetCur_STR()*0.32f + GetCur_CON()*0.45f + GetCur_LEVEL()*0.1f + nItemQ * 0.8f ) +
+					( ( (iWeaponAP+ITEMGRADE_ATK(pRightWPN->GetGrade()) ) ) * ( GetCur_CON()*0.04f + GetCur_SENSE()*0.05f+29) / 30 ) );
 			} 
 		} else {
 			switch ( WEAPON_TYPE( pRightWPN->m_nItemNo ) / 10 ) {
@@ -734,70 +663,62 @@ int CUserDATA::Cal_ATTACK ()
 			iWeaponAP = 0;
 		int iWeaponTERM = iWeaponAP + ITEMGRADE_ATK(pRightWPN->GetGrade()) + PAT_ITEM_ATK_POW(this->m_Inventory.m_ItemRIDE[ RIDE_PART_ARMS ].GetItemNO());
 
-		if( IsTAIWAN() ) // 2005-07-25 추가
-		{
-			if( ShotTYPE < MAX_SHOT_TYPE ) { // 타이완 원거리 무기
-				switch( ShotTYPE )
-				{
-				case SHOT_TYPE_ARROW :
-					iAP = ( ( GetCur_DEX()*0.52f + GetCur_STR()*0.1f + GetCur_LEVEL()*0.1f + 3 ) + 
-						iWeaponTERM *
-						( GetCur_DEX()*0.04f + GetCur_SENSE()*0.03f + 29 ) / 60.f ) * 1.03f;
-					break;
-				case SHOT_TYPE_BULLET:
-					iAP = ( (GetCur_DEX()*0.3f+GetCur_CON()*0.47+GetCur_LEVEL()*0.1f+6.4f) + iWeaponTERM * 
-						( GetCur_CON()*0.04f+GetCur_SENSE()*0.05f+29) / 60.f ) * 1.032f;
-					break;
-
-				case SHOT_TYPE_THROW :
-					iAP = ( (GetCur_STR()*0.32f + GetCur_CON()*0.45f+GetCur_LEVEL()*0.1f + 8) + iWeaponTERM *
-						(GetCur_CON() * 0.04f + GetCur_SENSE() * 0.05f + 29) / 60.f ) * 1.033f ;
-					break;
-				}
-			} 
-			else // 타이완 근거리 무기
+		if( ShotTYPE < MAX_SHOT_TYPE ) { // 타이완 원거리 무기
+			switch( ShotTYPE )
 			{
-				switch ( WEAPON_TYPE( pRightWPN->m_nItemNo ) / 10 ) {
-				case 21 :	// 한손
-				case 22 :	// 양손		// 근접 무기
-					iAP = ( (GetCur_STR()*0.75f + GetCur_LEVEL() * 0.2f) + iWeaponTERM *( GetCur_STR() * 0.05f + 29) / 60.f ) * 1.033f;
-					break;
-				case 24 :				// 마법 무기
-					{
-						if( WEAPON_TYPE( pRightWPN->m_nItemNo ) == 241) {
-							// 마법 지팡이
-							iAP = ( (GetCur_STR()*0.4f + GetCur_INT()*0.4f + GetCur_LEVEL() * 0.2f) + iWeaponTERM *
-								(GetCur_INT()*0.05f + 29) / 60.f ) * 1.03f;
-							break;
-						} else {	// 마법도구
-							iAP = ( (GetCur_INT()*0.6f + GetCur_LEVEL() * 0.2f ) + iWeaponTERM * ( GetCur_SENSE() * 0.1f + 26 )/ 54.f ) * 1.025f;
-						}
-					}
-					break;
-				case 25 :				
-					if ( 252 == WEAPON_TYPE( pRightWPN->m_nItemNo ) ) {	 // 이도류
-						iAP = ( (GetCur_STR() * 0.63f + GetCur_DEX() * 0.45f + GetCur_LEVEL() * 0.2f ) + iWeaponTERM  * 
-							(GetCur_DEX() * 0.05f + 25 ) / 52.f ) * 1.032f;
-					} else { // 카타르
-						iAP = ( (GetCur_STR() * 0.42f + GetCur_DEX() * 0.55f + GetCur_LEVEL() * 0.2f ) + iWeaponTERM * 
-							(GetCur_DEX() * 0.05f + 20 ) / 42.f ) * 1.032f;
-					}
-					break;
-				case 0  :
-					// [(STR*0.5 + DEX*0.3 + LV*0.2) + (카트무기공격력)]/2+ 아이템 증가치
-					iAP = GetCur_STR() * 0.5f + GetCur_DEX() * 0.3f + GetCur_LEVEL() * 0.2f + 
-						 PAT_ITEM_ATK_POW(this->m_Inventory.m_ItemRIDE[ RIDE_PART_ARMS ].GetItemNO()) / 2.f ;
-					break;
-				}
-			}
-			iAP += this->m_iAddValue[ AT_ATK ];
-			this->m_Battle.m_nATT = iAP + this->GetPassiveSkillAttackPower( iAP, pRightWPN->m_nItemNo );
-		}
-		else {
-			iAP = ( GetCur_LEVEL() * 3 ) + GetCur_CON() + PAT_ITEM_ATK_POW( this->m_Inventory.m_ItemRIDE[ RIDE_PART_ARMS ].GetItemNO() );
-			this->m_Battle.m_nATT = iAP + this->m_iAddValue[ AT_ATK ];
-		}
+			case SHOT_TYPE_ARROW :
+				iAP = ( ( GetCur_DEX()*0.52f + GetCur_STR()*0.1f + GetCur_LEVEL()*0.1f + 3 ) + 
+					iWeaponTERM *
+					( GetCur_DEX()*0.04f + GetCur_SENSE()*0.03f + 29 ) / 60.f ) * 1.03f;
+				break;
+			case SHOT_TYPE_BULLET:
+				iAP = ( (GetCur_DEX()*0.3f+GetCur_CON()*0.47+GetCur_LEVEL()*0.1f+6.4f) + iWeaponTERM * 
+					( GetCur_CON()*0.04f+GetCur_SENSE()*0.05f+29) / 60.f ) * 1.032f;
+				break;
 
+			case SHOT_TYPE_THROW :
+				iAP = ( (GetCur_STR()*0.32f + GetCur_CON()*0.45f+GetCur_LEVEL()*0.1f + 8) + iWeaponTERM *
+					(GetCur_CON() * 0.04f + GetCur_SENSE() * 0.05f + 29) / 60.f ) * 1.033f ;
+				break;
+			}
+		} 
+		else // 타이완 근거리 무기
+		{
+			switch ( WEAPON_TYPE( pRightWPN->m_nItemNo ) / 10 ) {
+			case 21 :	// 한손
+			case 22 :	// 양손		// 근접 무기
+				iAP = ( (GetCur_STR()*0.75f + GetCur_LEVEL() * 0.2f) + iWeaponTERM *( GetCur_STR() * 0.05f + 29) / 60.f ) * 1.033f;
+				break;
+			case 24 :				// 마법 무기
+				{
+					if( WEAPON_TYPE( pRightWPN->m_nItemNo ) == 241) {
+						// 마법 지팡이
+						iAP = ( (GetCur_STR()*0.4f + GetCur_INT()*0.4f + GetCur_LEVEL() * 0.2f) + iWeaponTERM *
+							(GetCur_INT()*0.05f + 29) / 60.f ) * 1.03f;
+						break;
+					} else {	// 마법도구
+						iAP = ( (GetCur_INT()*0.6f + GetCur_LEVEL() * 0.2f ) + iWeaponTERM * ( GetCur_SENSE() * 0.1f + 26 )/ 54.f ) * 1.025f;
+					}
+				}
+				break;
+			case 25 :				
+				if ( 252 == WEAPON_TYPE( pRightWPN->m_nItemNo ) ) {	 // 이도류
+					iAP = ( (GetCur_STR() * 0.63f + GetCur_DEX() * 0.45f + GetCur_LEVEL() * 0.2f ) + iWeaponTERM  * 
+						(GetCur_DEX() * 0.05f + 25 ) / 52.f ) * 1.032f;
+				} else { // 카타르
+					iAP = ( (GetCur_STR() * 0.42f + GetCur_DEX() * 0.55f + GetCur_LEVEL() * 0.2f ) + iWeaponTERM * 
+						(GetCur_DEX() * 0.05f + 20 ) / 42.f ) * 1.032f;
+				}
+				break;
+			case 0  :
+				// [(STR*0.5 + DEX*0.3 + LV*0.2) + (카트무기공격력)]/2+ 아이템 증가치
+				iAP = GetCur_STR() * 0.5f + GetCur_DEX() * 0.3f + GetCur_LEVEL() * 0.2f + 
+						PAT_ITEM_ATK_POW(this->m_Inventory.m_ItemRIDE[ RIDE_PART_ARMS ].GetItemNO()) / 2.f ;
+				break;
+			}
+		}
+		iAP += this->m_iAddValue[ AT_ATK ];
+		this->m_Battle.m_nATT = iAP + this->GetPassiveSkillAttackPower( iAP, pRightWPN->m_nItemNo );
 	}
 
 	this->Cal_AruaATTACK();
@@ -832,13 +753,7 @@ float CUserDATA::Cal_RunSPEED ()
 			nItemSpeed += BACKITEM_MOVE_SPEED( nItemNo );
 		}
 		nItemSpeed += 20;
-		if ( IsTAIWAN() ) {
-			// SPE = {(신발 이동력 + 등장착 이동력+20)*5
-			//fMoveSpeed = nItemSpeed * 5 + this->m_iAddValue[ AT_SPEED ];
-			fMoveSpeed = nItemSpeed * ( GetCur_DEX() + 500.f ) / 100.f + this->m_iAddValue[ AT_SPEED ];
-		} else {
-			fMoveSpeed = nItemSpeed * ( GetCur_DEX() + 500.f ) / 100.f + this->m_iAddValue[ AT_SPEED ];
-		}
+		fMoveSpeed = nItemSpeed * ( GetCur_DEX() + 500.f ) / 100.f + this->m_iAddValue[ AT_SPEED ];
 
 		float fPsvSpd = GetPassiveSkillValue( AT_PSV_MOV_SPD ) + fMoveSpeed * GetPassiveSkillRate( AT_PSV_MOV_SPD )/100.f;
 		return ( fMoveSpeed + fPsvSpd );
@@ -1970,29 +1885,23 @@ bool	CUserDATA::Quest_SubITEM( tagITEM &sSubITEM )
 #endif
 bool CUserDATA::Reward_InitSKILL (void)
 {
-	// 케릭터의 스킬을 초기화 한다.
-	if ( IsTAIWAN() ) {
-		short nSkillIDX, n1LevSkillIDX;
-		int iRecoverySP = 0;
+	short nSkillIDX, n1LevSkillIDX;
+	int iRecoverySP = 0;
 
-		for (int iS=MAX_LEARNED_SKILL_PER_PAGE; iS<MAX_LEARNED_SKILL_CNT; iS++) {
-			nSkillIDX = this->m_Skills.m_nSkillINDEX[ iS ];
-			if ( 0 == nSkillIDX )
-				continue;
+	for (int iS=MAX_LEARNED_SKILL_PER_PAGE; iS<MAX_LEARNED_SKILL_CNT; iS++) {
+		nSkillIDX = this->m_Skills.m_nSkillINDEX[ iS ];
+		if ( 0 == nSkillIDX )
+			continue;
 
-			this->m_Skills.m_nSkillINDEX[ iS ] = 0;
+		this->m_Skills.m_nSkillINDEX[ iS ] = 0;
 
-			n1LevSkillIDX = SKILL_1LEV_INDEX( nSkillIDX );
-			do {
-				iRecoverySP += SKILL_NEED_LEVELUPPOINT( nSkillIDX );
-				nSkillIDX --;
-			} while( nSkillIDX > 0 && n1LevSkillIDX == SKILL_1LEV_INDEX( nSkillIDX ) );
-		}
-		this->AddCur_SkillPOINT( iRecoverySP );
-	} else {
-		short nNewSP = (int)( this->GetCur_LEVEL() * ( this->GetCur_LEVEL()+4 ) * 0.25f ) - 1;
-		this->SetCur_SkillPOINT( nNewSP );
+		n1LevSkillIDX = SKILL_1LEV_INDEX( nSkillIDX );
+		do {
+			iRecoverySP += SKILL_NEED_LEVELUPPOINT( nSkillIDX );
+			nSkillIDX --;
+		} while( nSkillIDX > 0 && n1LevSkillIDX == SKILL_1LEV_INDEX( nSkillIDX ) );
 	}
+	this->AddCur_SkillPOINT( iRecoverySP );
 
 	// 0페이지의 기본 스킬을 걍 둔다.
 	::ZeroMemory( &m_Skills.m_nSkillINDEX[ MAX_LEARNED_SKILL_PER_PAGE ], sizeof(short) * ( MAX_LEARNED_SKILL_CNT-MAX_LEARNED_SKILL_PER_PAGE ) );

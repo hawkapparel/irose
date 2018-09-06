@@ -27,7 +27,6 @@
 #include "../../misc/gameutil.h"
 #include "UICommand.h"
 
-#include "../Country.h"
 #include "../System/CGame.h"
 
 const __int64 MAX_TRADE_MONEY = 1000000000;///교환시 최대 거래 돈
@@ -249,19 +248,7 @@ bool CTCmdMoveItemInv2Bank::Exec( CTObject* pObj )
 		}
 	}
 
-
-	if( CCountry::GetSingleton().IsJapan() )
-	{
-		if( bFullFirstTab )
-		{
-			if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_EXTRA_STOCK) )
-			{
-				g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_USE_BANK_EXTRASPACE );
-				return true;
-			}
-		}		
-	}
-	else if( bPlatinum )///일본이 아닌경우 플래티넘 탭은 플래티넘 사용자만 물건을 넣을수 있다.
+	if( bPlatinum )///일본이 아닌경우 플래티넘 탭은 플래티넘 사용자만 물건을 넣을수 있다.
 	{
 		if( CGame::GetInstance().GetPayType() != CGame::PAY_PLATINUM )
 		{
@@ -333,18 +320,6 @@ bool CTCmdMoveItemBank2Inv::Exec( CTObject* pObj )
 				bFullFirstTab = p->IsFullFirstTab();			
 			}			
 		}
-		
-		if( CCountry::GetSingleton().IsJapan() )
-		{
-			if( bFullFirstTab )
-			{
-				if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_EXTRA_STOCK) )
-				{
-					g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_USE_BANK_EXTRASPACE );
-					return true;
-				}
-			}			
-		}		
 	}
 
 	CItem* pItem = (CItem*)pObj;
@@ -356,9 +331,6 @@ bool CTCmdMoveItemBank2Inv::Exec( CTObject* pObj )
 
 	std::list< tagITEM > appendItems;
 	appendItems.push_back( Item );
-//	if( g_pAVATAR->IsInventoryFull( appendItems ) )
-//		g_itMGR.OpenMsgBox( STR_NOT_ENOUGH_INVENTORY_SPACE );
-//	else
 	g_pNet->Send_cli_MOVE_ITEM( MOVE_ITEM_TYPE_BANK2INV, pItem->GetIndex() ,Item , true );
 	return true;
 }

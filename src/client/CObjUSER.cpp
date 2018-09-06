@@ -14,7 +14,6 @@
 #include "gamecommon/item.h"
 #include "common/io_pat.h"
 #include "IO_Terrain.h"
-#include "Country.h"
 #include "CommandFilter.h"
 
 //박지호
@@ -1002,27 +1001,6 @@ int CObjUSER::GetOri_MaxMP()
 //------------------------------------------------------------------------------------
 void CObjUSER::Calc_AruaAddAbility()
 {
-	if( CCountry::GetSingleton().IsApplyNewVersion() )
-	{
-		if( m_IsAroa )
-		{
-			m_AruaAddHp			= GetDef_MaxHP() * 0.2;
-			m_AruaAddMp			= GetDef_MaxMP() * 0.2;
-			m_AruaAddCritical	= GetDef_CRITICAL() * 0.2;
-			m_AruaAddAttackPower	= GetDef_ATK() * 0.2;
-			m_AruaAddDefence		= GetDef_DEF() * 0.2;
-		}
-		else
-		{
-			m_AruaAddHp			= 0;
-			m_AruaAddMp			= 0;
-			m_AruaAddCritical	= 0;
-			m_AruaAddAttackPower	= 0;
-			m_AruaAddDefence		= 0; 
-
-		}
-		CObjCHAR::Calc_AruaAddAbility();
-	}
 }
 
 //------------------------------------------------------------------------------------
@@ -1104,107 +1082,14 @@ void CObjUSER::SetPatGuageCurrent( int guage )
 	SetCur_PatHP(guage);	
 }
 
-//------------------------------------------------------------------------------------------------------
-///박지호::유저 아이템 쿨타임을 설정한다. 
-//------------------------------------------------------------------------------------------------------
 BOOL CObjUSER::SetCoolTimeUseItem(char* uName,short iItem)
 {
- 
-	//허용국가인지...
-	if(!CCountry::GetSingleton().IsUseItemDelayNewVersion())
-		return FALSE;
-
-	//아바타인지 체크한다. 
-	if(lstrcmp(this->Get_NAME(),uName) != 0)
-		return FALSE;
-
-	int iDelayType	 = USEITME_DELAYTIME_TYPE( iItem );
-	float iDelayTick  = (float)(USEITME_DELAYTIME_TICK(iItem)) * 1000;
-
-	//0 이 아니면 딜레이를 설정한다. 
-	if( iDelayType )
-	{
-		//딜레이 타입을 넣어서 같은 타입이 딜레이 중이라면 사용할수 없다는 
-		//메세지를 채팅창에 출력한다. 
-		if( g_UseItemDelay.GetUseItemDelay( iDelayType ) > 0.0f)
-		{
-			///Use item delay 가 설정되어 있다면 패스..
-			g_itMGR.AppendChatMsg( STR_CANT_DOUBLE_USE, IT_MGR::CHAT_TYPE_SYSTEM );
-			return false;
-		}
-		//처음이라면 딜레이 타임을 설정한다. 
-		g_UseItemDelay.SetUseItemDelay( iDelayType, iDelayTick );
-		g_CurUseItemDelayTick.SetUseItemDelay( iDelayType, iDelayTick );
-	}
-	//공백일때 단독으로 처리한다. 
-	else
-	{
-		//자기 자신이 딜레이 중 
-		if(g_SoloUseItemDelayTick.GetUseItemDelay( iItem ) > 0.0f)
-		{
-			g_itMGR.AppendChatMsg( STR_CANT_DOUBLE_USE, IT_MGR::CHAT_TYPE_SYSTEM );
-			return false;
-		}
-
-		//자기 자신의 아이템 인덱스 및 딜레이 틱을 설정한다. 
-		g_SoloUseItemDelayTick.SetUseItemDelay( iItem, iDelayTick );
-	}	
-	return TRUE;
-
+	return FALSE;
 }
 
-
-//------------------------------------------------------------------------------------------------------
-///박지호::스킬 쿨타임을 설정한다. 
-//------------------------------------------------------------------------------------------------------
 BOOL CObjUSER::SetCoolTimeSkill(char* uName,int iSkill)
 {
-
-	//허용국가인지...
-	if(!CCountry::GetSingleton().IsUseItemDelayNewVersion())
-		return FALSE;
-
-	//아바타인지 체크한다. 
-	if(lstrcmp(this->Get_NAME(),uName) != 0)
-		return FALSE;
-
-
-	int iDelayType = SKILL_RELOAD_TYPE( iSkill);
-	float iDelayTick = g_SkillList.GetDelayTickCount( iSkill );
-
-
-	////0 이 아니면 딜레이를 설정한다. 
-	if( iDelayType )
-	{
-		//딜레이 타입을 넣어서 같은 타입이 딜레이 중이라면 사용할수 없다는 
-		//메세지를 채팅창에 출력한다. 
-		if( g_UseSkillDelay.GetUseItemDelay( iDelayType ) > 0.0f)
-		{
-			///Use item delay 가 설정되어 있다면 패스..
-			g_itMGR.AppendChatMsg( CStr::Printf("%s", STR_NOTIFY_04 ), IT_MGR::CHAT_TYPE_SYSTEM );
-			return false;
-		}
-				
-		g_UseSkillDelay.SetUseItemDelay( iDelayType, iDelayTick );
-		g_CurSkillDelayTick.SetUseItemDelay( iDelayType, iDelayTick );
-	}
-	//공백일때 단독으로 설정한다. 
-	else
-	{	
-		//자기 자신의 딜렉 중이라면....
-		if( g_SoloSkillDelayTick.GetUseItemDelay( iSkill ) > 0.0f)
-		{	
-			g_itMGR.AppendChatMsg( CStr::Printf("%s", STR_NOTIFY_04 ), IT_MGR::CHAT_TYPE_SYSTEM );
-			return false;
-		}
-
-		//자기 자신의 스킬인덱스 및 딜레이 틱을 설정한다. 
-		g_SoloSkillDelayTick.SetUseItemDelay( iSkill, iDelayTick );
-		
-	} 
-
-	return TRUE;
-
+	return FALSE;
 }
 
 void CObjUSER::Set_Block_CartRide(bool ride)

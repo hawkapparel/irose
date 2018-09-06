@@ -15,8 +15,6 @@
 #include "../../GameProc/UseItemDelay.h"
 #include "../../GameCommon/ReloadProcess.h"
 #include "../IO_Event.h"
-#include "../Country.h"
-
 
 #include "tgamectrl/resourcemgr.h"
 #include "tgamectrl/tcommand.h"
@@ -97,128 +95,89 @@ void CIconItem::Draw()
 	}
 	else
 	{
-		//2005. 6. 30 박 지호 
-		//새로운 Delay Type이 허용한 국가들이라면 설정... 
-		if( CCountry::GetSingleton().IsUseItemDelayNewVersion() )
+		
+		if( USEITME_STATUS_STB( Item.GetItemNO() ) )
 		{
-			//아이템 딜레이 타입을 가져온다. 
-			int iItem	   = Item.GetItemNO();
-			int iDelayType = USEITME_DELAYTIME_TYPE( iItem );
-		
-			float srcTick = 0.0f;
-			float desTick = 0.0f;
-
-			//그룹 타입이 있다면...
-			if(iDelayType)
+			switch( USEITME_STATUS_STB( Item.GetItemNO() ) )
 			{
-				srcTick = g_CurUseItemDelayTick.GetUseItemDelay( iDelayType ); 
-				desTick = g_UseItemDelay.GetUseItemDelay( iDelayType ); 
-			}
-			//단독으로 구동된다면...
-			else
-			{
-				srcTick = (float)((USEITME_DELAYTIME_TICK( iItem )) * 1000);
-				desTick = g_SoloUseItemDelayTick.GetUseItemDelay( iItem );
+				case 1:
+				case 2:
+				case 3:
+					{
+						if( float fUseItemDelay = (float)g_UseItemDelay.GetUseItemDelay( USE_ITEM_HP ) )
+						{
+							float fProcessRate =  fUseItemDelay / DEFAULT_HP_ITEM_DELAY;
+
+							CReloadProcess* pReloadProcess = g_itMGR.GetReloadProcess();
+							pReloadProcess->Draw( (int)m_ptPosition.x, (int)m_ptPosition.y ,																						IMAGE_RES_ITEM, m_iIconGraphicID, fProcessRate );		
+						}
+						else
+							CIcon::Draw();
+					}
+					break;
+
+				case 4:
+				case 5:
+				case 6:
+					{
+						if( float fUseItemDelay = (float)g_UseItemDelay.GetUseItemDelay( USE_ITEM_MP ) )
+						{
+							float fProcessRate =  fUseItemDelay / DEFAULT_MP_ITEM_DELAY;
+
+							CReloadProcess* pReloadProcess = g_itMGR.GetReloadProcess();
+							pReloadProcess->Draw((int)m_ptPosition.x, (int)m_ptPosition.y, IMAGE_RES_ITEM								,											m_iIconGraphicID, fProcessRate );		
+						}
+						else
+							CIcon::Draw();
+							
+					}
+					break;
+
+				default:
+					{
+						if( float fUseItemDelay = (float)g_UseItemDelay.GetUseItemDelay( USE_ITEM_OTHERS ) )
+						{
+							float fProcessRate =  fUseItemDelay / DEFAULT_OTHER_ITEM_DELAY;
+
+							CReloadProcess* pReloadProcess = g_itMGR.GetReloadProcess();
+							pReloadProcess->Draw( (int)m_ptPosition.x, (int)m_ptPosition.y, IMAGE_RES_ITEM, m_iIconGraphicID, fProcessRate );		
+						}
+						else
+							CIcon::Draw();
+					}
+					break;
+				}
 			}
 
-			//만약 딜레이 랜더링 중이라면...
-			if(desTick )	
-			{
-				float fProcessRate =  (float(desTick) / srcTick);
-
-				CReloadProcess* pReloadProcess = g_itMGR.GetReloadProcess();
-				pReloadProcess->Draw( (int)m_ptPosition.x, (int)m_ptPosition.y ,IMAGE_RES_ITEM,m_iIconGraphicID, fProcessRate );			
-			}
-			else
-				CIcon::Draw();
-			
-		}
-		
 		else
 		{
-			if( USEITME_STATUS_STB( Item.GetItemNO() ) )
+			/// 스크롤 스킬일경우
+			if( ITEM_TYPE( Item.GetTYPE(), Item.GetItemNO()  ) == USE_ITEM_SKILL_DOING )
 			{
-				switch( USEITME_STATUS_STB( Item.GetItemNO() ) )
+				if( float fUseItemDelay = (float)g_UseItemDelay.GetUseItemDelay( USE_ITEM_SCROLL ) )
 				{
-					case 1:
-					case 2:
-					case 3:
-						{
-							if( float fUseItemDelay = (float)g_UseItemDelay.GetUseItemDelay( USE_ITEM_HP ) )
-							{
-								float fProcessRate =  fUseItemDelay / DEFAULT_HP_ITEM_DELAY;
+					float fProcessRate =  fUseItemDelay / DEFAULT_USE_SCROLL_DELAY;
 
-								CReloadProcess* pReloadProcess = g_itMGR.GetReloadProcess();
-								pReloadProcess->Draw( (int)m_ptPosition.x, (int)m_ptPosition.y ,																						IMAGE_RES_ITEM, m_iIconGraphicID, fProcessRate );		
-							}
-							else
-								CIcon::Draw();
-						}
-						break;
-
-					case 4:
-					case 5:
-					case 6:
-						{
-							if( float fUseItemDelay = (float)g_UseItemDelay.GetUseItemDelay( USE_ITEM_MP ) )
-							{
-								float fProcessRate =  fUseItemDelay / DEFAULT_MP_ITEM_DELAY;
-
-								CReloadProcess* pReloadProcess = g_itMGR.GetReloadProcess();
-								pReloadProcess->Draw((int)m_ptPosition.x, (int)m_ptPosition.y, IMAGE_RES_ITEM								,											m_iIconGraphicID, fProcessRate );		
-							}
-							else
-								CIcon::Draw();
-							
-						}
-						break;
-
-					default:
-						{
-							if( float fUseItemDelay = (float)g_UseItemDelay.GetUseItemDelay( USE_ITEM_OTHERS ) )
-							{
-								float fProcessRate =  fUseItemDelay / DEFAULT_OTHER_ITEM_DELAY;
-
-								CReloadProcess* pReloadProcess = g_itMGR.GetReloadProcess();
-								pReloadProcess->Draw( (int)m_ptPosition.x, (int)m_ptPosition.y, IMAGE_RES_ITEM, m_iIconGraphicID, fProcessRate );		
-							}
-							else
-								CIcon::Draw();
-						}
-						break;
-					}
+					CReloadProcess* pReloadProcess = g_itMGR.GetReloadProcess();
+					pReloadProcess->Draw( (int)m_ptPosition.x, (int)m_ptPosition.y, IMAGE_RES_ITEM, m_iIconGraphicID, fProcessRate );		
 				}
-
-			else
+				else
+				{
+					CIcon::Draw();
+				}
+			}
+			else///OTHER
 			{
-				/// 스크롤 스킬일경우
-				if( ITEM_TYPE( Item.GetTYPE(), Item.GetItemNO()  ) == USE_ITEM_SKILL_DOING )
+				if( float fUseItemDelay = (float)g_UseItemDelay.GetUseItemDelay( USE_ITEM_OTHERS ) )
 				{
-					if( float fUseItemDelay = (float)g_UseItemDelay.GetUseItemDelay( USE_ITEM_SCROLL ) )
-					{
-						float fProcessRate =  fUseItemDelay / DEFAULT_USE_SCROLL_DELAY;
+					float fProcessRate =  fUseItemDelay / DEFAULT_OTHER_ITEM_DELAY;
 
-						CReloadProcess* pReloadProcess = g_itMGR.GetReloadProcess();
-						pReloadProcess->Draw( (int)m_ptPosition.x, (int)m_ptPosition.y, IMAGE_RES_ITEM, m_iIconGraphicID, fProcessRate );		
-					}
-					else
-					{
-						CIcon::Draw();
-					}
+					CReloadProcess* pReloadProcess = g_itMGR.GetReloadProcess();
+					pReloadProcess->Draw( (int)m_ptPosition.x, (int)m_ptPosition.y, IMAGE_RES_ITEM, m_iIconGraphicID, fProcessRate );		
 				}
-				else///OTHER
+				else
 				{
-					if( float fUseItemDelay = (float)g_UseItemDelay.GetUseItemDelay( USE_ITEM_OTHERS ) )
-					{
-						float fProcessRate =  fUseItemDelay / DEFAULT_OTHER_ITEM_DELAY;
-
-						CReloadProcess* pReloadProcess = g_itMGR.GetReloadProcess();
-						pReloadProcess->Draw( (int)m_ptPosition.x, (int)m_ptPosition.y, IMAGE_RES_ITEM, m_iIconGraphicID, fProcessRate );		
-					}
-					else
-					{
-						CIcon::Draw();
-					}
+					CIcon::Draw();
 				}
 			}
 		}

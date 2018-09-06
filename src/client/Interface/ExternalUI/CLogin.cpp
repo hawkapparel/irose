@@ -12,7 +12,6 @@
 #include "../../System/CGame.h"
 #include "../../Util/Localizing.h"
 #include "../../CClientStorage.h"
-#include "../../Country.h"
 
 #include "tgamectrl/teditbox.h"
 #include "tgamectrl/tmsgbox.h"
@@ -339,19 +338,6 @@ void CLogin::Show()
 
 	if( m_hCopyRight )
 		getTextureSize( m_hCopyRight, iTempWidth,  m_iHeightCopyRight);
-
-	
-	///사용자 등급
-	if( CCountry::GetSingleton().IsKorea() )
-	{
-		m_hUserGrade = loadTexture ( "3DData\\Control\\Res\\user12.dds", 
-									"3DData\\Control\\Res\\user12.dds",
-									1, 
-									0 );
-		assert( m_hUserGrade );
-		if( m_hUserGrade )
-			getTextureSize( m_hUserGrade, m_iWidthUserGrade, iTempHeight );
-	}
 
 
 	if( pCtrl =  Find( IID_CHECKBOX_SAVE_LASTCONECTID ) )

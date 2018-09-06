@@ -22,24 +22,7 @@ void CObjAVT::Update_SPEED ()
 	this->m_nRunSPEED = floor_int( fSpeed );
 
 	short nWeaponSpeed;
-	if ( this->GetCur_MOVE_MODE() <= MOVE_MODE_RUN ) {
-		this->m_fRunAniSPEED = Cal_RunAniSPEED( m_nRunSPEED );
-
-		// fSpeed = Cal_AtkAniSPEED( this->GetPartITEM(BODY_PART_WEAPON_R) );
-		// this->m_nAtkAniSPEED = floor_int( fSpeed );
-
-		//nWeaponSpeed = WEAPON_ATTACK_SPEED( GetPartITEM(BODY_PART_WEAPON_R) ) + 5;
-		//fSpeed = 1500.f / nWeaponSpeed;
-		//this->m_nAtkAniSPEED = floor_int( fSpeed );
-		//this->m_nAtkAniSPEED += this->GetPsv_ATKSPEED();	// this->m_iAddValue[ AT_ATK_SPD ] 포함되어 있음
-
-		short nWeaponItemNo = GetPartITEM( BODY_PART_WEAPON_R );
-		nWeaponSpeed = WEAPON_ATTACK_SPEED( nWeaponItemNo ) + 5;
-
-		fSpeed = 1500.f / nWeaponSpeed + m_iAddValue[ AT_ATK_SPD ];
-		this->m_nPassiveAttackSpeed = this->GetPassiveSkillAttackSpeed( fSpeed, nWeaponItemNo );
-		this->m_nAtkAniSPEED = (short)( fSpeed + this->m_nPassiveAttackSpeed );
-	} else if( this->GetCur_MOVE_MODE() > MOVE_MODE_RUN && IsTAIWAN() ) { // 타이완이고 탑승모드이면..
+	if( this->GetCur_MOVE_MODE() > MOVE_MODE_RUN ) {
 		this->m_fRunAniSPEED = Cal_RunAniSPEED( m_nRunSPEED );
 
 		short nWeaponItemNo = GetPartITEM( BODY_PART_WEAPON_R );
@@ -162,7 +145,7 @@ tagMOTION *CObjAVT::Get_MOTION (short nActionIdx)
 	short nFileIDX, nType;
 	tagMOTION *pMOTION;
 
-	if ( IsTAIWAN() || !this->m_btRideMODE ) {
+	if ( !this->m_btRideMODE ) {
 		// 오른손 무기 종류에따라...
 		//nFileIDX = FILE_MOTION( WEAPON_MOTION_TYPE(this->m_nRWeaponIDX), nActionIdx );
 		nFileIDX = FILE_MOTION( WEAPON_MOTION_TYPE(this->m_sRWeaponIDX.m_nItemNo), nActionIdx );
@@ -337,11 +320,7 @@ bool CObjAVT::SetCMD_TOGGLE (BYTE btTYPE, bool bForce)
 				this->m_btRideMODE = 0;
 				this->m_btRideATTR = RIDE_ATTR_NORMAL;
 				this->m_iLinkedCartObjIDX = 0;
-
-				if ( IsTAIWAN() ) {
-					// 2005.08.03 : icarus :: 하차시 모든 유리 상태 해지...
-					this->m_IngSTATUS.ClearAllGOOD ();
-				}
+				this->m_IngSTATUS.ClearAllGOOD ();
 			} else {
 				// 승차, 조건 체크, 
 				for (short nI=0; nI<MAX_RIDING_PART-2; nI++) {
@@ -350,16 +329,10 @@ bool CObjAVT::SetCMD_TOGGLE (BYTE btTYPE, bool bForce)
 					}
 				}
 
-				if ( IsTAIWAN() ) {
-					if ( ZONE_RIDING_REFUSE_FLAG( this->GetZONE()->Get_ZoneNO() ) ) {
-						// 0x01 : 카트 불가, 0x02 : 캐슬기어 불가
-						//TUNING_PART_BODY_CART				= 511,	// 튜닝부품 - 카트 바디
-						//TUNING_PART_BODY_CASTLEGEAR		= 512,	// 튜닝부품 - 케슬기어 바디
-						int iType = ITEM_TYPE( ITEM_TYPE_RIDE_PART, this->m_Inventory.m_ItemRIDE[ RIDE_PART_BODY ].GetItemNO() );
-						if ( (iType%3) & ZONE_RIDING_REFUSE_FLAG( this->GetZONE()->Get_ZoneNO() ) ) {
-							// 탑승 제한~
-							return true;
-						}
+				if ( ZONE_RIDING_REFUSE_FLAG( this->GetZONE()->Get_ZoneNO() ) ) {
+					int iType = ITEM_TYPE( ITEM_TYPE_RIDE_PART, this->m_Inventory.m_ItemRIDE[ RIDE_PART_BODY ].GetItemNO() );
+					if ( (iType%3) & ZONE_RIDING_REFUSE_FLAG( this->GetZONE()->Get_ZoneNO() ) ) {
+						return true;
 					}
 				}
 
@@ -866,40 +839,19 @@ void CObjAVT::Check_PerFRAME (DWORD dwPassTIME)
 	m_dwGoddnessTIME += dwPassTIME;
 	m_dwRecoverTIME  += dwPassTIME;
 
-	/*if ( IsTAIWAN() ) {
-		if ( m_dwGoddnessTIME >= CHECK_GODDNESS_CALL_TIME ) {
-			m_dwGoddnessTIME -= CHECK_GODDNESS_CALL_TIME;
-			// 여신 소환 삭제
-			this->Del_Goddess ();
-			if ( this->GetCur_LEVEL() >= 50 ) {
-				if ( RANDOM(100)+1 <= 3 ) {
-					this->Add_Goddess ();	// 여신 소환
-				}
-			} else 
-			if ( RANDOM(100)+1 <= 5 ) {
-				this->Add_Goddess ();		// 여신 소환
-			}
-		}
-	}*/
-
 	switch( this->Get_MoveMODE() ) {
 		case MOVE_MODE_RIDEON	:
 			break;
 		case MOVE_MODE_DRIVE	:			
 			if ( m_dwRecoverTIME >= USE_FUEL_CHEC_TIME ) {
 				m_dwRecoverTIME -= USE_FUEL_CHEC_TIME;
-				if( IsTAIWAN() )
-				{
-					if( !Get_STATE() && (Get_STATE() & CS_MOVE) ) // 
-						this->Dec_EngineLife ();	// 탑승 모드, 연료 소모	
-				}
-				else
+				if( !Get_STATE() && (Get_STATE() & CS_MOVE) ) // 
 					this->Dec_EngineLife ();	// 탑승 모드, 연료 소모	
 			}
 			break;
 		default :							// HP / MP 회복
 		{
-			DWORD dwCheckTime = IsTAIWAN() ? RECOVER_STATE_CHECK_TIME : 4000;
+			DWORD dwCheckTime = RECOVER_STATE_CHECK_TIME;
 			if ( m_dwRecoverTIME >=	dwCheckTime ) {
 				m_dwRecoverTIME -= dwCheckTime;
 
@@ -907,57 +859,29 @@ void CObjAVT::Check_PerFRAME (DWORD dwPassTIME)
 				{
 					// 스테미너 체크...
 					int iAdd;
-					if ( IsTAIWAN() ) {
 						int iArua;
-						if ( CMD_SIT == Get_COMMAND() ) {
-							//[앉기 상태]
-							// RECOVER_HP= (MAX_HP)/12+1+ ITEM_RECOVER_HP (1이하 버림) 대만 2005.6.16 kchs
-							iAdd = (int)( this->GetOri_MaxHP()/12.f + 1 + this->GetAdd_RecoverHP() );
-							iArua = ( this->m_IngSTATUS.IsSubSET( FLAG_SUB_ARUA_FAIRY ) ) ? iAdd >> 1 : 0;
-							this->Add_HP( iAdd+iArua );
+					if ( CMD_SIT == Get_COMMAND() ) {
+						//[앉기 상태]
+						// RECOVER_HP= (MAX_HP)/12+1+ ITEM_RECOVER_HP (1이하 버림) 대만 2005.6.16 kchs
+						iAdd = (int)( this->GetOri_MaxHP()/12.f + 1 + this->GetAdd_RecoverHP() );
+						iArua = ( this->m_IngSTATUS.IsSubSET( FLAG_SUB_ARUA_FAIRY ) ) ? iAdd >> 1 : 0;
+						this->Add_HP( iAdd+iArua );
 #ifdef	__INC_WORLD
-							g_LOG.CS_ODS( 0xffff, "ADD HP:: %d = %d + %d \n", iAdd+iArua, iAdd, iArua );
+						g_LOG.CS_ODS( 0xffff, "ADD HP:: %d = %d + %d \n", iAdd+iArua, iAdd, iArua );
 #endif
-							// RECOVER_MP= (MAX_MP)/12+1+ ITEM_RECOVER_MP (1이하 버림) 대만 2005.6.19 kchs
-							iAdd = (int)( this->GetOri_MaxMP()/12.f + 1 + this->GetAdd_RecoverMP() );
-							iArua = ( this->m_IngSTATUS.IsSubSET( FLAG_SUB_ARUA_FAIRY ) ) ? iAdd >> 1 : 0;
-							this->Add_MP( iAdd+iArua );
-//#ifdef	__INC_WORLD
-//							g_LOG.CS_ODS( 0xffff, "ADD MP:: %d = %d + %d \n", iAdd+iArua, iAdd, iArua );
-//#endif
-						} else {
-							//[일반 상태]
-							// RECOVER_HP= (MAX_HP)/50+1+ ITEM_RECOVER_HP (1이하 버림) (대만 2005.06.19) kchs
-							iAdd = (int)( this->GetOri_MaxHP()/50.f + 1 + this->GetAdd_RecoverHP() );
-							iArua = ( this->m_IngSTATUS.IsSubSET( FLAG_SUB_ARUA_FAIRY ) ) ? iAdd >> 1 : 0;
-							this->Add_HP( iAdd+iArua );
-//#ifdef	__INC_WORLD
-//							g_LOG.CS_ODS( 0xffff, ">> HP:: %d \n", Get_HP() );
-//							g_LOG.CS_ODS( 0xffff, "ADD HP:: %d = %d + %d \n", iAdd+iArua, iAdd, iArua );
-//#endif
-
-							// RECOVER_MP= (MAX_MP)/35+1+ ITEM_RECOVER_MP (1이하 버림) 대만 2005.6.19 kchs
-							iAdd = (int)( this->GetOri_MaxMP()/35.f + 1 + this->GetAdd_RecoverMP() );
-							iArua = ( this->m_IngSTATUS.IsSubSET( FLAG_SUB_ARUA_FAIRY ) ) ? iAdd >> 1 : 0;
-							this->Add_MP( iAdd+iArua );
-//#ifdef	__INC_WORLD
-//							g_LOG.CS_ODS( 0xffff, "ADD MP:: %d = %d + %d \n", iAdd+iArua, iAdd, iArua );
-//#endif
-						}
+						// RECOVER_MP= (MAX_MP)/12+1+ ITEM_RECOVER_MP (1이하 버림) 대만 2005.6.19 kchs
+						iAdd = (int)( this->GetOri_MaxMP()/12.f + 1 + this->GetAdd_RecoverMP() );
+						iArua = ( this->m_IngSTATUS.IsSubSET( FLAG_SUB_ARUA_FAIRY ) ) ? iAdd >> 1 : 0;
+						this->Add_MP( iAdd+iArua );
 					} else {
-						if ( CMD_SIT == Get_COMMAND() ) {
-							iAdd = this->Get_RecoverHP( RECOVER_STATE_SIT_ON_GROUND );
-							this->Add_HP( iAdd );
+						iAdd = (int)( this->GetOri_MaxHP()/50.f + 1 + this->GetAdd_RecoverHP() );
+						iArua = ( this->m_IngSTATUS.IsSubSET( FLAG_SUB_ARUA_FAIRY ) ) ? iAdd >> 1 : 0;
+						this->Add_HP( iAdd+iArua );
 
-							iAdd = this->Get_RecoverMP( RECOVER_STATE_SIT_ON_GROUND );
-							this->Add_MP( iAdd );
-			#ifdef	__INC_WORLD
-							LogString(0xffff, "Recover:: %d / %d :: %d\n", m_dwRecoverTIME, dwPassTIME, (this->GetZONE())->GetCurrentTIME() );
-			#endif
-						} else {
-							iAdd = (int)( ( this->GetAdd_RecoverHP() + ( this->Get_CON()+40 ) / 6.f) / 6.f);
-							this->Add_HP( iAdd );
-						}
+						// RECOVER_MP= (MAX_MP)/35+1+ ITEM_RECOVER_MP (1이하 버림) 대만 2005.6.19 kchs
+						iAdd = (int)( this->GetOri_MaxMP()/35.f + 1 + this->GetAdd_RecoverMP() );
+						iArua = ( this->m_IngSTATUS.IsSubSET( FLAG_SUB_ARUA_FAIRY ) ) ? iAdd >> 1 : 0;
+						this->Add_MP( iAdd+iArua );
 					}
 				}
 			}

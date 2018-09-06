@@ -374,9 +374,6 @@
     <ClCompile Include="CApplication.cpp">
       <Filter>Source Files\winMAIN</Filter>
     </ClCompile>
-    <ClCompile Include="Country.cpp">
-      <Filter>Source Files\winMAIN</Filter>
-    </ClCompile>
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files\winMAIN</Filter>
     </ClCompile>
@@ -1511,9 +1508,6 @@
       <Filter>Source Files\Terrain</Filter>
     </ClInclude>
     <ClInclude Include="CApplication.h">
-      <Filter>Source Files\winMAIN</Filter>
-    </ClInclude>
-    <ClInclude Include="Country.h">
       <Filter>Source Files\winMAIN</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">

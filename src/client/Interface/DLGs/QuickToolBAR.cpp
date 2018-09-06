@@ -21,7 +21,6 @@
 #include "../command/dragcommand.h"
 
 #include "../../GameData/Event/CTEventItem.h"
-#include "../../Country.h"
 
 #include "tgamectrl/tpane.h"
 #include "tgamectrl/teditbox.h"
@@ -234,24 +233,6 @@ unsigned int CQuickBAR::Process( UINT uiMsg, WPARAM wParam, LPARAM lParam )
 		{
 			switch ( wParam ) 
 			{
-				/**
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-				{
-					if( IsApplyNewVersion() 
-						&& CTControlMgr::GetInstance()->GetKeyboardInputType() == CTControlMgr::INPUTTYPE_NORMAL 
-						&& NULL == CTEditBox::s_pFocusEdit
-						&& GetQuickBarType() == QUICKBAR_TYPE_NORMAL )
-					{
-						m_nCurrentPage = wParam - '1';
-						UpdateHotIconSlot();
-						return uiMsg;
-					}
-				}
-				break;
-				**/
 			case 0x31:
 			case 0x32:
 			case 0x33:
@@ -414,8 +395,7 @@ unsigned int CQuickBAR::Process( UINT uiMsg, WPARAM wParam, LPARAM lParam )
 			case '3':
 			case '4':
 				{
-					if(/* IsApplyNewVersion() 
-						&& */CTControlMgr::GetInstance()->GetKeyboardInputType() == CTControlMgr::INPUTTYPE_NORMAL 
+					if(CTControlMgr::GetInstance()->GetKeyboardInputType() == CTControlMgr::INPUTTYPE_NORMAL 
 						&& NULL == CTEditBox::s_pFocusEdit
 						&& GetQuickBarType() == QUICKBAR_TYPE_NORMAL )
 					{

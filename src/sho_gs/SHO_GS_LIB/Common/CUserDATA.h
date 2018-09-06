@@ -337,13 +337,6 @@ struct tagGrowAbility {
 #define	MAX_LEARNED_SKILL_PAGE			4
 #define	MAX_LEARNED_SKILL_PER_PAGE		( MAX_LEARNED_SKILL_CNT/MAX_LEARNED_SKILL_PAGE )
 
-extern bool IsTAIWAN();
-/**
- * \ingroup SHO_GS_LIB
- * \class	tagSkillAbility
- * \author	wookSang.Jo
- * \brief	사용자 케릭터가 배우거나 사용 가능한 스킬능력치 데이타 보관 구조체
- */
 struct tagSkillAbility {
 	union {
 		short	m_nSkillINDEX[ MAX_LEARNED_SKILL_CNT ];
@@ -357,10 +350,6 @@ struct tagSkillAbility {
 		m_nSkillINDEX[ 1 ] = 12;	// 줍기
 		m_nSkillINDEX[ 2 ] = 16;	// 일반공격
 		m_nSkillINDEX[ 3 ] = 20;	// 거래신청
-
-		if ( !IsTAIWAN() )
-			return;
-
 		m_nSkillINDEX[  4 ] = 49;	// 화남
 		m_nSkillINDEX[  5 ] = 50;	// 박수
 		m_nSkillINDEX[  6 ] = 48;	// 절규

@@ -29,10 +29,7 @@
 extern classLogFILE	 g_ChatLOG;
 extern classLogFILE	 g_ChatGMLOG;
 
-extern bool IsJAPAN ();
 
-
-//-------------------------------------------------------------------------------------------------
 classUSER::classUSER ()
 {	
 	COMPILE_TIME_ASSERT( sizeof(tagITEM) == (6+sizeof(__int64)) );
@@ -1038,17 +1035,13 @@ void classUSER::Add_EXP (__int64 iGetExp, bool bApplyStamina, WORD wFromObjIDX)
 
 		this->AddCur_BonusPOINT( (short)( this->Get_LEVEL() * 0.8 ) + 10 );
 
-		if ( IsTAIWAN() ) {
-			for (short nD=0; nD<g_TblSkillPoint.m_nDataCnt ; nD++) {
-				if ( SP_LEVEL(nD) == this->Get_LEVEL() ) {
-					this->AddCur_SkillPOINT( SP_POINT(nD) );
-					break;
-				}
+		for (short nD=0; nD<g_TblSkillPoint.m_nDataCnt ; nD++) {
+			if ( SP_LEVEL(nD) == this->Get_LEVEL() ) {
+				this->AddCur_SkillPOINT( SP_POINT(nD) );
+				break;
 			}
-		} else {
-			// 스킬 포인트 =  (LV + 4) * 0.5 - 1 
-			this->AddCur_SkillPOINT( (short)( ( this->Get_LEVEL() + 4 ) * 0.5f ) - 1 );
 		}
+
 		m_GrowAbility.m_lEXP -= iNeedEXP;
 
 		m_GrowAbility.m_lPenalEXP = 0;
@@ -1127,21 +1120,8 @@ bool classUSER::Dead (CObjCHAR *pKiller)
 	return false;
 }
 
-//-------------------------------------------------------------------------------------------------
-/// 셀프 스킬 실행
 bool classUSER::Do_SelfSKILL (short nSkillIDX)
 {
-	if ( !IsTAIWAN() ) {
-		if ( this->GetCur_RIDE_MODE() ) {
-			short nSkillType = SKILL_TYPE( nSkillIDX );
-			if ( nSkillType >= SKILL_TYPE_03 && nSkillType <= SKILL_TYPE_07 ) 
-				return false;
-
-			if ( nSkillType == SKILL_TYPE_17 )
-				return false;
-		}
-	}
-
 	if ( this->Skill_ActionCondition( nSkillIDX ) ) {
 		// 실제 필요 수치 소모 적용...
 		if ( this->SetCMD_Skill2SELF( nSkillIDX ) ) {
@@ -1152,21 +1132,9 @@ bool classUSER::Do_SelfSKILL (short nSkillIDX)
 
 	return false;	// 접속 끊기지 않음
 }
-/// 타겟 스킬 실행
+
 bool classUSER::Do_TargetSKILL (int iTargetObject, short nSkillIDX)
 {
-	if ( !IsTAIWAN() ) {
-		if ( this->GetCur_RIDE_MODE() ) {
-			short nSkillType = SKILL_TYPE( nSkillIDX );
-			if ( nSkillType >= SKILL_TYPE_03 && nSkillType <= SKILL_TYPE_07 ) 
-				return false;
-
-			if ( nSkillType == SKILL_TYPE_17 )
-				return false;
-		}
-	}
-
-	// 리져렉션 스킬로 인해 HP체크 안하게...
 	CObjCHAR *pDestCHAR = g_pObjMGR->Get_ClientCharOBJ( iTargetObject, false /* true */ );
 	if ( pDestCHAR ) {
 		if ( !this->Skill_IsPassFilter( pDestCHAR, nSkillIDX ) )
@@ -1360,26 +1328,20 @@ bool classUSER::Use_InventoryITEM( t_PACKET *pPacket )
 	/// 쿨타임 적용..
 	DWORD dwCurTime;
 	short nCoolTimeType;
-	if ( IsTAIWAN() ) {
-		dwCurTime = this->GetCurAbsSEC();
-		nCoolTimeType = USEITEM_COOLTIME_TYPE(pITEM->m_nItemNo);
-		if ( nCoolTimeType ) {
-			if ( dwCurTime - this->m_dwCoolTIME[ nCoolTimeType ] <= static_cast<DWORD>( USEITEM_COOLTIME_DELAY(pITEM->m_nItemNo) ) ) {
-			#ifdef	__INC_WORLD
-				char szTmp[ MAX_PATH ];
-				sprintf( szTmp, "ignore use item:: CurTime:%d, LastTime:%d, Reamin:%dsec", 
-								dwCurTime, 	this->m_dwCoolTIME[ nCoolTimeType ], dwCurTime-this->m_dwCoolTIME[ nCoolTimeType ] );
-				this->Send_gsv_WHISPER( "Cool time", szTmp );			// xxxx
-			#endif
-				return true;
-			}
+	dwCurTime = this->GetCurAbsSEC();
+	nCoolTimeType = USEITEM_COOLTIME_TYPE(pITEM->m_nItemNo);
+	if ( nCoolTimeType ) {
+		if ( dwCurTime - this->m_dwCoolTIME[ nCoolTimeType ] <= static_cast<DWORD>( USEITEM_COOLTIME_DELAY(pITEM->m_nItemNo) ) ) {
+		#ifdef	__INC_WORLD
+			char szTmp[ MAX_PATH ];
+			sprintf( szTmp, "ignore use item:: CurTime:%d, LastTime:%d, Reamin:%dsec", 
+							dwCurTime, 	this->m_dwCoolTIME[ nCoolTimeType ], dwCurTime-this->m_dwCoolTIME[ nCoolTimeType ] );
+			this->Send_gsv_WHISPER( "Cool time", szTmp );			// xxxx
+		#endif
+			return true;
 		}
-	} else {
-		dwCurTime = 0;
-		nCoolTimeType = 0;
 	}
 
-	/// 사용 조건 체크...
 	int iValue = GetCur_AbilityValue( USEITEM_NEED_DATA_TYPE(pITEM->m_nItemNo) );
 	if ( AT_CURRENT_PLANET == USEITEM_NEED_DATA_TYPE(pITEM->m_nItemNo) ) {
 		// 사용할수 있는 행성을 체크하는 것인가 ????
@@ -1607,46 +1569,40 @@ bool classUSER::Send_srv_JOIN_SERVER_REPLY (t_PACKET *pRecvPket, char *szAccount
 	return true;
 }
 
-
-//-------------------------------------------------------------------------------------------------
-// bool classUSER::Send_gsv_SELECT_CHAR (void)
-/// 클라이언트에 존에 입장허가 패킷 전송
 bool classUSER::Send_gsv_JOIN_ZONE (CZoneTHREAD *pZONE)
 {
-	if ( IsTAIWAN() ) {
-		if ( this->m_btRideMODE && ZONE_RIDING_REFUSE_FLAG( pZONE->Get_ZoneNO() ) ) {
-			// 0x01 : 카트 불가, 0x02 : 캐슬기어 불가
-			if ( ITEM_TYPE_RIDE_PART == this->m_Inventory.m_ItemRIDE[ RIDE_PART_BODY ].GetTYPE() ) {
-				int iType = ITEM_TYPE( ITEM_TYPE_RIDE_PART, this->m_Inventory.m_ItemRIDE[ RIDE_PART_BODY ].GetItemNO() );
-				if ( (iType%3) & ZONE_RIDING_REFUSE_FLAG( this->GetZONE()->Get_ZoneNO() ) ) {
-					// 탑승 제한~
-					this->m_btRideMODE = 0;
-				}
-			} else {
-				this->m_btRideMODE = 0;		// 뭐냐 이건 ??
+	if ( this->m_btRideMODE && ZONE_RIDING_REFUSE_FLAG( pZONE->Get_ZoneNO() ) ) {
+		// 0x01 : 카트 불가, 0x02 : 캐슬기어 불가
+		if ( ITEM_TYPE_RIDE_PART == this->m_Inventory.m_ItemRIDE[ RIDE_PART_BODY ].GetTYPE() ) {
+			int iType = ITEM_TYPE( ITEM_TYPE_RIDE_PART, this->m_Inventory.m_ItemRIDE[ RIDE_PART_BODY ].GetItemNO() );
+			if ( (iType%3) & ZONE_RIDING_REFUSE_FLAG( this->GetZONE()->Get_ZoneNO() ) ) {
+				// 탑승 제한~
+				this->m_btRideMODE = 0;
+			}
+		} else {
+			this->m_btRideMODE = 0;		// 뭐냐 이건 ??
+		}
+
+		// 강제 해제 됐나 ?
+		/*if ( 0 == this->m_btRideMODE ) {
+			this->UpdateAbility ();		// 탑승 토글...
+		}*/
+		if ( 0 == this->m_btRideMODE ) 
+		{			
+			//	2006.03.16/김대성 - 카트나 캐슬기어를 탈수 없는 지역이 있다. (고블린동굴)
+			//	- 카트를 타고 카트를 탈수 없는 지역에 들어가면 스킬시전이 안되는 버그
+			if ( ZONE_RIDING_REFUSE_FLAG( pZONE->Get_ZoneNO() ) > 0 )	// 1:카트 불가, 2:캐슬기어 불가, 3:모두 불가
+			{
+				this->m_btRideMODE = 0;
+				this->m_btRideATTR = RIDE_ATTR_NORMAL;		// 여기가 중요
+				this->m_iLinkedCartObjIDX = 0;
+				//	김영환 2006.8.29일 채크 위치 보정
+				// 2006.05.30/김대성/추가
 			}
 
-			// 강제 해제 됐나 ?
-			/*if ( 0 == this->m_btRideMODE ) {
-				this->UpdateAbility ();		// 탑승 토글...
-			}*/
-			if ( 0 == this->m_btRideMODE ) 
-			{			
-				//	2006.03.16/김대성 - 카트나 캐슬기어를 탈수 없는 지역이 있다. (고블린동굴)
-				//	- 카트를 타고 카트를 탈수 없는 지역에 들어가면 스킬시전이 안되는 버그
-				if ( ZONE_RIDING_REFUSE_FLAG( pZONE->Get_ZoneNO() ) > 0 )	// 1:카트 불가, 2:캐슬기어 불가, 3:모두 불가
-				{
-					this->m_btRideMODE = 0;
-					this->m_btRideATTR = RIDE_ATTR_NORMAL;		// 여기가 중요
-					this->m_iLinkedCartObjIDX = 0;
-					//	김영환 2006.8.29일 채크 위치 보정
-					// 2006.05.30/김대성/추가
-				}
-
-				this->UpdateAbility ();		// 탑승 토글...
-				this->Send_gsv_SPEED_CHANGED ();	// 스피드 변경된 값을 전송 : 존 메시지로 전송.
-				//-------------------------------------
-			}
+			this->UpdateAbility ();		// 탑승 토글...
+			this->Send_gsv_SPEED_CHANGED ();	// 스피드 변경된 값을 전송 : 존 메시지로 전송.
+			//-------------------------------------
 		}
 	}
 
@@ -2475,12 +2431,11 @@ short classUSER::Recv_cli_REVIVE_REQ( BYTE btReviveTYPE, bool bApplyPenalty, boo
 				// 저장된 존의 행성과 죽은 존의 행성이 같으면 부활존으로 ....
 				nZoneNO   = this->m_nReviveZoneNO;
 				PosREVIVE = this->m_PosREVIVE;
-				if ( IsTAIWAN() ) {
-					if ( ZONE_REVIVE_ZONENO( this->m_nZoneNO ) ) {
-						nZoneNO		= ZONE_REVIVE_ZONENO( this->m_nZoneNO );
-						PosREVIVE.x = ZONE_REVIVE_X_POS( this->m_nZoneNO ) * 1000.f;
-						PosREVIVE.y = ZONE_REVIVE_Y_POS( this->m_nZoneNO ) * 1000.f;
-					}
+
+				if ( ZONE_REVIVE_ZONENO( this->m_nZoneNO ) ) {
+					nZoneNO		= ZONE_REVIVE_ZONENO( this->m_nZoneNO );
+					PosREVIVE.x = ZONE_REVIVE_X_POS( this->m_nZoneNO ) * 1000.f;
+					PosREVIVE.y = ZONE_REVIVE_Y_POS( this->m_nZoneNO ) * 1000.f;
 				}
 
 				PosREVIVE.x += ( RANDOM(1001) - 500 );	// 랜덤 5미터..
@@ -3948,39 +3903,23 @@ bool classUSER::Recv_cli_CREATE_ITEM_REQ( t_PACKET *pPacket )
 				nMAT_QUAL = ITEM_QUALITY( pInvITEM->GetTYPE(), pInvITEM->GetItemNO() );
 
 				fSUC_POINT[0] = ( nITEM_DIF+35 ) * ( nITEM_QUAL+15 ) / 16.f;
-				if( IsTAIWAN() )
-				{
-					// PRO_POINT1 = { (MAT_QUAL) * ((RAN(1~100)+70) * ((CON / A_LV)*100 + ITEM_DIF/2 + 430) * (WORLD_PROD) } / 800000 (2005.07.08 대만)
-					fPRO_POINT[0] = ( nMAT_QUAL * (nRand+71) * ( (GetCur_CON() / GetCur_LEVEL())*100.f + nITEM_DIF/2.f + 430 ) * Get_WorldPROD() ) / 800000.f;
-				}
-				else
-					fPRO_POINT[0] = ( nMAT_QUAL * (nRand+71) * ( 0.5f*this->GetCur_CON() + nITEM_DIF/2.f + 530 ) * Get_WorldPROD() ) / 800000.f;
+				fPRO_POINT[0] = ( nMAT_QUAL * (nRand+71) * ( (GetCur_CON() / GetCur_LEVEL())*100.f + nITEM_DIF/2.f + 430 ) * Get_WorldPROD() ) / 800000.f;
 				nPLUS = (short)( ( fPRO_POINT[0] - fSUC_POINT[0] ) * 30 / ( fPRO_POINT[0]+nITEM_QUAL ) );
 				break;
 			}
 			case 1 :
 			{
 				fSUC_POINT[1] = ( nITEM_DIF+15 ) * ( nITEM_QUAL+140 ) / ( nNUM_MAT+3) / 4.f;
-				if( IsTAIWAN() )
-				{
-					// PRO_POINT2 = { (MAT_QUAL + ITEM_DIF/2) * ((RAN(1~100)+100) * ((CON / A_LV)*100 + MAT_QUAL*2 + 600) } / (NUM_MAT+7) / 1600 (2005.07.08 대만)
-					fPRO_POINT[1] = ( ( nMAT_QUAL + nITEM_DIF/2.f ) * (nRand+101) * ( (this->GetCur_CON() / this->GetCur_LEVEL())*100.f + nMAT_QUAL*2 + 600 ) ) / ( nNUM_MAT+7 ) / 1600.f;
-				}
-				else
-					fPRO_POINT[1] = ( ( nMAT_QUAL + nITEM_DIF/2.f ) * (nRand+96) * ( 0.5f*this->GetCur_CON() + SKILL_LEVEL( nSkillIDX )*6 + nMAT_QUAL*2 + 770 ) ) / ( nNUM_MAT+7 ) / 1600.f;
+				fPRO_POINT[1] = ( ( nMAT_QUAL + nITEM_DIF/2.f ) * (nRand+101) * ( (this->GetCur_CON() / this->GetCur_LEVEL())*100.f + nMAT_QUAL*2 + 600 ) ) / ( nNUM_MAT+7 ) / 1600.f;
+					
 				nPLUS += (short) ( ( fPRO_POINT[1] - fSUC_POINT[1] ) * 20 / ( fPRO_POINT[1] ) );
 				break;
 			}
 			case 2 :
 			{
 				fSUC_POINT[2] = ( nITEM_DIF+90 ) * ( nITEM_QUAL+30 ) / ( nNUM_MAT+3) / 4.f;
-				if( IsTAIWAN() )
-				{
-					// PRO_POINT3 = { (PRO_POINT1/6 + ITEM_QUAL) * (RAN(1~100)+80) * ((CON / A_LV)*100 + MAT_QUAL*2 + 500) } / (NUM_MAT+7) / 2000 (2005.07.08 대만)
-					fPRO_POINT[2] = ( ( fPRO_POINT[0]/6.f + nITEM_QUAL ) * ( nRand+81 ) * ( (GetCur_CON() / GetCur_LEVEL()) * 100.f + nMAT_QUAL*2 + 500 ) ) / ( nNUM_MAT+7 ) / 2000.f;
-				}
-				else
-					fPRO_POINT[2] = ( ( fPRO_POINT[0]/6.f + nITEM_QUAL ) * ( nRand+81 ) * ( 0.3f*this->GetCur_CON() + SKILL_LEVEL( nSkillIDX )*5 + nMAT_QUAL*2 + 600 ) ) / ( nNUM_MAT+7 ) / 2000.f;
+				fPRO_POINT[2] = ( ( fPRO_POINT[0]/6.f + nITEM_QUAL ) * ( nRand+81 ) * ( (GetCur_CON() / GetCur_LEVEL()) * 100.f + nMAT_QUAL*2 + 500 ) ) / ( nNUM_MAT+7 ) / 2000.f;
+			
 				nPLUS += (short)( ( fPRO_POINT[2] - fSUC_POINT[2] ) * 10 / ( fPRO_POINT[2] ) );
 				break;
 			}
@@ -4022,12 +3961,6 @@ bool classUSER::Recv_cli_CREATE_ITEM_REQ( t_PACKET *pPacket )
 				g_pThreadLOG->When_CreateOrDestroyITEM ( this, NULL, sUsedITEM, nUsedCNT, NEWLOG_CREATE, NEWLOG_FAILED );
 			#endif
 
-			if( IsTAIWAN() )
-			{
-				// 타이완 버젼에서 경험치는 빼지 않음..
-			}
-			else
-				this->m_nCreateItemEXP = 1 + (short) ( ( this->Get_LEVEL() + 50 ) * fPRO_POINT[0] * ( nNUM_MAT+4 ) / 1300.f );
 			return this->Send_gsv_CREATE_ITEM_REPLY( RESULT_CREATE_ITEM_FAILED, nI, fPRO_POINT );
 		}
 	}
@@ -4056,15 +3989,9 @@ bool classUSER::Recv_cli_CREATE_ITEM_REQ( t_PACKET *pPacket )
 				sOutITEM.m_bIsAppraisal = 1;
 				break;
 			case 2 :	// 계산
-				if( IsTAIWAN() )
-				{
-					// 소켓수=[{(SEN/A_LV)*40+400)*(PLUS*1.8+아이템품질*0.4+ 8) * 0.2}   / (RAND(1~100)+50)] ? 100 (2005.07.08 대만)
-					iTEMP = (int)( ( (GetCur_SENSE()/GetCur_LEVEL())*40.f+400  ) * 
-						( nPLUS*1.8f + ITEM_QUALITY(sOutITEM.GetTYPE(), sOutITEM.GetItemNO() )*0.4f + 8 ) * 0.2f / ( RANDOM(100)+51 ) - 100 );
-				}
-				else
-					iTEMP = (int)( ( this->GetCur_SENSE()+400-this->Get_LEVEL()*0.7f ) * 
-						( nPLUS*1.8f + ITEM_QUALITY(sOutITEM.GetTYPE(), sOutITEM.GetItemNO() )*0.4f + 8 ) * 0.2f / ( RANDOM(100)+50 ) - 100 );
+				iTEMP = (int)( ( (GetCur_SENSE()/GetCur_LEVEL())*40.f+400  ) * 
+					( nPLUS*1.8f + ITEM_QUALITY(sOutITEM.GetTYPE(), sOutITEM.GetItemNO() )*0.4f + 8 ) * 0.2f / ( RANDOM(100)+51 ) - 100 );
+
 				if ( iTEMP >= 1 ) {
 					sOutITEM.m_bHasSocket = 1;
 					sOutITEM.m_bIsAppraisal = 1;
@@ -4074,14 +4001,7 @@ bool classUSER::Recv_cli_CREATE_ITEM_REQ( t_PACKET *pPacket )
 				{
 					// 아이템 옵션
 					iTEMP = 1 + RANDOM(100);
-					int iITEM_OP = 0;
-					if( IsTAIWAN() )
-					{
-						// ITEM_OP = [{((SEN/A_LV)*50 + 220) * (PLUS+20) * 0.4 + ITEM_DIF*35 ? 1600 - TEMP} / (TEMP+17)] ? 85 (2005.07.08 대만)
-						iITEM_OP = (int)( ( ((GetCur_SENSE()/Get_LEVEL()/2.f)*50.f + 220) * ( nPLUS+20 )*0.4f + nITEM_DIF*35 - 1600 - iTEMP ) / ( iTEMP+17 ) - 85 );
-					}
-					else
-						iITEM_OP = (int)( ( ( this->GetCur_SENSE()+220-this->Get_LEVEL()/2.f ) * ( nPLUS+20 )*0.4f + nITEM_DIF*35 - 1600 - iTEMP ) / ( iTEMP+17 ) - 85 );
+					int iITEM_OP = (int)( ( ((GetCur_SENSE()/Get_LEVEL()/2.f)*50.f + 220) * ( nPLUS+20 )*0.4f + nITEM_DIF*35 - 1600 - iTEMP ) / ( iTEMP+17 ) - 85 );
 					if ( iITEM_OP > 0 ) {
 						sOutITEM.m_bIsAppraisal = 1;	// 감정 받은걸루...
 						int iMod = (int)( (ITEM_QUALITY(sOutITEM.GetTYPE(), sOutITEM.GetItemNO() ) + 12)*3.2f );
@@ -4111,13 +4031,6 @@ bool classUSER::Recv_cli_CREATE_ITEM_REQ( t_PACKET *pPacket )
 	if ( nI<= 0 ) {
 		this->Save_ItemToFILED( sOutITEM );	// 제조시 인벤토리가 추가가 불가능해서 밖에 30분간 보관...
 	}
-
-	if( IsTAIWAN() )
-	{
-		// 대만 버젼일 경우.. 경험치 주지 않음.
-	}
-	else
-		this->m_nCreateItemEXP = 1 + (short)( ( this->Get_LEVEL() + 35 ) * ( fPRO_POINT[0] + this->Get_LEVEL() ) * ( nNUM_MAT+4 ) * (nITEM_DIF+20) / 23000.f );
 
 	return this->Send_gsv_CREATE_ITEM_REPLY( RESULT_CREATE_ITEM_SUCCESS, nI, fPRO_POINT, &sOutITEM);
 }
@@ -4625,30 +4538,20 @@ bool classUSER::Recv_cli_MOVE_ITEM( t_PACKET *pPacket )
 			sMoveITEM.m_iSN = pSourITEM->m_iSN;
 			sOriITEM = *pSourITEM;
 			this->Sub_ITEM( pPacket->m_cli_MOVE_ITEM.m_btFromIDX, sMoveITEM );
-			// 플레티넘 서비스 텝 가능...
-			if ( IsJAPAN() ) {
-				if ( this->m_dwPayFLAG & PLAY_FLAG_EXTRA_STOCK ) {
-					// 총 120개 사용
-					nToSlotIDX = this->m_Bank.Add_ITEM( sMoveITEM, 0, BANKSLOT_JPN_DEFAULT+BANKSLOT_JPN_EXTRA );
-				} else {
-					// 총 40개 사용
-					nToSlotIDX = this->m_Bank.Add_ITEM( sMoveITEM, 0, BANKSLOT_JPN_DEFAULT );
-				}
+
+#ifndef	__INC_WORLD
+			if ( ( this->m_dwPayFLAG & PLAY_FLAG_EXTRA_STOCK ) && pPacket->m_cli_MOVE_ITEM.m_btUseSpecialTAB == 1 ) {
+#else
+			if ( pPacket->m_cli_MOVE_ITEM.m_btUseSpecialTAB == 1 ) {
+#endif
+				nToSlotIDX = this->m_Bank.Add_ITEM( sMoveITEM, BANKSLOT_PLATINUM_0, BANKSLOT_PLATINUM_0+BANKSLOT_PLATINUM );
+			} else 
+			if ( this->m_GrowAbility.IsBankAddON( this->GetCurAbsSEC() ) ) {
+				// 창고 확장슬롯 가능......
+				nToSlotIDX = this->m_Bank.Add_ITEM( sMoveITEM, 0, BANKSLOT_DEFAULT+BANKSLOT_ADDON );
 			} else {
-	#ifndef	__INC_WORLD
-				if ( ( this->m_dwPayFLAG & PLAY_FLAG_EXTRA_STOCK ) && pPacket->m_cli_MOVE_ITEM.m_btUseSpecialTAB == 1 ) {
-	#else
-				if ( pPacket->m_cli_MOVE_ITEM.m_btUseSpecialTAB == 1 ) {
-	#endif
-					nToSlotIDX = this->m_Bank.Add_ITEM( sMoveITEM, BANKSLOT_PLATINUM_0, BANKSLOT_PLATINUM_0+BANKSLOT_PLATINUM );
-				} else 
-				if ( this->m_GrowAbility.IsBankAddON( this->GetCurAbsSEC() ) ) {
-					// 창고 확장슬롯 가능......
-					nToSlotIDX = this->m_Bank.Add_ITEM( sMoveITEM, 0, BANKSLOT_DEFAULT+BANKSLOT_ADDON );
-				} else {
-					// 일반 창고....
-					nToSlotIDX = this->m_Bank.Add_ITEM( sMoveITEM, 0, BANKSLOT_DEFAULT );
-				}
+				// 일반 창고....
+				nToSlotIDX = this->m_Bank.Add_ITEM( sMoveITEM, 0, BANKSLOT_DEFAULT );
 			}
 
 			if ( nToSlotIDX < 0 ) {
@@ -4825,18 +4728,9 @@ short classUSER::Recv_cli_TELEPORT_REQ( t_PACKET *pPacket )
 			return this->Send_gsv_ADJUST_POS( true );
 		}
 	} else 
-	if ( IsTAIWAN() ) {
 #ifndef	__INC_WORLD
 		return RET_OK;	// IS_HACKING( this, "Recv_cli_TELEPORT_REQ-4" );
 #endif
-	}
-	/*
-	// 체크해 말어 ?
-	if ( !g_pZoneLIST->IsValidZONE( TELEPORT_ZONE( nWarpIDX ) ) {
-		g_LOG.CS_ODS( 0xffff, "ERROR:: Invalid Warp Zone ... WarpIDX: %d, ZoneNO: %d \n", nWarpIDX, TELEPORT_ZONE( nWarpIDX ) );
-		return IS_HACKING( this, "Recv_cli_TELEPORT_REQ-2" );
-	}
-	*/
 
 	// 같은 서버에서 존이 실행 되고 있는가 ???
 	tagEVENTPOS *pEventPOS = g_pZoneLIST->Get_EventPOS( TELEPORT_ZONE( wWarpIDX ), TELEPORT_EVENT_POS(wWarpIDX) );
@@ -5858,7 +5752,7 @@ bool classUSER::Recv_cli_SKILL_LEVELUP_REQ ( t_PACKET *pPacket )
 	BYTE btResult = this->Skill_LevelUpCondition( nSkillIDX, pPacket->m_cli_SKILL_LEVELUP_REQ.m_nNextLevelSkillIDX );
 	if ( RESULT_SKILL_LEVELUP_SUCCESS == btResult ) {
 		// 05.05.25 스킬 렙업시 줄리 소모...
-		int iNeedZuly = IsTAIWAN() ? SKILL_LEVELUP_NEED_ZULY( pPacket->m_cli_SKILL_LEVELUP_REQ.m_nNextLevelSkillIDX ) * 100 : 0;
+		int iNeedZuly = SKILL_LEVELUP_NEED_ZULY(pPacket->m_cli_SKILL_LEVELUP_REQ.m_nNextLevelSkillIDX) * 100;
 
 		if ( this->GetCur_MONEY() < iNeedZuly ) {
 			btResult = RESULT_SKILL_LEVELUP_OUTOFZULY;
@@ -5989,23 +5883,21 @@ bool classUSER::Recv_cli_SELF_SKILL( t_PACKET *pPacket )
 	}
 
 	short nSkillIDX = this->m_Skills.m_nSkillINDEX[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ];
-	if ( IsTAIWAN() ) {
-		if ( SKILL_AVAILBLE_STATUS(nSkillIDX) && !(m_btRideATTR & SKILL_AVAILBLE_STATUS(nSkillIDX)) )
-			return true;
+	if ( SKILL_AVAILBLE_STATUS(nSkillIDX) && !(m_btRideATTR & SKILL_AVAILBLE_STATUS(nSkillIDX)) )
+		return true;
 
-		if ( SKILL_RELOAD_TYPE(nSkillIDX) ) {
-			// 05.05.30 스킬 리로드 그룹타입으로 체크...
-			if ( SKILL_RELOAD_SECOND(nSkillIDX) > dwCurTime - this->m_dwLastSkillGroupSpeelTIME[ SKILL_RELOAD_TYPE(nSkillIDX) ] ) {
-	#ifdef	__INC_WORLD
-				sprintf( szTmp, "ignore SkillIdx:%d, :: Delay:%d > Charged:%d, LastStamp:%d \n", 
-						nSkillIDX, 
-						SKILL_RELOAD_SECOND(nSkillIDX), 
-						dwCurTime - this->m_dwLastSkillGroupSpeelTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ], 
-						this->m_dwLastSkillGroupSpeelTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ] );
-				this->Send_gsv_WHISPER( "SELF_SKILL", szTmp );
-	#endif
-				return true;
-			}
+	if ( SKILL_RELOAD_TYPE(nSkillIDX) ) {
+		// 05.05.30 스킬 리로드 그룹타입으로 체크...
+		if ( SKILL_RELOAD_SECOND(nSkillIDX) > dwCurTime - this->m_dwLastSkillGroupSpeelTIME[ SKILL_RELOAD_TYPE(nSkillIDX) ] ) {
+#ifdef	__INC_WORLD
+			sprintf( szTmp, "ignore SkillIdx:%d, :: Delay:%d > Charged:%d, LastStamp:%d \n", 
+					nSkillIDX, 
+					SKILL_RELOAD_SECOND(nSkillIDX), 
+					dwCurTime - this->m_dwLastSkillGroupSpeelTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ], 
+					this->m_dwLastSkillGroupSpeelTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ] );
+			this->Send_gsv_WHISPER( "SELF_SKILL", szTmp );
+#endif
+			return true;
 		}
 	}
 
@@ -6112,23 +6004,21 @@ bool classUSER::Recv_cli_TARGET_SKILL( t_PACKET *pPacket )
 	}
 
 	short nSkillIDX = this->m_Skills.m_nSkillINDEX[ pPacket->m_cli_TARGET_SKILL.m_btSkillSLOT ];
-	if ( IsTAIWAN() ) {
-		if ( SKILL_AVAILBLE_STATUS(nSkillIDX) && !(m_btRideATTR & SKILL_AVAILBLE_STATUS(nSkillIDX)) )
-			return true;
+	if ( SKILL_AVAILBLE_STATUS(nSkillIDX) && !(m_btRideATTR & SKILL_AVAILBLE_STATUS(nSkillIDX)) )
+		return true;
 
-		if ( SKILL_RELOAD_TYPE(nSkillIDX) ) {
-			// 05.05.30 스킬 리로드 그룹타입으로 체크...
-			if ( SKILL_RELOAD_SECOND(nSkillIDX) > dwCurTime - this->m_dwLastSkillGroupSpeelTIME[ SKILL_RELOAD_TYPE(nSkillIDX) ] ) {
-	#ifdef	__INC_WORLD
-				sprintf( szTmp, "ignore SkillIdx:%d, :: Delay:%d > Charged:%d, LastStamp:%d \n", 
-						nSkillIDX, 
-						SKILL_RELOAD_SECOND(nSkillIDX), 
-						dwCurTime - this->m_dwLastSkillGroupSpeelTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ], 
-						this->m_dwLastSkillGroupSpeelTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ] );
-				this->Send_gsv_WHISPER( "SELF_SKILL", szTmp );
-	#endif
-				return true;
-			}
+	if ( SKILL_RELOAD_TYPE(nSkillIDX) ) {
+		// 05.05.30 스킬 리로드 그룹타입으로 체크...
+		if ( SKILL_RELOAD_SECOND(nSkillIDX) > dwCurTime - this->m_dwLastSkillGroupSpeelTIME[ SKILL_RELOAD_TYPE(nSkillIDX) ] ) {
+#ifdef	__INC_WORLD
+			sprintf( szTmp, "ignore SkillIdx:%d, :: Delay:%d > Charged:%d, LastStamp:%d \n", 
+					nSkillIDX, 
+					SKILL_RELOAD_SECOND(nSkillIDX), 
+					dwCurTime - this->m_dwLastSkillGroupSpeelTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ], 
+					this->m_dwLastSkillGroupSpeelTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ] );
+			this->Send_gsv_WHISPER( "SELF_SKILL", szTmp );
+#endif
+			return true;
 		}
 	}
 
@@ -6227,24 +6117,22 @@ bool classUSER::Recv_cli_POSITION_SKILL( t_PACKET *pPacket )
 		return false;
 
 	short nSkillIDX = this->m_Skills.m_nSkillINDEX[ pPacket->m_cli_POSITION_SKILL.m_btSkillSLOT ];
-	if ( IsTAIWAN() ) {
-		if ( SKILL_AVAILBLE_STATUS(nSkillIDX) && !(m_btRideATTR & SKILL_AVAILBLE_STATUS(nSkillIDX)) )
-			return true;
+	if ( SKILL_AVAILBLE_STATUS(nSkillIDX) && !(m_btRideATTR & SKILL_AVAILBLE_STATUS(nSkillIDX)) )
+		return true;
 
-		if ( SKILL_RELOAD_TYPE(nSkillIDX) ) {
-			// 05.05.30 스킬 리로드 그룹타입으로 체크...
-			if ( SKILL_RELOAD_SECOND(nSkillIDX) > dwCurTime - this->m_dwLastSkillGroupSpeelTIME[ SKILL_RELOAD_TYPE(nSkillIDX) ] ) {
-	#ifdef	__INC_WORLD
-				char szTmp[ MAX_PATH ];
-				sprintf( szTmp, "ignore SkillIdx:%d, :: Delay:%d > Charged:%d, LastStamp:%d \n", 
-						nSkillIDX, 
-						SKILL_RELOAD_SECOND(nSkillIDX), 
-						dwCurTime - this->m_dwLastSkillGroupSpeelTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ], 
-						this->m_dwLastSkillGroupSpeelTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ] );
-				this->Send_gsv_WHISPER( "SELF_SKILL", szTmp );
-	#endif
-				return true;
-			}
+	if ( SKILL_RELOAD_TYPE(nSkillIDX) ) {
+		// 05.05.30 스킬 리로드 그룹타입으로 체크...
+		if ( SKILL_RELOAD_SECOND(nSkillIDX) > dwCurTime - this->m_dwLastSkillGroupSpeelTIME[ SKILL_RELOAD_TYPE(nSkillIDX) ] ) {
+#ifdef	__INC_WORLD
+			char szTmp[ MAX_PATH ];
+			sprintf( szTmp, "ignore SkillIdx:%d, :: Delay:%d > Charged:%d, LastStamp:%d \n", 
+					nSkillIDX, 
+					SKILL_RELOAD_SECOND(nSkillIDX), 
+					dwCurTime - this->m_dwLastSkillGroupSpeelTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ], 
+					this->m_dwLastSkillGroupSpeelTIME[ pPacket->m_cli_SELF_SKILL.m_btSkillSLOT ] );
+			this->Send_gsv_WHISPER( "SELF_SKILL", szTmp );
+#endif
+			return true;
 		}
 	}
 
@@ -8434,18 +8322,8 @@ int classUSER::Proc_ZonePACKET( t_PACKET *pPacket )
 		{
 			if ( pPacket->m_cli_REVIVE_REQ.m_btReviveTYPE >= REVIVE_TYPE_CURRENT_POS ) 
 			{
-				// 클라이언트는 현재 위치 부활 할수 없다 !!!
 				return RET_FAILED;
 			}
-			/*if ( IsTAIWAN() ) {
-				// 대만 오픈베타 이후에는 같은존 부활 없앤다...
-				switch( pPacket->m_cli_REVIVE_REQ.m_btReviveTYPE ) {
-					case REVIVE_TYPE_START_POS	:
-					case REVIVE_TYPE_REVIVE_POS :
-						// pPacket->m_cli_REVIVE_REQ.m_btReviveTYPE = REVIVE_TYPE_SAVE_POS;
-						return true;
-				}
-			}*/
 
 			return Recv_cli_REVIVE_REQ( pPacket->m_cli_REVIVE_REQ.m_btReviveTYPE, true, true );
 		}
@@ -9168,35 +9046,4 @@ bool  classUSER::Send_gsv_CHARSTATE_CHANGE( DWORD dwFLAG )
 void classUSER::LogCHAT( const char * szMSG , const char * pDestCHAR , const char * szMsgTYPE )
 {
 	return;
-
-	if( !IsTAIWAN() )
-		return ;
-
-	if( !szMSG )
-		return;
-	if( !IsTAIWAN() )
-		return;
-
-	char * szACCOUNT = this->Get_ACCOUNT();
-	char * szNAME = this->Get_NAME();
-
-	if( szMSG[ 0 ] == '/' )
-		szMsgTYPE = "CHEAT";
-
-	if( this->m_dwRIGHT >= RIGHT_TWG ) /// 128 보다 크면.
-		::g_ChatGMLOG.QueueString( "[%s] %s\t%s\t%s\t%s\t%s\r\n", 
-				szMsgTYPE,
-				szACCOUNT ? szACCOUNT : "",
-				szNAME ? szNAME : "",
-				pDestCHAR ? pDestCHAR : "",
-				this->Get_IP(), 
-				szMSG  );
-	else
-		::g_ChatLOG.QueueString( "[%s] %s\t%s\t%s\t%s\t%s\r\n", 
-				szMsgTYPE,
-				szACCOUNT ? szACCOUNT : "",
-				szNAME ? szNAME : "",
-				pDestCHAR ? pDestCHAR : "",
-				this->Get_IP(), 
-				szMSG );
 }

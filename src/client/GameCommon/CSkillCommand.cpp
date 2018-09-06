@@ -11,7 +11,6 @@
 #include "GameData/CExchange.h"
 #include "GameData/CPrivateStore.h"
 #include "io_terrain.h"
-#include "../Country.h"
 #include "../System/CGame.h"
 
 
@@ -255,33 +254,6 @@ bool CBasicCommand::Execute()
 
 				int iItemType = g_pAVATAR->m_Inventory.m_ItemRIDE[ 0 ].GetTYPE();
 				int iItemNo   = g_pAVATAR->m_Inventory.m_ItemRIDE[ 0 ].GetItemNO();
-
-				if( CCountry::GetSingleton().IsApplyNewVersion() )
-				{
-					switch( ZONE_RIDING_REFUSE_FLAG( g_pTerrain->GetZoneNO() ) )
-					{
-					case 1:
-						if( (ITEM_TYPE( iItemType, iItemNo ) / 100 == 5) && (ITEM_TYPE( iItemType, iItemNo ) % 10 == 1 ) )
-						{
-							g_itMGR.AppendChatMsg( STR_CANT_USE_CART , IT_MGR::CHAT_TYPE_SYSTEM , D3DCOLOR_ARGB( 255, 206, 223, 136));				
-							return false;
-						}
-						break;
-					case 2:
-						if( (ITEM_TYPE( iItemType, iItemNo ) / 100 == 5) && (ITEM_TYPE( iItemType, iItemNo ) % 10 == 2 ) )
-						{
-							g_itMGR.AppendChatMsg( STR_CANT_USE_CASTLEGEAR , IT_MGR::CHAT_TYPE_SYSTEM , D3DCOLOR_ARGB( 255, 206, 223, 136));				
-							return false;
-						}
-						break;
-					case 3:
-						g_itMGR.AppendChatMsg(STR_CANT_USE_DRIVESKILL, IT_MGR::CHAT_TYPE_SYSTEM, D3DCOLOR_ARGB( 255, 206, 223, 136) );
-						return false;
-						break;
-					default:
-						break;
-					}
-				}
 			}
 
 
@@ -434,20 +406,6 @@ bool CBasicCommand::Execute()
 		}
 	case COMMON_COMMAND_PRIVATESTORE:
 		{
-
-			if(CCountry::GetSingleton().IsJapan())
-			{
-
-
-				if( !(CGame::GetInstance().GetPayType() & PLAY_FLAG_TRADE) )
-				{
-					g_itMGR.OpenMsgBox( STR_JP_BILL_CANT_OPEN_PRIVATESTORE );
-					return false;
-				}        
-			}
-
-
-			/// 주위 10미터 안에 NPC가 있다면 상점 개설 금지
 			g_itMGR.OpenDialog( DLG_TYPE_PRIVATESTORE );
 			g_itMGR.OpenDialog( DLG_TYPE_ITEM, false );
 		}

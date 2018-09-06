@@ -15,7 +15,6 @@
 #include "../Common/CItem.h"
 #include "../IO_Event.h"
 #include "../io_terrain.h"
-#include "../Country.h"
 
 
 //Item base command에서 필요한 글로벌 함수들
@@ -432,123 +431,77 @@ bool CTCmdItemUseInInventory::Exec( CTObject* pObj )
 		break;
 	}
 
-	//----------------------------------------------------------------------------------------------------
-	/// Use Item Delay 적용 및
-	/// Use Item Delay 설정
-	//----------------------------------------------------------------------------------------------------
-	
-	// 허용된 국가만이 New Delay type을 적용 할수 있음. 
-	// 현재 아이템의 딜레이 타입을 가져온다. 
-	if(CCountry::GetSingleton().IsUseItemDelayNewVersion())
+	// 상태 번호가 설정되어 있다면..
+	if( USEITME_STATUS_STB( Item.GetItemNO() ) )
 	{
-		short iItem = Item.GetItemNO();
-       int iDelayType	 = USEITME_DELAYTIME_TYPE( iItem );
-		float iDelayTick  = (float)(USEITME_DELAYTIME_TICK(iItem)) * 1000;
-
-		//0 이 아니면 딜레이를 설정한다. 
-		if( iDelayType )
+		switch( USEITME_STATUS_STB( Item.GetItemNO() ) )
 		{
-			//딜레이 타입을 넣어서 같은 타입이 딜레이 중이라면 사용할수 없다는 
-			//메세지를 채팅창에 출력한다. 
-			if( g_UseItemDelay.GetUseItemDelay( iDelayType ) > 0.0f)
+		case 1:
+		case 2:
+		case 3:
+			if( g_UseItemDelay.GetUseItemDelay( USE_ITEM_HP ) )
 			{
 				///Use item delay 가 설정되어 있다면 패스..
 				g_itMGR.AppendChatMsg( STR_CANT_DOUBLE_USE, IT_MGR::CHAT_TYPE_SYSTEM );
 				return false;
 			}
-		}
-		//공백일때 단독으로 처리한다. 
-		else
-		{
-			//자기 자신이 딜레이 중 
-			if(g_SoloUseItemDelayTick.GetUseItemDelay( iItem ) > 0.0f)
+			g_UseItemDelay.SetUseItemDelay( USE_ITEM_HP, DEFAULT_HP_ITEM_DELAY );
+			break;
+		case 4:
+		case 5:
+		case 6:
+			if( g_UseItemDelay.GetUseItemDelay( USE_ITEM_MP ) )
 			{
+				///Use item delay 가 설정되어 있다면 패스..
 				g_itMGR.AppendChatMsg( STR_CANT_DOUBLE_USE, IT_MGR::CHAT_TYPE_SYSTEM );
 				return false;
 			}
-		}
-	}
-	else
-	{
-		// 상태 번호가 설정되어 있다면..
-		if( USEITME_STATUS_STB( Item.GetItemNO() ) )
-		{
-			switch( USEITME_STATUS_STB( Item.GetItemNO() ) )
+
+			g_UseItemDelay.SetUseItemDelay( USE_ITEM_MP, DEFAULT_MP_ITEM_DELAY );
+			break;
+		default:
 			{
-			case 1:
-			case 2:
-			case 3:
-				if( g_UseItemDelay.GetUseItemDelay( USE_ITEM_HP ) )
-				{
-					///Use item delay 가 설정되어 있다면 패스..
-					g_itMGR.AppendChatMsg( STR_CANT_DOUBLE_USE, IT_MGR::CHAT_TYPE_SYSTEM );
-					return false;
-				}
-				g_UseItemDelay.SetUseItemDelay( USE_ITEM_HP, DEFAULT_HP_ITEM_DELAY );
-				break;
-			case 4:
-			case 5:
-			case 6:
-				if( g_UseItemDelay.GetUseItemDelay( USE_ITEM_MP ) )
-				{
-					///Use item delay 가 설정되어 있다면 패스..
-					g_itMGR.AppendChatMsg( STR_CANT_DOUBLE_USE, IT_MGR::CHAT_TYPE_SYSTEM );
-					return false;
-				}
-
-				g_UseItemDelay.SetUseItemDelay( USE_ITEM_MP, DEFAULT_MP_ITEM_DELAY );
-				break;
-			default:
-				{
-					if( g_UseItemDelay.GetUseItemDelay( USE_ITEM_OTHERS ) )
-					{
-						///Use item delay 가 설정되어 있다면 패스..
-						g_itMGR.AppendChatMsg( STR_CANT_DOUBLE_USE, IT_MGR::CHAT_TYPE_SYSTEM );
-						return false;
-					}
-					g_UseItemDelay.SetUseItemDelay( USE_ITEM_OTHERS, DEFAULT_OTHER_ITEM_DELAY );
-				}
-				break;
-			}
-		}
-		else
-		{
-			/// 스크롤 스킬일경우
-			if( ITEM_TYPE( Item.GetTYPE(), Item.GetItemNO()  ) == USE_ITEM_SKILL_DOING )
-			{
-
-				if( g_UseItemDelay.GetUseItemDelay( USE_ITEM_SCROLL ) )
-				{
-					///Use item delay 가 설정되어 있다면 패스..
-					g_itMGR.AppendChatMsg( STR_CANT_DOUBLE_USE, IT_MGR::CHAT_TYPE_SYSTEM );
-					return false;
-				}
-
-				g_UseItemDelay.SetUseItemDelay( USE_ITEM_SCROLL, DEFAULT_USE_SCROLL_DELAY );
-
-			}else
-			{
-				// 다른 모든 종류의 Use Item
-
 				if( g_UseItemDelay.GetUseItemDelay( USE_ITEM_OTHERS ) )
 				{
 					///Use item delay 가 설정되어 있다면 패스..
 					g_itMGR.AppendChatMsg( STR_CANT_DOUBLE_USE, IT_MGR::CHAT_TYPE_SYSTEM );
 					return false;
 				}
-
 				g_UseItemDelay.SetUseItemDelay( USE_ITEM_OTHERS, DEFAULT_OTHER_ITEM_DELAY );
 			}
+			break;
 		}
 	}
-	//--------------------------------------------------------------------------------------------------
+	else
+	{
+		/// 스크롤 스킬일경우
+		if( ITEM_TYPE( Item.GetTYPE(), Item.GetItemNO()  ) == USE_ITEM_SKILL_DOING )
+		{
 
+			if( g_UseItemDelay.GetUseItemDelay( USE_ITEM_SCROLL ) )
+			{
+				///Use item delay 가 설정되어 있다면 패스..
+				g_itMGR.AppendChatMsg( STR_CANT_DOUBLE_USE, IT_MGR::CHAT_TYPE_SYSTEM );
+				return false;
+			}
 
-	//사용?
+			g_UseItemDelay.SetUseItemDelay( USE_ITEM_SCROLL, DEFAULT_USE_SCROLL_DELAY );
 
-	//--------------------------------------------------------------------------------------------------
-	/// Target skill 일경우는 패킷뒤에 타겟 번호를 붙인다.
-	//--------------------------------------------------------------------------------------------------
+		}else
+		{
+			// 다른 모든 종류의 Use Item
+
+			if( g_UseItemDelay.GetUseItemDelay( USE_ITEM_OTHERS ) )
+			{
+				///Use item delay 가 설정되어 있다면 패스..
+				g_itMGR.AppendChatMsg( STR_CANT_DOUBLE_USE, IT_MGR::CHAT_TYPE_SYSTEM );
+				return false;
+			}
+
+			g_UseItemDelay.SetUseItemDelay( USE_ITEM_OTHERS, DEFAULT_OTHER_ITEM_DELAY );
+		}
+	}
+
 	bool bTargetSkill = false;
 	if( ITEM_TYPE( Item.GetTYPE(), Item.GetItemNO()  ) == USE_ITEM_SKILL_DOING )
 	{

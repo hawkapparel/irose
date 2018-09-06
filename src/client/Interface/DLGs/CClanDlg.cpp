@@ -16,8 +16,6 @@
 #include "../Command/UICommand.h"
 #include "../../IO_Terrain.h"
 #include "../ClanMarkTransfer.h"
-#include "../../Country.h"
-
 
 #include "tgamectrl/tbutton.h"
 #include "tgamectrl/tabbedpane.h"
@@ -56,11 +54,8 @@ void CClanDlg::Draw()
 		DrawMembers();		
 		break;
 	case TAB_SKILL:		
-		if( !CCountry::GetSingleton().IsApplyNewVersion() )
-		{
-			CClanMarkView::Draw( g_pAVATAR, vCharPos );		
-			DrawSkills();
-		}
+		CClanMarkView::Draw( g_pAVATAR, vCharPos );		
+		DrawSkills();
 		break;
 	case TAB_NOTICE:	
 		CClanMarkView::Draw( g_pAVATAR, vCharPos );		
@@ -69,15 +64,8 @@ void CClanDlg::Draw()
 	default:
 		break;
 	}
-
-	//vCharPos = { m_sPosition.x + 238,  m_sPosition.y + 102,  0 };
-	//CClanMarkView::Draw( g_pAVATAR, vCharPos );
-
-	///내가 클랜에 가입중이라면
-	//g_DrawImpl.Draw( (int)m_sPosition.x + 238, (int)m_sPosition.y + 102, IMAGE_RES_CLANBACK,   CClan::GetInstance().GetMarkBack() );
-	//g_DrawImpl.Draw( (int)m_sPosition.x + 238, (int)m_sPosition.y + 102, IMAGE_RES_CLANCENTER, CClan::GetInstance().GetMarkCenter() );
-
 }
+
 unsigned CClanDlg::Process( unsigned uiMsg, WPARAM wParam, LPARAM lParam )
 {
 	if( !IsVision() ) return 0;

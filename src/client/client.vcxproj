@@ -213,7 +213,6 @@
     <ClCompile Include="Util\SystemUtil.cpp" />
     <ClCompile Include="Util\VFSManager.cpp" />
     <ClCompile Include="Util\WndMsgQ.cpp" />
-    <ClCompile Include="Util\Arcfour\Arcfour.cpp" />
     <ClCompile Include="GameProc\BGMManager.cpp" />
     <ClCompile Include="GameProc\CallGM.cpp" />
     <ClCompile Include="GameProc\CaptureChatList.cpp" />
@@ -598,7 +597,6 @@
     <ClInclude Include="Util\SystemUtil.h" />
     <ClInclude Include="Util\VFSManager.h" />
     <ClInclude Include="Util\WndMsgQ.h" />
-    <ClInclude Include="Util\Arcfour\Arcfour.h" />
     <ClInclude Include="GameProc\BGMManager.h" />
     <ClInclude Include="GameProc\CallGM.h" />
     <ClInclude Include="GameProc\CaptureChatList.h" />

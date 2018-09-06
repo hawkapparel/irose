@@ -8,9 +8,6 @@
     <Filter Include="Source Files\Util">
       <UniqueIdentifier>{ce31b77f-e99e-4e81-8949-677f76b4de0a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Util\Arcfour">
-      <UniqueIdentifier>{963d41dd-823f-4b00-9091-57fbb1006118}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\GameProc">
       <UniqueIdentifier>{04fb1383-0a1b-42ee-83d7-046bcb8bf7ae}</UniqueIdentifier>
     </Filter>
@@ -217,9 +214,6 @@
     </ClCompile>
     <ClCompile Include="Util\WndMsgQ.cpp">
       <Filter>Source Files\Util</Filter>
-    </ClCompile>
-    <ClCompile Include="Util\Arcfour\Arcfour.cpp">
-      <Filter>Source Files\Util\Arcfour</Filter>
     </ClCompile>
     <ClCompile Include="GameProc\BGMManager.cpp">
       <Filter>Source Files\GameProc</Filter>
@@ -1350,9 +1344,6 @@
     </ClInclude>
     <ClInclude Include="Util\WndMsgQ.h">
       <Filter>Source Files\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="Util\Arcfour\Arcfour.h">
-      <Filter>Source Files\Util\Arcfour</Filter>
     </ClInclude>
     <ClInclude Include="GameProc\BGMManager.h">
       <Filter>Source Files\GameProc</Filter>

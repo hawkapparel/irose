@@ -11,21 +11,12 @@
     <Filter Include="Source Files\Thread">
       <UniqueIdentifier>{aba7d7a4-eec0-433d-a737-0ece22d479a6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\OGG">
-      <UniqueIdentifier>{ece0d3aa-3750-40b0-b94b-a108aff422f6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{23495904-b88f-4880-a75f-539e860a2d1e}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="classFile.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="classSYS.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="CProcess.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -107,9 +98,6 @@
     <ClInclude Include="DynamicData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LIB_IJL.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LIB_Util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -127,9 +115,6 @@
     <ClCompile Include="classCRC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="classFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="classHASH.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -145,9 +130,6 @@
     <ClCompile Include="classSTR.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="classSYS.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="classTIME.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -158,9 +140,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CRandom.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LIB_IJL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CClientSOCKET.cpp">

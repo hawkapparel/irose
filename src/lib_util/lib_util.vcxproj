@@ -123,8 +123,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="classFile.h" />
-    <ClInclude Include="classSYS.h" />
     <ClInclude Include="CProcess.h" />
     <ClInclude Include="CRandom.h" />
     <ClInclude Include="..\Client\Util\CClientSOCKET.h" />
@@ -152,7 +150,6 @@
     <ClInclude Include="CWaveFILE.h" />
     <ClInclude Include="..\Client\Util\DLLIST.h" />
     <ClInclude Include="DynamicData.h" />
-    <ClInclude Include="LIB_IJL.h" />
     <ClInclude Include="LIB_Util.h" />
     <ClInclude Include="..\Client\Util\SLLIST.h" />
   </ItemGroup>
@@ -184,7 +181,6 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="classFile.cpp" />
     <ClCompile Include="classHASH.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -230,7 +226,6 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="classSYS.cpp" />
     <ClCompile Include="classTIME.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -251,15 +246,6 @@
     </ClCompile>
     <ClCompile Include="CProcess.cpp" />
     <ClCompile Include="CRandom.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Disabled</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='release|Win32'">MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="LIB_IJL.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>

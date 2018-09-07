@@ -1312,17 +1312,6 @@ void CGame::ScreenCAPTURE ()
 			pStr = CStr::Printf ("capture\\screen%03d.jpg", wDumpNo);
 			pTempBMP = CStr::Printf ("capture\\screen%03d.bmp", wDumpNo);
 		} while ( CUtil::Is_FileExist( pStr ) && wDumpNo <= 999 ) ;		
-
-
-
-		/*D3DLOCKED_RECT LockRect;
-		pSUR->LockRect( &LockRect, NULL, D3DLOCK_READONLY );
-
-		if (IJL_EncodeToJPEGFile ( pStr, sDesc.Width, sDesc.Height, (WORD*)LockRect.pBits, sDesc.Format ) ) 
-		{
-			LogString (LOG_NORMAL, "Capture Screen %s", pStr);		
-		}*/
-
 		
 		if ( D3D_OK == D3DXSaveSurfaceToFile( pTempBMP, D3DXIFF_BMP, pSUR, NULL,	NULL) ) 
 		{
@@ -1388,17 +1377,6 @@ void CGame::ScreenCAPTURE (SYSTEMTIME SystemTime)
 			pStr = CStr::Printf ("capture\\screen%03d.jpg", wDumpNo);
 			pTempBMP = CStr::Printf ("capture\\screen%03d.bmp", wDumpNo);
 		} while ( CUtil::Is_FileExist( pStr ) && wDumpNo <= 999 ) ;		
-
-
-
-		/*D3DLOCKED_RECT LockRect;
-		pSUR->LockRect( &LockRect, NULL, D3DLOCK_READONLY );
-
-		if (IJL_EncodeToJPEGFile ( pStr, sDesc.Width, sDesc.Height, (WORD*)LockRect.pBits, sDesc.Format ) ) 
-		{
-		LogString (LOG_NORMAL, "Capture Screen %s", pStr);		
-		}*/
-
 
 		if ( D3D_OK == D3DXSaveSurfaceToFile( pTempBMP, D3DXIFF_BMP, pSUR, NULL,	NULL) ) 
 		{

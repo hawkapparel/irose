@@ -148,34 +148,6 @@ bool CObjMOB::SendPacketToTARGET( CObjCHAR *pAtkCHAR, classPACKET *pCPacket )
 	return true;
 }
 
-
-//-------------------------------------------------------------------------------------------------
-#ifdef	__CS_TARGET_LIST
-void CObjMOB::LockTargetLIST ()
-{
-	if ( !m_csTargetLIST.TryLock () ) {
-		HANDLE hOwningThread = m_csTargetLIST.GetOwningThread ();
-		// 현재 쓰레드를 소유한 쓰레드의 콜스택을 보자...
-	#ifdef	__USE_TRACE
-		TRACE_THREADSTACKMSG( hOwningThread, "**OwningTHREAD**" );
-		// 현재 호출된 콜스택을 보자...
-		TRACE_STACKMSG ("**TryTHREAD**");
-	#endif
-		::sndPlaySound( "Connect.WAV", SND_ASYNC);
-		g_LOG.CS_ODS( 0xfff, "LockTargetLIST:: Critical !!!! in %s :: %s \n", __FILE__, m_StrLOC.Get() );
-
-		m_csTargetLIST.Lock ();
-	}
-	m_StrLOC.Set( __FILE__ );
-}
-void CObjMOB::UnlockTargetLIST ()
-{
-	m_StrLOC.Del ();
-	m_csTargetLIST.Unlock ();
-}
-#endif
-
-//-------------------------------------------------------------------------------------------------
 void CObjMOB::Add_ToTargetLIST( CObjAVT *pAVTChar )
 {	
 	this->LockTargetLIST ();
@@ -189,7 +161,6 @@ void CObjMOB::Sub_FromTargetLIST( CObjAVT *pAVTChar )
 	this->UnlockTargetLIST ();
 }
 
-//-------------------------------------------------------------------------------------------------
 bool CObjMOB::Dead( CObjCHAR *pKiller )
 {
 	if ( CObjCHAR::Dead(NULL) ) {

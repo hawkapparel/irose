@@ -1166,9 +1166,6 @@
     <ClCompile Include="Tutorial\TutorialEventUtility.cpp">
       <Filter>Source Files\Tutorial</Filter>
     </ClCompile>
-    <ClCompile Include="..\common\CAssertNew.cpp">
-      <Filter>Source Files\Common\Common</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CCamera.h">
@@ -2283,9 +2280,6 @@
     </ClInclude>
     <ClInclude Include="..\Engine\include\zz_interface.h">
       <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\CAssertNew.h">
-      <Filter>Source Files\Common\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -179,7 +179,6 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\common\CAssertNew.cpp" />
     <ClCompile Include="CCamera.cpp" />
     <ClCompile Include="CClientStorage.cpp" />
     <ClCompile Include="CommandFilter.cpp" />
@@ -538,7 +537,6 @@
     <ClCompile Include="Tutorial\TutorialEventUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\common\CAssertNew.h" />
     <ClInclude Include="CCamera.h" />
     <ClInclude Include="CClientStorage.h" />
     <ClInclude Include="CommandFilter.h" />

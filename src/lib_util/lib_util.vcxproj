@@ -137,7 +137,6 @@
     <ClInclude Include="..\Client\Util\PacketHEADER.h" />
     <ClInclude Include="classSYNCOBJ.h" />
     <ClInclude Include="classTHREAD.h" />
-    <ClInclude Include="classTRACE.h" />
     <ClInclude Include="..\Client\Util\CBITArray.h" />
     <ClInclude Include="CDXHPC.H" />
     <ClInclude Include="classCRC.h" />
@@ -343,15 +342,6 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="classTHREAD.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Disabled</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='release|Win32'">MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="classTRACE.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>

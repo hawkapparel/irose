@@ -522,32 +522,9 @@ bool CZoneTHREAD::Load_Economy (FILE *fp)
 	return true;
 }
 
-
-//-------------------------------------------------------------------------------------------------
-// 추가 객체를 바로 넣어 버린다.
 bool CZoneTHREAD::Add_DIRECT( CGameOBJ *pObj )
 {
-#ifdef	__USE_TRACE
-	#pragma message ( "%%%%% 정상 동작하면 지워야 할곳..." __FILE__ )
-	DWORD dwThreadID = ::GetCurrentThreadId();
-	if ( ::GetCurrentThreadId() != this->ThreadID ) {
-		// 현재 호출된 콜스택을 보자...
-		TRACE_STACKMSG ("**Current ADD_DIRECT**");
-		assert( dwThreadID == this->ThreadID );
-	}
-#endif
-
 	assert( pObj->Get_INDEX() == 0 );
-
-	//pObj->ResetSECTOR( this->Get_SectorSIZE() );
-	//if ( pObj->m_PosSECTOR.x < 0 || pObj->m_PosSECTOR.x >= this->Get_SectorXCNT() ||
-	//	 pObj->m_PosSECTOR.y < 0 || pObj->m_PosSECTOR.y >= this->Get_SectorYCNT() ) {
-	//	return false;
-	//}
-	//if ( pObj->m_PosSECTOR.x < 0 || pObj->m_PosSECTOR.x >= this->Get_SectorXCNT() ||
-	//	 pObj->m_PosSECTOR.y < 0 || pObj->m_PosSECTOR.y >= this->Get_SectorYCNT() ) {
-	//	return false;
-	//}
 
 	pObj->m_iIndex = g_pObjMGR->AddData( pObj );
 	if ( !pObj->m_iIndex ) {
@@ -561,10 +538,6 @@ bool CZoneTHREAD::Add_DIRECT( CGameOBJ *pObj )
 	m_ObjLIST.AppendNode( &pObj->m_ZoneNODE );
 	this->AddObjectToSector( pObj, SECTOR_UPDATE_ALL );
 	pObj->SetZONE( this );
-
-	//LogString( 0, ">>>> Join Object( Type:%d[ %s:%d ] ), Total Object In %d zone : %d \n", 
-	//		pObj->Get_TYPE(), pObj->Get_NAME(), pObj->Get_INDEX(), 
-	//		this->Get_ZoneNO(), m_ObjLIST.GetNodeCount() );
 
 	return true;
 }
@@ -611,29 +584,13 @@ bool CZoneTHREAD::Add_OBJECT( CGameOBJ *pObj )
 // ** CZoneTHREAD 메인 루프에서 탈출 하도록 한다. 
 void CZoneTHREAD::Sub_DIRECT( CGameOBJ *pObj, bool bSubFromREGEN )
 {
-#ifdef	__USE_TRACE
-	#pragma message ( "%%%%% 정상 동작하면 지워야 할곳... " __FILE__ )
-	DWORD dwThreadID = ::GetCurrentThreadId();
-	if ( ::GetCurrentThreadId() != this->ThreadID ) {
-		// 현재 호출된 콜스택을 보자...
-		TRACE_STACKMSG ("**Current Sub_DIRECT**");
-		assert( dwThreadID == this->ThreadID );
-	}
-#endif
-
-//	LogString( LOG_NORMAL, "Left_OBJECT( Type:%d, IDX:%d:%s ) \n", pObj->Get_TYPE(), pObj->Get_INDEX(), pObj->Get_NAME() );
-
     if ( pObj->IsA( OBJ_MOB ) ) {
 		if ( bSubFromREGEN && ((CObjMOB*)pObj)->m_pRegenPOINT )
 			((CObjMOB*)pObj)->m_pRegenPOINT->SubLiveCNT ();
     }
 
-	// @bug 2004.01.12 
-	// 아래 Set_TargetIDX( 0 )이 classUSER::SetZONE( Z )안에 있던것을 일루 옮겼다
-	// 접속이 종료되는 사용자에 의해 SetZONE( Z )이 호출되어 TargetLIST가 꼬이던 현상이 있었다.
 	pObj->Set_TargetObjIDX( 0 );	// CCharOBJ경우 에만 해당.
 
-	/// 밑에 꺼를 위에서 옮기고... thread loop에서 puser->lockself를 빼면 ?? 
 	this->SubObjectFromSector( pObj, SECTOR_UPDATE_ALL );
 
 	m_ObjLIST.DeleteNode( &pObj->m_ZoneNODE );
@@ -643,7 +600,6 @@ void CZoneTHREAD::Sub_DIRECT( CGameOBJ *pObj, bool bSubFromREGEN )
 
 	pObj->SetZONE( NULL );
 	if ( pObj->IsUSER() ) {
-		// 존에서 빠진 사용자 리스트에 등록...
 		g_pUserLIST->Add_NullZONE( &pObj->m_ZoneNODE );		// CZoneTHREAD::Sub_DIRECT
 	}
 }

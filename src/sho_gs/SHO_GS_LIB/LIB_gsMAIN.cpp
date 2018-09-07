@@ -321,18 +321,10 @@ CLIB_GameSRV::~CLIB_GameSRV ()
 	SAFE_DELETE_ARRAY( m_pCheckedLocalZONE );
 
 	CSOCKET::Free ();
-	// Cleaning up
-#ifdef	__USE_TRACE
-	TRACE_FREE ();
-#endif
 }
 
 void CLIB_GameSRV::SystemINIT( HINSTANCE hInstance, char *szBaseDataDIR, int iLangType )
 {
-	// Initializes the symbol files
-#ifdef	__USE_TRACE
-	TRACE_INIT ( NULL );
-#endif
 	m_pInstance = this;
 
 	if ( iLangType < 0 )
@@ -351,7 +343,6 @@ void CLIB_GameSRV::SystemINIT( HINSTANCE hInstance, char *szBaseDataDIR, int iLa
 
 	g_pPacketCODEC = new CPacketCODEC;
 
-	// 주의 !!!! Pool을 사용 안하더라도 초기화 해야 한다 !!!
 	CPoolPACKET::Instance (DEF_PACKET_POOL_SIZE,	INC_PACKET_POOL_SIZE );
 	CPoolRECVIO::Instance (DEF_RECV_IO_POOL_SIZE,	INC_RECV_IO_POOL_SIZE);
 	CPoolSENDIO::Instance (DEF_SEND_IO_POOL_SIZE,	INC_SEND_IO_POOL_SIZE);

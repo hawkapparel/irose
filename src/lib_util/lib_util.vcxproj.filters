@@ -14,9 +14,6 @@
     <Filter Include="Source Files\OGG">
       <UniqueIdentifier>{ece0d3aa-3750-40b0-b94b-a108aff422f6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Trace">
-      <UniqueIdentifier>{96dea517-78f7-4fbb-81ee-9e1a98b8c8f7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{23495904-b88f-4880-a75f-539e860a2d1e}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl</Extensions>
@@ -64,9 +61,6 @@
     </ClInclude>
     <ClInclude Include="classTHREAD.h">
       <Filter>Source Files\Thread</Filter>
-    </ClInclude>
-    <ClInclude Include="classTRACE.h">
-      <Filter>Source Files\Trace</Filter>
     </ClInclude>
     <ClInclude Include="..\Client\Util\CBITArray.h">
       <Filter>Header Files</Filter>
@@ -198,9 +192,6 @@
     </ClCompile>
     <ClCompile Include="classTHREAD.cpp">
       <Filter>Source Files\Thread</Filter>
-    </ClCompile>
-    <ClCompile Include="classTRACE.cpp">
-      <Filter>Source Files\Trace</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -41,7 +41,6 @@
 #include "classINDEX.h"
 #include "classIOCP.h"
 #include "classTIME.h"
-#include "classTRACE.h"
 #include "classSYNCOBJ.h"
 #include "CClientSOCKET.h"
 
@@ -50,15 +49,7 @@
 #include "IO_STB.h"
 #include "OBJECT.h"
 
-//-------------------------------------------------------------------------------------------------
 
-/**
- * \ingroup SHO_GS_LIB
- * \file	LIB_gsMAIN.h
- * \class	CLIB_GameSRV
- * \author	wookSang.Jo
- * \brief	gs Àü¿ª ½Ì±ÛÅæ Å¬·¡½º
- */
 class CLIB_GameSRV {
 private  :
 	static CLIB_GameSRV	*m_pInstance;

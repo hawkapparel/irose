@@ -21,10 +21,6 @@
 #define	RET_OK			true
 #define	RET_SKIP_PROC	2
 
-#include "classFILE.h"
-extern classLogFILE	 g_ChatLOG;
-extern classLogFILE	 g_ChatGMLOG;
-
 
 classUSER::classUSER ()
 {	

@@ -123,7 +123,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AStrTABLE.h" />
     <ClInclude Include="classFile.h" />
     <ClInclude Include="classSYS.h" />
     <ClInclude Include="CProcess.h" />

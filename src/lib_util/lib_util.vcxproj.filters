@@ -20,9 +20,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AStrTABLE.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="classFile.h">
       <Filter>Source Files</Filter>
     </ClInclude>

@@ -18,7 +18,6 @@
 #include "GS_SocketASV.h"
 #include "CThreadGUILD.h"
 #include "GS_ThreadMALL.h"
-#include "classFILE.h"
 
 #define	TEST_ZONE_NO 100
 #define	DB_INI_STRING		30
@@ -105,10 +104,6 @@ GS_CThreadMALL  *g_pThreadMALL = NULL;
 
 char			 g_szURL[ MAX_PATH ];
 
-classLogFILE	 g_ChatLOG;
-classLogFILE	 g_ChatGMLOG;
-int				 g_iChatLogDAY; /// 로그 파일을 주기적으로 바꾸기 위한 날짜
-
 #define	BASE_DATA_DIR	m_BaseDataDIR.Get()	//	"..\\..\\sho\\"
 
 
@@ -176,20 +171,6 @@ VOID CALLBACK GS_TimerProc (HWND hwnd/* handle to window */, UINT uMsg/* WM_TIME
 				case 1 : // case 4 :
 					g_pUserLIST->CloseIdleSCOKET( 90*1000 );
 					break;
-			}
-
-			if( Get_WorldVAR( WORLD_VAR_DAY ) > g_iChatLogDAY ) /// 하루가 지나면 로그 파일을 바꿔라
-			{
-				g_iChatLogDAY = Get_WorldVAR( WORLD_VAR_DAY );
-				if( ::g_ChatLOG.IsOpened() )
-					::g_ChatLOG.Close();
-				if( !::g_ChatLOG.Open( "USER" ) )
-					g_LOG.CS_OUT( 0xffff, "User Chat Log file can't be opened" );
-
-				if( ::g_ChatGMLOG.IsOpened() )
-					::g_ChatGMLOG.Close();
-				if( !::g_ChatGMLOG.Open( "GM" ) )
-					g_LOG.CS_OUT( 0xffff, "GM Chat Log file can't be opened" );
 			}
 
 			break;
@@ -378,36 +359,7 @@ void CLIB_GameSRV::SystemINIT( HINSTANCE hInstance, char *szBaseDataDIR, int iLa
 	}
 
 	this->InitLocalZone( true );
-
-	if( !g_ChatLOG.Open( "USER" ) )
-		g_LOG.CS_OUT( 0xffff, "User Chat Log file can't be opened" );
-	else
-		g_ChatLOG.Resume();
-	if( !g_ChatGMLOG.Open( "GM" ) )
-		g_LOG.CS_OUT( 0xffff, "GM Chat Log file can't be opened" );
-	else
-		g_ChatGMLOG.Resume();
 }
-
-//-------------------------------------------------------------------------------------------------
-/*
-bool CLIB_GameSRV::CheckSTB_AllITEM ()
-{
-	short nT, nI, nProductIDX;
-	for (nT=ITEM_TYPE_FACE_ITEM; nT<=ITEM_TYPE_RIDE_PART; nT++) {
-		for (nI=0; nI<g_pTblSTBs[nT]->m_nDataCnt; nI++) {
-			nProductIDX = ITEM_PRODUCT_IDX(nT,nI);
-			if ( 0 == nProductIDX )
-				continue;
-
-			if ( 0 == PRODUCT_NEED_ITEM_NO( nProductIDX, 0 ) ) {
-				// 재료 입력 필요...
-				ITEM_PRODUCT_IDX(nT,nI) = 0;
-			}
-		}
-	}
-}
-*/
 
 bool CLIB_GameSRV::CheckSTB_UseITEM ()
 {

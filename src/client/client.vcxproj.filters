@@ -431,9 +431,6 @@
     <ClCompile Include="GameData\CDealData.cpp">
       <Filter>Source Files\GameData</Filter>
     </ClCompile>
-    <ClCompile Include="GameData\CDecomposition.cpp">
-      <Filter>Source Files\GameData</Filter>
-    </ClCompile>
     <ClCompile Include="GameData\CExchange.cpp">
       <Filter>Source Files\GameData</Filter>
     </ClCompile>
@@ -1547,9 +1544,6 @@
       <Filter>Source Files\GameData</Filter>
     </ClInclude>
     <ClInclude Include="GameData\CDealData.h">
-      <Filter>Source Files\GameData</Filter>
-    </ClInclude>
-    <ClInclude Include="GameData\CDecomposition.h">
       <Filter>Source Files\GameData</Filter>
     </ClInclude>
     <ClInclude Include="GameData\CExchange.h">

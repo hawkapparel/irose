@@ -287,7 +287,6 @@
     <ClCompile Include="GameData\CClan.cpp" />
     <ClCompile Include="GameData\CCommunity.cpp" />
     <ClCompile Include="GameData\CDealData.cpp" />
-    <ClCompile Include="GameData\CDecomposition.cpp" />
     <ClCompile Include="GameData\CExchange.cpp" />
     <ClCompile Include="GameData\CGameDataCreateAvatar.cpp" />
     <ClCompile Include="GameData\CManufacture.cpp" />
@@ -664,7 +663,6 @@
     <ClInclude Include="GameData\CClan.h" />
     <ClInclude Include="GameData\CCommunity.h" />
     <ClInclude Include="GameData\CDealData.h" />
-    <ClInclude Include="GameData\CDecomposition.h" />
     <ClInclude Include="GameData\CExchange.h" />
     <ClInclude Include="GameData\CGameDataCreateAvatar.h" />
     <ClInclude Include="GameData\CManufacture.h" />

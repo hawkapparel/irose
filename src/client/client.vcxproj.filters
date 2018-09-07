@@ -218,12 +218,6 @@
     <ClCompile Include="GameProc\BGMManager.cpp">
       <Filter>Source Files\GameProc</Filter>
     </ClCompile>
-    <ClCompile Include="GameProc\CallGM.cpp">
-      <Filter>Source Files\GameProc</Filter>
-    </ClCompile>
-    <ClCompile Include="GameProc\CaptureChatList.cpp">
-      <Filter>Source Files\GameProc</Filter>
-    </ClCompile>
     <ClCompile Include="GameProc\CDayNNightProc.cpp">
       <Filter>Source Files\GameProc</Filter>
     </ClCompile>
@@ -1339,12 +1333,6 @@
     <ClInclude Include="GameProc\BGMManager.h">
       <Filter>Source Files\GameProc</Filter>
     </ClInclude>
-    <ClInclude Include="GameProc\CallGM.h">
-      <Filter>Source Files\GameProc</Filter>
-    </ClInclude>
-    <ClInclude Include="GameProc\CaptureChatList.h">
-      <Filter>Source Files\GameProc</Filter>
-    </ClInclude>
     <ClInclude Include="GameProc\CDayNNightProc.h">
       <Filter>Source Files\GameProc</Filter>
     </ClInclude>
@@ -2350,13 +2338,13 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="System\export_System.lua">
-      <Filter>Source Files\System</Filter>
-    </CustomBuild>
     <CustomBuild Include="export_GM.lua">
       <Filter>Source Files\LUA</Filter>
     </CustomBuild>
     <CustomBuild Include="export_QF.lua">
+      <Filter>Source Files\LUA</Filter>
+    </CustomBuild>
+    <CustomBuild Include="System\export_System.lua">
       <Filter>Source Files\LUA</Filter>
     </CustomBuild>
   </ItemGroup>

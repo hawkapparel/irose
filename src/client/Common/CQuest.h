@@ -1,6 +1,6 @@
 #ifndef	__QUEST_H
 #define	__QUEST_H
-#include "..\util\CBITArray.h"
+
 #include "CItem.h"
 //-------------------------------------------------------------------------------------------------
 

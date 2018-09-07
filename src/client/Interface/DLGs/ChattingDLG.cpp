@@ -10,7 +10,6 @@
 #include "../../GameCommon/CFilterWord.h"
 #include "../../GameData/CParty.h"
 #include "../../Util/Localizing.h"
-#include "../../GameProc/CaptureChatList.h"
 
 #include "tgamectrl/teditbox.h"
 #include "tgamectrl/tlistbox.h"
@@ -300,11 +299,6 @@ bool CChatDLG::On_LButtonUP( unsigned iProcID )
 	switch( iProcID )
 	{
 	case IID_BTN_CAPTURE:
-		{
-			//CCaptureChatList captureChatList;
-			//captureChatList.DoCaptureChatList();
-			//g_itMGR.AppendChatMsg( STR_SAVED_CHAT, IT_MGR::CHAT_TYPE_SYSTEM );
-		}
 		break;
 	case IID_BTN_FILTER:
 		g_itMGR.OpenDialog( DLG_TYPE_CHATFILTER );

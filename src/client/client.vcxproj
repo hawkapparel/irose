@@ -213,8 +213,6 @@
     <ClCompile Include="Util\VFSManager.cpp" />
     <ClCompile Include="Util\WndMsgQ.cpp" />
     <ClCompile Include="GameProc\BGMManager.cpp" />
-    <ClCompile Include="GameProc\CallGM.cpp" />
-    <ClCompile Include="GameProc\CaptureChatList.cpp" />
     <ClCompile Include="GameProc\CDayNNightProc.cpp" />
     <ClCompile Include="GameProc\ChangeActionMode.cpp" />
     <ClCompile Include="GameProc\ChangeVisibility.cpp" />
@@ -594,8 +592,6 @@
     <ClInclude Include="Util\VFSManager.h" />
     <ClInclude Include="Util\WndMsgQ.h" />
     <ClInclude Include="GameProc\BGMManager.h" />
-    <ClInclude Include="GameProc\CallGM.h" />
-    <ClInclude Include="GameProc\CaptureChatList.h" />
     <ClInclude Include="GameProc\CDayNNightProc.h" />
     <ClInclude Include="GameProc\ChangeActionMode.h" />
     <ClInclude Include="GameProc\ChangeVisibility.h" />

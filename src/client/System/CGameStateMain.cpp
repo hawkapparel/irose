@@ -50,9 +50,6 @@
 
 #include "../Tutorial/TutorialEventManager.h"
 
-#include "../GameProc/CaptureChatList.h"
-
-
 #define CAMERA_MOVE_SPEED 10
 
 
@@ -826,18 +823,6 @@ bool CGameStateMain::On_WM_KEYDOWN (WPARAM wParam, LPARAM lParam)
 				}
 			}
 			return true;
-		/*
-		case 'S':
-		case 's':
-			{
-				if( GetAsyncKeyState( VK_CONTROL ) )
-				{
-					CCaptureChatList captureChatList;
-					captureChatList.DoCaptureChatList();
-				}
-			}
-			break;*/
-
 		default:
 			{
 				

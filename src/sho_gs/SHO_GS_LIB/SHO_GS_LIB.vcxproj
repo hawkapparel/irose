@@ -115,12 +115,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AlphabetCvt\AlphabetCvt.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-    </ClCompile>
     <ClCompile Include="ETC_Math.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -307,7 +301,6 @@
     <ClCompile Include="md5.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AlphabetCvt\AlphabetCvt.h" />
     <ClInclude Include="CGS_API.h" />
     <ClInclude Include="ETC_Math.h" />
     <ClInclude Include="LIB_gsMAIN.H" />

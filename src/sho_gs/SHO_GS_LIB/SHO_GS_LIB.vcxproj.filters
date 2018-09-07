@@ -31,9 +31,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AlphabetCvt\AlphabetCvt.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ETC_Math.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -180,9 +177,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AlphabetCvt\AlphabetCvt.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="CGS_API.h">
       <Filter>Source Files</Filter>
     </ClInclude>

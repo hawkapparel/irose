@@ -59,7 +59,7 @@
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)3rdParty\dx90csdk\Include;$(ProjectDir)include\triggervfs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;TRIGGERVFS_EXPORTS;__DLL;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <debugInformationFormat>
       </debugInformationFormat>
     </ClCompile>
@@ -82,7 +82,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)3rdParty\dx90csdk\Include;$(ProjectDir)include\triggervfs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;TRIGGERVFS_EXPORTS;__DLL;_DEBUG;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadeddebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <debugInformationFormat>EditAndContinue</debugInformationFormat>
     </ClCompile>
     <Link>

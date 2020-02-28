@@ -6,6 +6,17 @@
 - SQL Server Express 2014+
 - SQL Server Management Studio
 
+### Setup
+Please make sure you have the default C++ toolchain for Visual studio installed. Run the application
+"Visual studio Installer" then select the "modify" button next to your installer. Ensure these are selected:
+
+- **Workloads:** Desktop Development with C++
+- **Individual Components**
+    - C++ MFC or latest v141 build tools (x86 & x64)
+    - MSVC v141 - VS 2017 C++ x64/x86 build tools
+    - C++ ATL for v141 build tools with Spectre Mitigations (x86 & x64)
+    - Windows 10 SDK (10.0.18362.0)
+
 ### Build
 - Clone the repository
 - Open the `All.sln` file

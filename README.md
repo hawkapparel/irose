@@ -2,7 +2,7 @@
 
 ## Setup
 ### Requirements
-- Visual studio 2017 Community or better
+- Visual studio 2019 Community or better
 - SQL Server Express 2014+
 - SQL Server Management Studio
 
@@ -12,9 +12,9 @@ Please make sure you have the default C++ toolchain for Visual studio installed.
 
 - **Workloads:** Desktop Development with C++
 - **Individual Components**
-    - C++ MFC or latest v141 build tools (x86 & x64)
-    - MSVC v141 - VS 2017 C++ x64/x86 build tools
-    - C++ ATL for v141 build tools with Spectre Mitigations (x86 & x64)
+    - C++ MFC or latest v142 build tools (x86 & x64)
+    - MSVC v142 - VS 2017 C++ x64/x86 build tools
+    - C++ ATL for v142 build tools with Spectre Mitigations (x86 & x64)
     - Windows 10 SDK (10.0.18362.0)
 
 ### Build

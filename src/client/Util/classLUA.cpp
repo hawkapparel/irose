@@ -15,7 +15,6 @@
     #pragma	comment (lib, "BCB5_lualib.lib")
 #else
     #pragma	comment (lib, "lua401.lib")
-    #pragma	comment (lib, "lualib401.lib")
 #endif
 
 //-------------------------------------------------------------------------------------------------

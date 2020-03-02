@@ -57,7 +57,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>$(SolutionDir)src\SHO_WS\SHO_WS_LIB;$(SolutionDir)src\SHO_WS\SHO_WS_LIB\Shared;$(SolutionDir)src\Client\Util;$(SolutionDir)src\Client;$(SolutionDir)src\Client\Common;$(SolutionDir)src\LIB_Util;$(SolutionDir)src\LIB_Server;$(SolutionDir)src\Common;$(SolutionDir)3rdParty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\SHO_WS\SHO_WS_LIB;$(SolutionDir)src\SHO_WS\SHO_WS_LIB\Shared;$(SolutionDir)src\Client\Util;$(SolutionDir)src\Client;$(SolutionDir)src\Client\Common;$(SolutionDir)src\LIB_Util;$(SolutionDir)src\LIB_Server;$(SolutionDir)src\Common;$(SolutionDir)thirdparty\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;Ndebug;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -85,7 +85,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)src\SHO_WS\SHO_WS_LIB;$(SolutionDir)src\SHO_WS\SHO_WS_LIB\Shared;$(SolutionDir)src\Client\Util;$(SolutionDir)src\Client;$(SolutionDir)src\Client\Common;$(SolutionDir)src\LIB_Util;$(SolutionDir)src\LIB_Server;$(SolutionDir)src\Common;$(SolutionDir)3rdParty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\SHO_WS\SHO_WS_LIB;$(SolutionDir)src\SHO_WS\SHO_WS_LIB\Shared;$(SolutionDir)src\Client\Util;$(SolutionDir)src\Client;$(SolutionDir)src\Client\Common;$(SolutionDir)src\LIB_Util;$(SolutionDir)src\LIB_Server;$(SolutionDir)src\Common;$(SolutionDir)thirdparty\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_debug;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadeddebug</RuntimeLibrary>

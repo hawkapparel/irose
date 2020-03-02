@@ -46,7 +46,7 @@ void sqliteUpdate(
                          ** an expression for the i-th column of the table.
                          ** aXRef[i]==-1 if the i-th column is not changed. */
   int chngRecno;         /* True if the record number is being changed */
-  Expr *pRecnoExpr;      /* Expression defining the new record number */
+  Expr *pRecnoExpr = 0;  /* Expression defining the new record number */
   int openAll;           /* True if all indices need to be opened */
   int isView;            /* Trying to update a view */
   AuthContext sContext;  /* The authorization context */

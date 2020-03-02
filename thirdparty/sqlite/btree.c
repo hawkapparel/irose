@@ -2182,7 +2182,7 @@ static int balance(Btree *pBt, MemPage *pPage, BtCursor *pCur){
   int nxDiv;                   /* Next divider slot in pParent->apCell[] */
   int rc;                      /* The return code */
   int iCur;                    /* apCell[iCur] is the cell of the cursor */
-  MemPage *pOldCurPage;        /* The cursor originally points to this page */
+  MemPage *pOldCurPage = NULL; /* The cursor originally points to this page */
   int subtotal;                /* Subtotal of bytes in cells on one page */
   MemPage *extraUnref = 0;     /* A page that needs to be unref-ed */
   MemPage *apOld[NB];          /* pPage and up to two siblings */

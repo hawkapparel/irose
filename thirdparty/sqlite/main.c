@@ -132,8 +132,8 @@ static
 int upgrade_3_callback(void *pInit, int argc, char **argv, char **NotUsed){
   InitData *pData = (InitData*)pInit;
   int rc;
-  Table *pTab;
-  Trigger *pTrig;
+  Table *pTab = NULL;
+  Trigger *pTrig = NULL;
   char *zErr = 0;
 
   pTab = sqliteFindTable(pData->db, argv[0], 0);

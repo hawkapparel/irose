@@ -390,8 +390,8 @@ void sqlitePragma(Parse *pParse, Token *pLeft, Token *pRight, int minusFlag){
   }else
 
   if( sqliteStrICmp(zLeft, "index_list")==0 ){
-    Index *pIdx;
-    Table *pTab;
+    Index *pIdx = NULL;
+    Table *pTab = NULL;
     pTab = sqliteFindTable(db, zRight, 0);
     if( pTab ){
       v = sqliteGetVdbe(pParse);
@@ -419,8 +419,8 @@ void sqlitePragma(Parse *pParse, Token *pLeft, Token *pRight, int minusFlag){
   }else
 
   if( sqliteStrICmp(zLeft, "foreign_key_list")==0 ){
-    FKey *pFK;
-    Table *pTab;
+    FKey *pFK = NULL;
+    Table *pTab = NULL;
     pTab = sqliteFindTable(db, zRight, 0);
     if( pTab ){
       v = sqliteGetVdbe(pParse);

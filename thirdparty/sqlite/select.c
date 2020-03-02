@@ -2167,7 +2167,7 @@ int sqliteSelect(
   /* Generate code for all sub-queries in the FROM clause
   */
   for(i=0; i<pTabList->nSrc; i++){
-    const char *zSavedAuthContext;
+    const char *zSavedAuthContext = "";
     int needRestoreContext;
 
     if( pTabList->a[i].pSelect==0 ) continue;

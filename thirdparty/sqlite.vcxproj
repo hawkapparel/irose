@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="debug|Win32">
+      <Configuration>debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="release|Win32">
+      <Configuration>release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="sqlite/attach.c" />
+    <ClCompile Include="sqlite/auth.c" />
+    <ClCompile Include="sqlite/btree.c" />
+    <ClCompile Include="sqlite/btree_rb.c" />
+    <ClCompile Include="sqlite/build.c" />
+    <ClCompile Include="sqlite/copy.c" />
+    <ClCompile Include="sqlite/date.c" />
+    <ClCompile Include="sqlite/delete.c" />
+    <ClCompile Include="sqlite/expr.c" />
+    <ClCompile Include="sqlite/func.c" />
+    <ClCompile Include="sqlite/hash.c" />
+    <ClCompile Include="sqlite/insert.c" />
+    <ClCompile Include="sqlite/main.c" />
+    <ClCompile Include="sqlite/opcodes.c" />
+    <ClCompile Include="sqlite/os.c" />
+    <ClCompile Include="sqlite/pager.c" />
+    <ClCompile Include="sqlite/parse.c" />
+    <ClCompile Include="sqlite/pragma.c" />
+    <ClCompile Include="sqlite/printf.c" />
+    <ClCompile Include="sqlite/random.c" />
+    <ClCompile Include="sqlite/select.c" />
+    <ClCompile Include="sqlite/shell.c" />
+    <ClCompile Include="sqlite/table.c" />
+    <ClCompile Include="sqlite/tokenize.c" />
+    <ClCompile Include="sqlite/trigger.c" />
+    <ClCompile Include="sqlite/update.c" />
+    <ClCompile Include="sqlite/util.c" />
+    <ClCompile Include="sqlite/vacuum.c" />
+    <ClCompile Include="sqlite/vdbe.c" />
+    <ClCompile Include="sqlite/vdbeaux.c" />
+    <ClCompile Include="sqlite/where.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="sqlite/btree.h" />
+    <ClInclude Include="sqlite/config.h" />
+    <ClInclude Include="sqlite/hash.h" />
+    <ClInclude Include="sqlite/opcodes.h" />
+    <ClInclude Include="sqlite/os.h" />
+    <ClInclude Include="sqlite/pager.h" />
+    <ClInclude Include="sqlite/parse.h" />
+    <ClInclude Include="sqlite/sqlite.h" />
+    <ClInclude Include="sqlite/sqliteInt.h" />
+    <ClInclude Include="sqlite/vdbe.h" />
+    <ClInclude Include="sqlite/vdbeInt.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{71095F13-E036-4F35-A706-20B90B1D8DBF}</ProjectGuid>
+    <RootNamespace>zlib</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UsedebugLibraries>true</UsedebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UsedebugLibraries>false</UsedebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
+    <OutDir>$(SolutionDir)bin\$(Configuration)\thirdparty\</OutDir>
+    <IntDir>$(SolutionDir)build\$(Configuration)\thirdparty\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
+    <OutDir>$(SolutionDir)bin\$(Configuration)\thirdparty\</OutDir>
+    <IntDir>$(SolutionDir)build\$(Configuration)\thirdparty\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)sqlite;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)sqlite;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

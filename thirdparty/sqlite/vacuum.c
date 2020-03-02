@@ -224,7 +224,7 @@ int sqliteRunVacuum(char **pzErrMsg, sqlite *db){
   sqlite *dbNew = 0;      /* The new vacuumed database */
   int rc = SQLITE_OK;     /* Return code from service routines */
   int i;                  /* Loop counter */
-  char *zErrMsg;          /* Error message */
+  char *zErrMsg = 0;      /* Error message */
   vacuumStruct sVac;      /* Information passed to callbacks */
 
   /* These are all of the pragmas that need to be transferred over

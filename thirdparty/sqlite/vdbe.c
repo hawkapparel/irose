@@ -3111,9 +3111,9 @@ case OP_Column: {
   int i = pOp->p1;
   int p2 = pOp->p2;
   int tos = p->tos+1;
-  Cursor *pC;
-  char *zRec;
-  BtCursor *pCrsr;
+  Cursor *pC = NULL;
+  char *zRec = NULL;
+  BtCursor *pCrsr = NULL;
   int idxWidth;
   unsigned char aHdr[10];
 

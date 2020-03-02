@@ -1,5 +1,8 @@
+*.sql diff
+
 *.[Ll][Ii][Bb] filter=lfs diff=lfs merge=lfs -text
 *.[Dd][Ll][Ll] filter=lfs diff=lfs merge=lfs -text
+*.[Ee][Xx][Ee] filter=lfs diff=lfs merge=lfs -text
 *.[Ee][Xx][Pp] filter=lfs diff=lfs merge=lfs -text
 
 # Resource files
@@ -7,11 +10,17 @@
 *.[Ii][Cc][Oo] filter=lfs diff=lfs merge=lfs -text
 *.[Pp][Aa][Ll] filter=lfs diff=lfs merge=lfs -text
 
+# Asset files
+*.3[Dd][Ss] filter=lfs diff=lfs merge=lfs -text
+
 # DirectX file
 *.[Xx] filter=lfs diff=lfs merge=lfs -text
 
 # Image formats
+*.[Bb][Mm][Pp] filter=lfs diff=lfs merge=lfs -text
 *.[Dd][Dd][Ss] filter=lfs diff=lfs merge=lfs -text
+*.[Gg][Ii][Ff] filter=lfs diff=lfs merge=lfs -text
+*.[Pp][Nn][Gg] filter=lfs diff=lfs merge=lfs -text
 *.[Pp][Ss][Dd] filter=lfs diff=lfs merge=lfs -text
 *.[Tt][Gg][Aa] filter=lfs diff=lfs merge=lfs -text
 
@@ -52,4 +61,3 @@
 *.[Zz][Mm][Ss] filter=lfs diff=lfs merge=lfs -text
 *.[Zz][Oo][Nn] filter=lfs diff=lfs merge=lfs -text
 *.[Zz][Ss][Cc] filter=lfs diff=lfs merge=lfs -text
-

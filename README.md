@@ -19,8 +19,8 @@ Please make sure you have the default C++ toolchain for Visual studio installed.
 
 ### Build
 - Clone the repository
+- Open `thirdparty.sln` and build both debug and release configurations
 - Open the `All.sln` file
-    - NOTE: If using VS2017 then **DO NOT** convert the solution or project files. You must have the VS2010 toolchain to compile this project.
 - Build the solution
 
 ## Client

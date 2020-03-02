@@ -3,14 +3,6 @@
 #include <process.h>
 #include "ADSStream.h"
 
-#ifdef	_DEBUG
-	#pragma comment ( lib, "ogg_static_d.lib")
-	#pragma comment ( lib, "vorbisfile_static_d.lib")
-#else
-	#pragma comment ( lib, "ogg_static.lib")
-	#pragma comment ( lib, "vorbisfile_static.lib")
-#endif
-
 
 //-------------------------------------------------------------------------------------------------
 

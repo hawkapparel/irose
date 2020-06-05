@@ -909,32 +909,39 @@
   <ItemGroup>
     <CustomBuild Include="System\export_System.lua">
       <Message Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Export Game Function Interface %(FullPath)</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">.\lua %(FullPath)
+      <Command Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">$(SolutionDir)bin\$(Configuration)\thirdparty\lua4.exe %(FullPath)
 </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">$(ProjectDir)system\System_FUNC_DEF.inc;$(ProjectDir)system\System_FUNC_REG.inc;%(Outputs)</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Export Game Function Interface %(FullPath)</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='release|Win32'">.\lua %(FullPath)
+      <Command Condition="'$(Configuration)|$(Platform)'=='release|Win32'">$(SolutionDir)bin\$(Configuration)\thirdparty\lua4.exe %(FullPath)
 </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='release|Win32'">$(ProjectDir)system\System_FUNC_DEF.inc;$(ProjectDir)system\System_FUNC_REG.inc;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='release|Win32'">$(ProjectDir)system\System_FUNC.h</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">$(ProjectDir)system\System_FUNC.h</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="export_GM.lua">
       <Message Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Export Game Function Interface %(FullPath)</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">.\lua %(FullPath)
+      <Command Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">$(SolutionDir)bin\$(Configuration)\thirdparty\lua4.exe %(FullPath)
 </Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">.\Game_FUNC.h;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">%(RootDir)%(Directory)Game_FUNC.h2;%(Outputs)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='release|Win32'">lua %(Filename)%(Extension)
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">$(ProjectDir)Game_FUNC.h</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">$(ProjectDir)Game_FUNC_DEF.inc; $(ProjectDir)Game_FUNC_REG.inc;</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='release|Win32'">$(SolutionDir)bin\$(Configuration)\thirdparty\lua4.exe %(FullPath)
 </Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='release|Win32'">%(RootDir)%(Directory)%(Filename);%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='release|Win32'">$(ProjectDir)Game_FUNC_DEF.inc; $(ProjectDir)Game_FUNC_REG.inc;</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Export Game Function Interface %(FullPath)</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='release|Win32'">$(ProjectDir)Game_FUNC.h</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="export_QF.lua">
       <Message Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">Export Quest Function Interface %(FullPath)</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">.\lua %(FullPath)
+      <Command Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">$(SolutionDir)bin\$(Configuration)\thirdparty\lua4.exe %(FullPath)
 </Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">%(RootDir)%(Directory)Event\Quest_FUNC.h2;%(Outputs)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='release|Win32'">lua %(Filename)%(Extension)
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">$(ProjectDir)event\Quest_FUNC_DEF.inc;$(ProjectDir)event\Quest_FUNC_REG.inc;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='release|Win32'">$(SolutionDir)bin\$(Configuration)\thirdparty\lua4.exe %(FullPath)
 </Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='release|Win32'">%(RootDir)%(Directory)%(Filename);%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='release|Win32'">$(ProjectDir)event\Quest_FUNC_DEF.inc;$(ProjectDir)event\Quest_FUNC_REG.inc;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='release|Win32'">Export Quest Function Interface %(FullPath)</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">$(ProjectDir)event\quest_func.h</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='release|Win32'">$(ProjectDir)event\quest_func.h</AdditionalInputs>
     </CustomBuild>
     <None Include="GlobalScr.lua" />
     <None Include="Res\Attack.cur" />

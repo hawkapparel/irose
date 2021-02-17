@@ -19,6 +19,8 @@ Please make sure you have the default C++ toolchain for Visual studio installed.
 
 ### Build
 - Clone the repository
+	- DO NOT CLICK "Download ZIP" on github, you must clone this using git and git LFS
+	- **Alternative**: Download from here https://mega.nz/file/odwwmLBY#py235XUP5ohbkcCJezjjl10PtKcfBQYSImHtV-EUT_s
 - Open `thirdparty.sln` and build both debug and release configurations
 - Open the `All.sln` file
 - Build the solution
